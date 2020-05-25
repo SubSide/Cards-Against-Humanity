@@ -1,4 +1,3 @@
-// const socketio = require('./lib/socket.io.min.js');
 import io from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { SocketChangePacket } from '../../shared/network/Packets';
@@ -13,4 +12,3 @@ if (id !== undefined && socket.id !== id) {
 socket.on("message", (msg: string) => {
     document.write(msg);
 });
-

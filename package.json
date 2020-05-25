@@ -23,6 +23,7 @@
     "@types/uuid": "^8.0.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-minify": "^0.5.1",
     "babelify": "^10.0.0",

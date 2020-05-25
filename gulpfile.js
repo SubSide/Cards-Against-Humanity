@@ -16,35 +16,43 @@ async function clean() {
 
 function build(cb) {
     let clientItems = 'src/client/**/*.ts';
+    // We browserify main.ts
     browserify( {
-        basedir: './src/client',
-        entries: ['./js/main.ts'],
+        basedir: './src',
+        entries: ['./client/js/main.ts'],
         debug: true,
         cache: {},
         packageCache: {}
     })
-        // .plugin(tsify)
+        .plugin(tsify)
         .transform('babelify', {
-            presets: ['@babel/preset-typescript', '@babel/env', 'minify'],
+            presets: [
+                // ['@babel/preset-typescript', {}],
+                '@babel/preset-env',
+                //'minify',
+            ],
             extensions: ['.ts']
         })
         .bundle()
-        // )
-         // First we browserify the client items
-        .pipe(source('./js/bundle.js'))
-        .pipe(buffer())
-        .pipe(uglify())
         .on('error', err => {
             util.log(
                 util.colors.red('[Error] ', err.toString())
             );
             this.emit('end');
         })
-        .pipe(src(['src/client/**', `!${clientItems}`])) // Here we do all non-ts files
+        // // )
+        // Then we bundle it to bundle.js
+        .pipe(source('./js/bundle.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
-        // .pipe(uglify())
+        // We uglify it
+        .pipe(uglify())
         .pipe(sourcemaps.write('./'))
+        .pipe(buffer())
+        // Add all the other files
+        .pipe(src(['src/client/**', `!${clientItems}`])) // Here we do all non-ts files
+        .pipe(buffer())
+        // And put it in our client folder
         .pipe(dest('dist/client'));
     
     // Then we do the rest
