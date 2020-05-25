@@ -1,0 +1,51 @@
+{
+  "name": "cah",
+  "version": "1.0.0",
+  "description": "A Card Against Humanity clone",
+  "main": "./dist/server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "CAH"
+  ],
+  "author": "SubSide",
+  "license": "GPLv3",
+  "dependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/express": "^4.17.6",
+    "@types/js-cookie": "^2.2.6",
+    "@types/mongodb": "^3.5.18",
+    "@types/socket.io": "^2.1.8",
+    "@types/socket.io-client": "^1.4.33",
+    "@types/uuid": "^8.0.0",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-minify": "^0.5.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.1",
+    "del": "^5.1.0",
+    "express": "^4.17.1",
+    "fancy-log": "^1.3.3",
+    "gulp": "^4.0.2",
+    "gulp-browserify": "^0.5.1",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-uglify": "^3.0.2",
+    "gulp-uglify-es": "^2.0.0",
+    "gulp-util": "^3.0.8",
+    "js-cookie": "^2.2.1",
+    "mongodb": "^3.5.7",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "tsify": "^4.0.1",
+    "typescript": "^3.9.3",
+    "uuid": "^8.1.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.11.1"
+  }
+}
