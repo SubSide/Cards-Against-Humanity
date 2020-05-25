@@ -3,15 +3,17 @@ import http from 'http';
 import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import { GameManager } from './GameManager';
+require('dotenv').config({ path: '../.env' });
 
 const MONGODB_URL = process.env.MONGODB_URL;
 const MONGODB_DB = process.env.MONGODB_DB;
+const WEB_PORT = process.env.WEB_PORT;
 const SERVER_PORT = process.env.SERVER_PORT;
 
 
 const app = express();
 app.use(express.static('../client'));
-app.listen(SERVER_PORT, () => console.debug(`App listening at http://localhost:${SERVER_PORT}`));
+app.listen(WEB_PORT, () => console.debug(`App listening at http://localhost:${WEB_PORT}`));
 
 
 MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
@@ -44,8 +46,3 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
             io.emit("message", "Test: "+(count++));
         }, 2000);
     })
-
-
-
-
-// app.get('/', (req, res) => res.send('Hello world!'));
