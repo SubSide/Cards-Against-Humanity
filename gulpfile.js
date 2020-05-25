@@ -25,11 +25,11 @@ function build(cb) {
         packageCache: {}
     })
         .plugin(tsify)
+        .transform('browserify-shim')
         .transform('babelify', {
             presets: [
                 // ['@babel/preset-typescript', {}],
                 '@babel/preset-env',
-                //'minify',
             ],
             extensions: ['.ts']
         })
@@ -46,7 +46,7 @@ function build(cb) {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         // We uglify it
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(buffer())
         // Add all the other files

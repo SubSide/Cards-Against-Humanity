@@ -1,14 +1,26 @@
 import io from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { SocketChangePacket } from '../../shared/network/Packets';
+import { SocketChangePacket, CreateRoomPacket } from '../../shared/network/ClientPackets';
 
-const socket = io('localhost:3001');
+$.ready.then(() => {
+    const socket = io('localhost:3001');
 
-let id = Cookies.get('previousId');
-if (id !== undefined && socket.id !== id) {
-    socket.send(new SocketChangePacket(id));
-}
+    let id = Cookies.get('previousId');
+    if (id !== undefined && socket.id !== id) {
+        socket.send(new SocketChangePacket(id));
+    }
+    
+    socket.on("message", (data: any) => {
+        console.debug(data);
+    });
 
-socket.on("message", (msg: string) => {
-    document.write(msg);
-});
+    $("#refresh").click(() => {
+
+    });
+
+    $("#createRoom").click(() => {
+        socket.send(new CreateRoomPacket({
+            allowedPlayers: 5
+        }));
+    });
+})

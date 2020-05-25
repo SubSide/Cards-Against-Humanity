@@ -15,7 +15,7 @@ export class RoomManager {
         this.cardManager = new CardManager(db);
     }
     
-    public createGame(owner: ServerUser, settings: Settings): ServerRoom {
+    public createRoom(owner: ServerUser, settings: Settings): ServerRoom {
         let room = new ServerRoom(
             UUID(),
             this.cardManager.packs,
@@ -27,6 +27,8 @@ export class RoomManager {
         room.owner = ownerPlayer;
 
         this.rooms.push(room);
+
+        console.info(`Room #${room.id} created by: ${owner.username}`);
 
         return room;
     }

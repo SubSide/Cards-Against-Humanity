@@ -3,6 +3,7 @@ import http from 'http';
 import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import { GameManager } from './GameManager';
+import { ClientPacketType } from '../shared/network/ClientPackets';
 require('dotenv').config({ path: '../.env' });
 
 const MONGODB_URL = process.env.MONGODB_URL;
@@ -33,16 +34,15 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
 
         io.on('connection', client => {
             gameManager.onConnect(client);
-            client.on('event', data => { 
-
+            
+            client.on('message', data => {
+                gameManager.onPacket(client, data as ClientPacketType);
              });
-            client.on('disconnect', () => { /* … */ });
+
+            client.on('disconnect', () => { 
+                gameManager.onDisconnect(client);
+             });
         });
         
         server.listen(SERVER_PORT);
-
-        var count = 1;
-        setInterval(function () {
-            io.emit("message", "Test: "+(count++));
-        }, 2000);
-    })
+    });

@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="./js/lib/socket.io.min.js"></script>
+        <script 
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js" 
+            integrity="sha256-Dul4c09cdrWKXVtallPxF558lwxMwCC8dXJdZ0PVW54=" 
+            crossorigin="anonymous"></script>
+        <script
+			  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+			  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+              crossorigin="anonymous"></script>
+              
         <script src="./js/bundle.js"></script>
     </head>
     <body>
-        Test
+        Test<br />
+        <button id="createRoom">Create room</button>
+        <br />
+        <button id="refresh">Refresh</button>
     </body>
 </html>

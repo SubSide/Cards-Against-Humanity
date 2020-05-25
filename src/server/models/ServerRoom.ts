@@ -34,7 +34,7 @@ export class ServerRoom implements Room, Transmissible {
         this.whiteDiscardPile = [];
     };
 
-    public join(user: ServerUser) {
+    public join(user: ServerUser): ServerPlayer {
         if (user.player != null) {
             throw new Error('Already in a room');
         }
@@ -43,6 +43,8 @@ export class ServerRoom implements Room, Transmissible {
         user.player = player;
 
         this.players.push(player);
+
+        return player;
 
         // TODO init player
     }

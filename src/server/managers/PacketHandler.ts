@@ -1,20 +1,24 @@
-import { PacketType, CreateRoomPacket} from "../../shared/network/Packets";
+import { ClientPacketType, CreateRoomPacket } from "../../shared/network/ClientPackets";
+import { ServerUser } from "../models/ServerUser";
+import { GameManager } from "../GameManager";
 
 export class PacketHandler {
-    incomingPacket(packet: PacketType) {
-        try {
-            switch (packet.type) {
-                case 'createRoom':
-                    this.handleCreateRoom(packet);
-                    break;
-            }
-        } catch (e) {
-            console.warn('Malformed packet received: ')
+    
+    constructor(
+        public gameManager: GameManager
+    ) {
+    }
+
+    incomingPacket(user: ServerUser, packet: ClientPacketType) {
+        switch (packet.type) {
+            case 'createRoom':
+                this.handleCreateRoom(user, packet);
+                break;
         }
         
     }
 
-    handleCreateRoom(packet: CreateRoomPacket) {
-
+    private handleCreateRoom(user: ServerUser, packet: CreateRoomPacket) {
+        this.gameManager.roomManager.createRoom(user, packet.roomSettings);
     }
 }
