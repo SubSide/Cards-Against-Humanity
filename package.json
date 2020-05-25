@@ -50,6 +50,7 @@
     "uuid": "^8.1.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
+    "vue": "^2.6.11",
     "watchify": "^3.11.1"
   },
   "browser": {
@@ -58,6 +59,7 @@
   },
   "browserify-shim": {
     "jquery": "global:$",
-    "socket.io-client": "global:io"
+    "socket.io-client": "global:io",
+    "vue": "global:Vue"
   }
 }

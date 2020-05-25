@@ -4,7 +4,7 @@ import { PacketHandler } from './managers/PacketHandler';
 import { Db, Server } from 'mongodb';
 import { ServerUser } from './models/ServerUser';
 import { ClientPacketType } from '../shared/network/ClientPackets';
-import { ErrorPacket } from '../shared/network/ServerPacket';
+import { ErrorPacket, ServerPacketType } from '../shared/network/ServerPacket';
 
 export class GameManager {
     public cardManager: CardManager;
@@ -15,10 +15,10 @@ export class GameManager {
 
     private static PLAYER_TIMEOUT = 5 * 60 * 1000;
 
-    constructor(db: Db) {
+    constructor(db: Db, serverIO: SocketIO.Server) {
         this.cardManager = new CardManager(db);
         this.roomManager = new RoomManager(db);
-        this.packetHandler = new PacketHandler(this);
+        this.packetHandler = new PacketHandler(this, serverIO);
 
         this.users = new Map();
     }
@@ -80,7 +80,7 @@ export class GameManager {
     
             // TODO debugging
             // We send the packet right back, for debugging purposes
-            socket.send(packet);
+            user.sendPacket(socket.server, packet as any);
 
             // If we found a user we handle it here
             this.packetHandler.incomingPacket(user, packet);

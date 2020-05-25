@@ -30,7 +30,7 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
     .then(db => {
         const server = http.createServer(app);
         const io = socketIO(server);
-        const gameManager = new GameManager(db as Db);
+        const gameManager = new GameManager(db as Db, io);
 
         io.on('connection', client => {
             gameManager.onConnect(client);

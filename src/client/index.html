@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script 
             src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js" 
             integrity="sha256-Dul4c09cdrWKXVtallPxF558lwxMwCC8dXJdZ0PVW54=" 
@@ -13,9 +14,11 @@
         <script src="./js/bundle.js"></script>
     </head>
     <body>
-        Test<br />
-        <button id="createRoom">Create room</button>
-        <br />
-        <button id="refresh">Refresh</button>
+        <div id="app">
+            {{message}}<br />
+            <button id="createRoom">Create room</button>
+            <br />
+            <button id="refresh">Refresh</button>
+        </div>
     </body>
 </html>

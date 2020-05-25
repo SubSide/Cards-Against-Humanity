@@ -14,8 +14,8 @@ async function clean() {
     return del('dist/**');
 }
 
-function build(cb) {
-    let clientItems = 'src/client/**/*.ts';
+let clientTs = 'src/client/**/*.ts';
+async function buildClientJavascript() {
     // We browserify main.ts
     browserify( {
         basedir: './src',
@@ -49,31 +49,41 @@ function build(cb) {
         // .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(buffer())
-        // Add all the other files
-        .pipe(src(['src/client/**', `!${clientItems}`])) // Here we do all non-ts files
+        .pipe(dest('dist/client'));
+}
+
+async function buildClientOthers() {
+    // Add all the other files
+    src(['src/client/**', `!${clientTs}`]) // Here we do all non-ts files
         .pipe(buffer())
         // And put it in our client folder
         .pipe(dest('dist/client'));
-    
-    // Then we do the rest
-    src(['src/**/*.ts', `!${clientItems}`])
+}
+
+
+async function buildServer() {
+    src(['src/**/*.ts', `!${clientTs}`])
         .pipe(ts.createProject('tsconfig.json')())
-        .pipe(src(['src/**/*', '!src/**/*.ts', `!${clientItems}`]))
+        .pipe(src(['src/**/*', '!src/**/*.ts', `!${clientTs}`]))
         .pipe(src('.env.example', '.env')) // If there exists an .env in the root we want to copy that over too (as clean will remove it)
         .pipe(dest('dist/'));
-
-    cb();
 }
 
 function watchBuild(cb) {
     clean();
-    build(() => {});
-    watch('src/**', build);
+    build()();
+    watch(['src/**/*.ts', `!${clientTs}`], buildServer);
+    watch([clientTs, 'src/shared/**'], buildClientJavascript);
+    watch(['src/client/**', `!${clientTs}`], buildClientOthers);
+}
+
+function build() {
+    return parallel(buildServer, buildClientOthers, buildClientJavascript);
 }
 
 exports.watch = watchBuild;
-exports.build = build;
-exports.default = series(clean, build);
+exports.build = build();
+exports.default = series(clean, build());
 
 
 

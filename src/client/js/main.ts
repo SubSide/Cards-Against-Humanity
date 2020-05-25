@@ -1,8 +1,20 @@
 import io from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { SocketChangePacket, CreateRoomPacket } from '../../shared/network/ClientPackets';
+import { SocketChangePacket, CreateRoomPacket, RequestRoomsPacket } from '../../shared/network/ClientPackets';
+import Vue from 'vue';
+
+
+
 
 $.ready.then(() => {
+    
+    var app = new Vue({
+        el: "#app",
+        data: {
+            message: "Hi!"
+        }
+    });
+
     const socket = io('localhost:3001');
 
     let id = Cookies.get('previousId');
@@ -15,7 +27,7 @@ $.ready.then(() => {
     });
 
     $("#refresh").click(() => {
-
+        socket.send(new RequestRoomsPacket());
     });
 
     $("#createRoom").click(() => {

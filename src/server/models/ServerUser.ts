@@ -1,7 +1,7 @@
 import { User } from "../../shared/models/User";
 import { ServerPlayer } from './ServerPlayer';
-import { ClientPacketType } from "../../shared/network/ClientPackets";
 import SocketIO from "socket.io";
+import { ServerPacketType } from "../../shared/network/ServerPacket";
 
 export class ServerUser implements User, Transmissible {
     public lastActive: number;
@@ -21,7 +21,7 @@ export class ServerUser implements User, Transmissible {
         }
     }
 
-    sendPacket(socket: SocketIO.Server, packet: ClientPacketType) {
+    sendPacket(socket: SocketIO.Server, packet: ServerPacketType) {
         socket.to(this.id).send(packet);
     }
 }
