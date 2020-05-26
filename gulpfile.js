@@ -9,15 +9,18 @@ const uglify = require('gulp-uglify-es').default;
 const buffer = require('vinyl-buffer');
 const browserify = require('browserify');
 const util = require('gulp-util');
+var { spawn, spawnSync } = require('child_process');
+var _console = console;
 
-async function clean() {
-    return del('dist/**');
+function clean(cb) {
+    del.sync('dist/**');
+    cb();
 }
 
 let clientTs = 'src/client/**/*.ts';
-async function buildClientJavascript() {
+function buildClientJavascript() {
     // We browserify main.ts
-    browserify( {
+    return browserify( {
         basedir: './src',
         entries: ['./client/js/main.ts'],
         debug: true,
@@ -50,19 +53,20 @@ async function buildClientJavascript() {
         .pipe(sourcemaps.write('./'))
         .pipe(buffer())
         .pipe(dest('dist/client'));
+    cb();
 }
 
-async function buildClientOthers() {
+function buildClientOthers() {
     // Add all the other files
-    src(['src/client/**', `!${clientTs}`]) // Here we do all non-ts files
+    return src(['src/client/**', `!${clientTs}`]) // Here we do all non-ts files
         .pipe(buffer())
         // And put it in our client folder
         .pipe(dest('dist/client'));
 }
 
 
-async function buildServer() {
-    src(['src/**/*.ts', `!${clientTs}`])
+function buildServer() {
+    return src(['src/**/*.ts', `!${clientTs}`])
         .pipe(ts.createProject('tsconfig.json')())
         .pipe(src(['src/**/*', '!src/**/*.ts', `!${clientTs}`]))
         .pipe(src('.env.example', '.env')) // If there exists an .env in the root we want to copy that over too (as clean will remove it)
@@ -70,48 +74,72 @@ async function buildServer() {
 }
 
 function watchBuild(cb) {
-    clean();
-    build()();
+    clean(() => {});
+    build()(() => {});
     watch(['src/**/*.ts', `!${clientTs}`], buildServer);
     watch([clientTs, 'src/shared/**'], buildClientJavascript);
     watch(['src/client/**', `!${clientTs}`], buildClientOthers);
+    cb();
 }
+
+function devRun() {
+    return parallel(
+        function(cb) {
+            watch(['src/**/*.ts', `!${clientTs}`], series(buildServer, runServer));
+            watch([clientTs, 'src/shared/**'], buildClientJavascript);
+            watch(['src/client/**', `!${clientTs}`], buildClientOthers);
+            cb();
+        },
+        runServer
+    )
+};
+
+var currentNpm;
+var shouldSpawnNew = false;
+async function runServer(cb) {
+    shouldSpawnNew = true;
+
+    try {
+        if (currentNpm) {
+            spawnSync('taskkill', ['/pid', currentNpm.pid, '/f', '/t']);
+        }
+    } catch(e) {}
+
+    spawnNewServer();
+    cb();
+}
+
+async function spawnNewServer() {
+    if (currentNpm || !shouldSpawnNew) return;
+
+    var npmCommand;
+    if (process.platform === 'win32') {
+        npmCommand = 'npm.cmd';
+    } else {
+        npmCommand = 'npm';
+    }
+
+    currentNpm = spawn(npmCommand, ['start'], { stdio: 'inherit' });
+    currentNpm.on('message', message => _console.debug(message));
+    currentNpm.on('error', err => console.error(err));
+    currentNpm.on('exit', () => {
+        _console.warn("--- Process exited ---");
+        currentNpm = false;
+
+        if (shouldSpawnNew) {
+            spawnNewServer();
+        }
+    })
+}
+
+
 
 function build() {
     return parallel(buildServer, buildClientOthers, buildClientJavascript);
 }
 
+exports.clean = clean;
 exports.watch = watchBuild;
+exports.devRun = devRun();
 exports.build = build();
 exports.default = series(clean, build());
-
-
-
-
-
-// var gulp = require('gulp');
-// var browserify = require('browserify');
-// var source = require('vinyl-source-stream');
-// var tsify = require('tsify');
-// var paths = {
-//     pages: ['src/*.html']
-// };
-
-// gulp.task('copy-html', function () {
-//     return gulp.src(paths.pages)
-//         .pipe(gulp.dest('dist'));
-// });
-
-// gulp.task('default', gulp.series(gulp.parallel('copy-html'), function () {
-//     return browserify({
-//         basedir: '.',
-//         debug: true,
-//         entries: ['src/main.ts'],
-//         cache: {},
-//         packageCache: {}
-//     })
-//     .plugin(tsify)
-//     .bundle()
-//     .pipe(source('bundle.js'))
-//     .pipe(gulp.dest('dist'));
-// }));

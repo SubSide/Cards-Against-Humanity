@@ -4,7 +4,8 @@
   "description": "A Card Against Humanity clone",
   "main": "./dist/server/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/server/index.js",
+    "develop": "gulp devRun"
   },
   "keywords": [
     "CAH"

@@ -4,7 +4,7 @@ import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import { GameManager } from './GameManager';
 import { ClientPacketType } from '../shared/network/ClientPackets';
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: __dirname+'/../.env' });
 
 const MONGODB_URL = process.env.MONGODB_URL;
 const MONGODB_DB = process.env.MONGODB_DB;
@@ -13,8 +13,9 @@ const SERVER_PORT = process.env.SERVER_PORT;
 
 
 const app = express();
-app.use(express.static('../client'));
-app.listen(WEB_PORT, () => console.debug(`App listening at http://localhost:${WEB_PORT}`));
+var server: http.Server;
+app.use(express.static(__dirname+'/../client'));
+const webServer = app.listen(WEB_PORT, () => console.debug(`App listening at http://localhost:${WEB_PORT}`));
 
 
 MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
@@ -28,7 +29,7 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
         });
     })
     .then(db => {
-        const server = http.createServer(app);
+        server = http.createServer(app);
         const io = socketIO(server);
         const gameManager = new GameManager(db as Db, io);
 
@@ -45,4 +46,22 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
         });
         
         server.listen(SERVER_PORT);
+
     });
+
+    
+process.on('SIGTERM', shutDown);
+process.on('SIGINT', shutDown)
+
+function shutDown() {
+    console.warn("!!! SERVER CLOSED !!!");
+    webServer.close(err => {
+        server?.close(err2 => {
+            if (err || err2) {
+                process.exit();
+            } else {
+                process.exit(1);
+            }
+        });
+    });
+}
