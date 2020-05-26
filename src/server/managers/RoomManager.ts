@@ -22,8 +22,7 @@ export class RoomManager {
             settings
         )
 
-        let ownerPlayer = new ServerPlayer(room, owner);
-        ownerPlayer.user = owner;
+        let ownerPlayer = room.join(owner);
         room.owner = ownerPlayer;
 
         this.rooms.push(room);
