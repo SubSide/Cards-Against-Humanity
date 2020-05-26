@@ -9,6 +9,7 @@ const uglify = require('gulp-uglify-es').default;
 const buffer = require('vinyl-buffer');
 const browserify = require('browserify');
 const util = require('gulp-util');
+const liveReload = require('gulp-livereload');
 var { spawn, spawnSync } = require('child_process');
 var _console = console;
 
@@ -83,16 +84,22 @@ function watchBuild(cb) {
 }
 
 function devRun() {
+    liveReload.listen();
     return parallel(
         function(cb) {
             watch(['src/**/*.ts', `!${clientTs}`], series(buildServer, runServer));
-            watch([clientTs, 'src/shared/**'], buildClientJavascript);
-            watch(['src/client/**', `!${clientTs}`], buildClientOthers);
+            watch([clientTs, 'src/shared/**'], series(buildClientJavascript, doLiveReload));
+            watch(['src/client/**', `!${clientTs}`], series(buildClientOthers, doLiveReload));
             cb();
         },
         runServer
     )
 };
+
+function doLiveReload(cb) {
+    liveReload.reload();
+    cb();
+}
 
 var currentNpm;
 var shouldSpawnNew = false;
