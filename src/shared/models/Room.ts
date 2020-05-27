@@ -6,3 +6,9 @@ export interface Room {
     players: Player[];
     settings: Settings;
 }
+
+export interface RoomListItem {
+    id: string;
+    playerCount: number;
+    maxPlayers: number;
+}

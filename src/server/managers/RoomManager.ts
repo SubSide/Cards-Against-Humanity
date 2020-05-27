@@ -16,6 +16,10 @@ export class RoomManager {
     }
     
     public createRoom(owner: ServerUser, settings: Settings): ServerRoom {
+        if (owner.player != null) {
+            throw Error("You can't create a new room as you're already in a room!");
+        }
+        
         let room = new ServerRoom(
             UUID(),
             this.cardManager.packs,

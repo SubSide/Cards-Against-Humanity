@@ -1,5 +1,5 @@
 export interface Settings {
-    allowedPlayers?: number;
+    maxPayers?: number;
     pointsToWin?: number;
     timeToRespond?: number;
 }

@@ -29,7 +29,7 @@ export class PacketHandler {
 
     private handleRequestRooms(user: ServerUser, packet: RequestRoomsPacket) {
         user.sendPacket(this.serverIO, new RoomListPacket(
-            this.gameManager.roomManager.rooms.map(map => map.getTransmitData())
+            this.gameManager.roomManager.rooms.map(map => map.getListTransmitData())
         ))
     }
 }

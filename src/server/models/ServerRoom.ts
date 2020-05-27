@@ -1,6 +1,6 @@
 import { BlackCard, WhiteCard, Card } from '../../shared/models/Card';
 import io from 'socket.io';
-import { Room } from '../../shared/models/Room';
+import { Room, RoomListItem } from '../../shared/models/Room';
 import { ServerUser } from './ServerUser';
 import { Settings } from '../../shared/models/Settings';
 import { ServerPlayer } from './ServerPlayer';
@@ -36,7 +36,7 @@ export class ServerRoom implements Room, Transmissible {
 
     public join(user: ServerUser): ServerPlayer {
         if (user.player != null) {
-            throw new Error('Already in a room');
+            throw new Error('You can\'t join this room as you\'re already in one!');
         }
 
         let player = new ServerPlayer(this, user);
@@ -51,6 +51,7 @@ export class ServerRoom implements Room, Transmissible {
 
     public leave(player: ServerPlayer) {
         this.players.splice(this.players.indexOf(player), 1);
+        player.user.player = null;
     }
 
     public drawCard(): WhiteCard {
@@ -73,6 +74,14 @@ export class ServerRoom implements Room, Transmissible {
         // Get random card from deck
         let card = this.blackDeck.splice(Math.floor(Math.random() * this.blackDeck.length), 1)[0];    
         return card;
+    }
+
+    getListTransmitData(): RoomListItem {
+        return {
+            id: this.id,
+            playerCount: this.players.length,
+            maxPlayers: this.settings.maxPayers || -1
+        }
     }
 
     getTransmitData(): Room {

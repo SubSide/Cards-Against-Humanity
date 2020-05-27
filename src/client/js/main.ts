@@ -4,11 +4,7 @@ import { SocketChangePacket, CreateRoomPacket, RequestRoomsPacket } from '../../
 import Vue from 'vue';
 import { ServerPacketType } from '../../shared/network/ServerPacket';
 
-
-
-
 $.ready.then(() => {
-    
     var app = new Vue({
         el: "#app",
         data: {
@@ -17,13 +13,18 @@ $.ready.then(() => {
     });
 
     const socket = io('localhost:3001');
+    socket.on('connect', () => {
+        let id = Cookies.get('previousId');
+        Cookies.set('previousId', socket.id, { sameSite: 'Strict' });
+        if (id != undefined && id != "undefined" && socket.id !== id) {
+            socket.send(new SocketChangePacket(id));
+        }
 
-    let id = Cookies.get('previousId');
-    if (id !== undefined && socket.id !== id) {
-        socket.send(new SocketChangePacket(id));
-    }
+    });
     
     socket.on("message", (data: ServerPacketType) => {
+        // TODO just for testing
+        console.debug(data);
         try {
             switch (data.type) {
                 case 'roomList':
@@ -40,7 +41,7 @@ $.ready.then(() => {
 
     $("#createRoom").click(() => {
         socket.send(new CreateRoomPacket({
-            allowedPlayers: 5
+            maxPayers: 5
         }));
     });
 })

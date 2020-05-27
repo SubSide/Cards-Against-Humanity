@@ -5,6 +5,7 @@ import { Db, Server } from 'mongodb';
 import { ServerUser } from './models/ServerUser';
 import { ClientPacketType } from '../shared/network/ClientPackets';
 import { ErrorPacket, ServerPacketType } from '../shared/network/ServerPacket';
+import { Pair } from '../shared/utils/Pair';
 
 export class GameManager {
     public cardManager: CardManager;
@@ -21,6 +22,7 @@ export class GameManager {
         this.packetHandler = new PacketHandler(this, serverIO);
 
         this.users = new Map();
+        setInterval(this.tick.bind(this), 15000);
     }
 
     private tick() {
@@ -28,7 +30,7 @@ export class GameManager {
     }
 
     private removeInactiveUsers() {
-        let removeUsers: string[] = [];
+        let removeUsers: Pair<string, ServerUser>[] = [];
         let currentTime: number = new Date().getTime();
 
         this.users.forEach((user, key) => {
@@ -37,13 +39,22 @@ export class GameManager {
                 user.lastActive = currentTime;
             }
             // If not we check if the user timed out and if so add it to our removedUsers list
-            else if (user.lastActive < currentTime + GameManager.PLAYER_TIMEOUT) {
-                removeUsers.push(key);
+            else if (user.lastActive < currentTime - GameManager.PLAYER_TIMEOUT) {
+                removeUsers.push(new Pair(key, user));
             }
         });
 
         // We delete all users that timed out
-        removeUsers.forEach(key =>this.users.delete(key));
+        removeUsers.forEach(pair => {
+            console.debug(`Removed '${pair.value.username}' due to inactivity.`);
+            this.users.delete(pair.key);
+            
+            let player = pair.value?.player;
+            // Remove the player from the game if he is in any
+            if (player != null) {
+                player.game.leave(player);
+            }
+        });
     }
 
     /**
@@ -61,12 +72,12 @@ export class GameManager {
                 let user = this.users.get(packet.oldId);
                 // This automatically makes it fail-safe, if the user doesn't exist, we ignore it.
                 if (user !== undefined) {
-                    user.id = socket.id;
-                    user.socket = socket;
-                    this.users.delete(packet.oldId);
-                    this.users.set(socket.id, user);
+                    user.id = socket.id; // Update the id
+                    user.socket = socket; // Update the socket
+                    this.users.delete(packet.oldId); // delete the user from the old id
+                    this.users.set(socket.id, user); // Set the user to the new id
+                    console.debug(`Succesfully changed Socket ID for user '${user.username}'. From '${packet.oldId}' to '${socket.id}'`);
                 }
-                
                 return;
             }
             
@@ -74,30 +85,26 @@ export class GameManager {
             let user = this.users.get(socket.id);
             if (user === undefined) {
                 // If we can't find a user, we send an error
-                socket.send(new ErrorPacket('User not found. Try reloading'));
-                return;
+                throw Error('User not found. Try reloading.');
             }
-    
-            // TODO debugging
-            // We send the packet right back, for debugging purposes
-            user.sendPacket(socket.server, packet as any);
 
             // If we found a user we handle it here
             this.packetHandler.incomingPacket(user, packet);
         
         } catch (e) {
-            console.warn('Malformed packet received: ', e);
+            socket.send(new ErrorPacket(e.message));
+            console.warn('Malformed packet received: '+ e?.message);
         }
     }
 
     onConnect(socket: SocketIO.Socket) {
-        this.users.set(socket.id, new ServerUser(socket.id));
+        let newUser = new ServerUser(socket.id, socket);
+        this.users.set(socket.id, newUser);
+        console.debug(`New user '${newUser.username}' connected with id: ${newUser.id}`);
     }
 
     onDisconnect(socket: SocketIO.Socket) {
         let user = this.users.get(socket.id);
-        
-        if (user != null)
-            user.lastActive = new Date().getTime();
+        console.debug(`User '${user.username}'(${user.id}) disconnected. After 5 mins he gets removed.`);
     }
 }

@@ -1,4 +1,4 @@
-import { Room } from "../models/Room";
+import { Room, RoomListItem } from "../models/Room";
 import { Round } from "../models/Round";
 
 export type ServerPacketType =
@@ -15,7 +15,7 @@ export interface ServerPacket {
 
 export class RoomListPacket implements RoomListPacket {
     type: 'roomList' = 'roomList';
-    constructor(public roomList: Room[]) {}
+    constructor(public roomList: RoomListItem[]) {}
 }
 
 export class RoomJoinedPacket implements ServerPacket {

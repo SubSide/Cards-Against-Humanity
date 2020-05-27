@@ -40,9 +40,7 @@
             <div class="row">
                 <div class="col-md-6 col-12" v-for="room in roomList">
                     <h4>{{ room.id }}</h4>
-                    <ul>
-                        <li v-for="player in room.players">{{ player }}</li>
-                    </ul>
+                    <span>{{ room.playerCount }} / {{ room.maxPlayers }}</span>
                 </div>
             </div>
         </div>
