@@ -1,7 +1,7 @@
 import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket } from "../../shared/network/ClientPackets";
 import { ServerUser } from "../models/ServerUser";
 import { GameManager } from "../GameManager";
-import { RoomListPacket } from "../../shared/network/ServerPacket";
+import { RoomListPacket } from "../../shared/network/ServerPackets";
 
 export class PacketHandler {
     

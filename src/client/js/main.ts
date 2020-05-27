@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import Cookies from 'js-cookie';
 import { SocketChangePacket, CreateRoomPacket, RequestRoomsPacket } from '../../shared/network/ClientPackets';
 import Vue from 'vue';
-import { ServerPacketType } from '../../shared/network/ServerPacket';
+import { ServerPacketType } from '../../shared/network/ServerPackets';
 
 $.ready.then(() => {
     var app = new Vue({

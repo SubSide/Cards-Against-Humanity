@@ -2,7 +2,7 @@ import { Player } from '../../shared/models/Player';
 import { WhiteCard } from '../../shared/models/Card';
 import { ServerUser } from './ServerUser';
 import { ServerRoom } from './ServerRoom';
-import { ServerPacketType } from '../../shared/network/ServerPacket';
+import { ServerPacketType } from '../../shared/network/ServerPackets';
 
 export class ServerPlayer implements Player, Transmissible {
     public cards: WhiteCard[];

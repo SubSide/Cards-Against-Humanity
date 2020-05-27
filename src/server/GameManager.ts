@@ -4,7 +4,7 @@ import { PacketHandler } from './managers/PacketHandler';
 import { Db, Server } from 'mongodb';
 import { ServerUser } from './models/ServerUser';
 import { ClientPacketType } from '../shared/network/ClientPackets';
-import { ErrorPacket, ServerPacketType } from '../shared/network/ServerPacket';
+import { ErrorPacket, ServerPacketType } from '../shared/network/ServerPackets';
 import { Pair } from '../shared/utils/Pair';
 
 export class GameManager {
