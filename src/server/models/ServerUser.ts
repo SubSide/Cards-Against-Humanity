@@ -22,6 +22,6 @@ export class ServerUser implements User, Transmissible {
     }
 
     sendPacket(socket: SocketIO.Server, packet: ServerPacketType) {
-        socket.to(this.id).send(packet);
+        socket.to(this.id).emit(packet.type, packet);
     }
 }

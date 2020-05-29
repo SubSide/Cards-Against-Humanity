@@ -6,6 +6,7 @@ import { BlackCard, WhiteCard } from '../../shared/models/Card';
 import { Settings } from '../../shared/models/Settings';
 import { ServerUser } from '../models/ServerUser';
 import { ServerPlayer } from '../models/ServerPlayer';
+import ClientError from '../util/ClientError';
 
 export class RoomManager {
     private cardManager: CardManager;
@@ -17,7 +18,7 @@ export class RoomManager {
     
     public createRoom(owner: ServerUser, settings: Settings): ServerRoom {
         if (owner.player != null) {
-            throw Error("You can't create a new room as you're already in a room!");
+            throw new ClientError("You can't create a new room as you're already in a room!");
         }
         
         let room = new ServerRoom(

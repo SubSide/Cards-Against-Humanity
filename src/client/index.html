@@ -4,6 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- Vue CDN-->
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@3.3.2/dist/vue-router.js"></script>
         <script src="https://unpkg.com/vuex@2.0.0/dist/vuex.min.js"></script>
 
         <!-- Socket.IO CDN -->
@@ -24,7 +25,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         
         <!-- CAH CDN -->
-        <script src="./js/bundle.js"></script>
+        <script src="./bundle.js"></script>
 
         <!-- Live reload -->
         <script>
@@ -33,12 +34,6 @@
           </script> 
     </head>
     <body>
-        <div id="app" class="container">
-
-            <button id="createRoom">Create room</button>
-            <button id="refresh">Refresh</button>
-
-            <room-list :rooms="roomList" />
-        </div>
+        <div id="app"></div>
     </body>
 </html>

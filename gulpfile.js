@@ -29,20 +29,20 @@ function buildClientJavascript() {
     // We browserify main.ts
     return browserify( {
         basedir: './src',
-        entries: ['./client/js/main.ts'],
+        entries: ['./client/main.ts'],
         debug: true,
         cache: {},
         packageCache: {}
     })
-        .transform(vueify)
         .plugin(tsify)
         .transform('babelify', { 
             presets: ['@babel/preset-env'],
             extensions: ['.ts']
         })
+        .transform(vueify)
         .transform('browserify-shim')
         .bundle()
-        .on('error', err => {
+        .on('error', function(err) {
             util.log(
                 util.colors.red('[Error] ', err.toString())
             );
@@ -50,7 +50,7 @@ function buildClientJavascript() {
         })
         // // )
         // Then we bundle it to bundle.js
-        .pipe(source('./js/bundle.js'))
+        .pipe(source('./bundle.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         // We uglify it
@@ -88,11 +88,8 @@ function watchBuild(cb) {
 }
 
 function devRun() {
-    return parallel(
-        function(cb) {
-            liveReload.listen();
-            cb();
-        },
+    return series(
+        startLiveReload,
         function(cb) {
             watch(['src/**/*.ts', `!${clientTs}`, `!${clientVue}`], series(buildServer, runServer));
             watch([clientTs, clientVue, 'src/shared/**'], series(buildClientJavascript, doLiveReload));
@@ -103,6 +100,11 @@ function devRun() {
         runServer
     )
 };
+
+function startLiveReload(cb) {
+    liveReload.listen();
+    cb();
+}
 
 function doLiveReload(cb) {
     liveReload.reload();

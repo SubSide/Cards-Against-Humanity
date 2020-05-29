@@ -5,6 +5,7 @@ import { ServerUser } from './ServerUser';
 import { Settings } from '../../shared/models/Settings';
 import { ServerPlayer } from './ServerPlayer';
 import { Pack } from './Pack';
+import ClientError from '../util/ClientError';
 
 export class ServerRoom implements Room, Transmissible {
     private blackDiscardPile: BlackCard[];
@@ -37,7 +38,7 @@ export class ServerRoom implements Room, Transmissible {
 
     public join(user: ServerUser): ServerPlayer {
         if (user.player != null) {
-            throw new Error('You can\'t join this room as you\'re already in one!');
+            throw new ClientError('You can\'t join this room as you\'re already in one!');
         }
 
         let player = new ServerPlayer(this, user);
@@ -82,7 +83,7 @@ export class ServerRoom implements Room, Transmissible {
             id: this.id,
             name: this.name,
             playerCount: this.players.length,
-            maxPlayers: this.settings.maxPayers || -1
+            maxPlayers: this.settings.maxPlayers || -1
         }
     }
 

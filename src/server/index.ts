@@ -11,9 +11,9 @@ const MONGODB_DB = process.env.MONGODB_DB;
 const WEB_PORT = process.env.WEB_PORT;
 const SERVER_PORT = process.env.SERVER_PORT;
 
+var server: http.Server;
 
 const app = express();
-var server: http.Server;
 app.use(express.static(__dirname+'/../client'));
 const webServer = app.listen(WEB_PORT, () => console.debug(`App listening at http://localhost:${WEB_PORT}`));
 

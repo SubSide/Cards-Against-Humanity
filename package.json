@@ -48,6 +48,7 @@
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "mongodb": "^3.5.7",
+    "sessionstorage": "^0.1.0",
     "socket.io": "^2.3.0",
     "tsify": "^4.0.1",
     "typescript": "^3.9.3",
@@ -55,7 +56,10 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "vue": "^2.6.11",
+    "vue-router": "^3.3.2",
+    "vue-socket.io": "3.0.7",
     "vueify": "^9.4.1",
+    "vuex": "^3.4.0",
     "watchify": "^3.11.1"
   },
   "browser": {
@@ -65,6 +69,7 @@
   "browserify-shim": {
     "jquery": "global:$",
     "socket.io-client": "global:io",
-    "vue": "global:Vue"
+    "vue": "global:Vue",
+    "vuex": "global:Vuex"
   }
 }
