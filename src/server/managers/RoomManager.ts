@@ -22,6 +22,7 @@ export class RoomManager {
         
         let room = new ServerRoom(
             UUID(),
+            "Room " + (Math.floor(Math.random() * 899999) + 100000),
             this.cardManager.packs,
             settings
         )

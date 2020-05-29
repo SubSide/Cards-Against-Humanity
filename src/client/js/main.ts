@@ -4,11 +4,17 @@ import { SocketChangePacket, CreateRoomPacket, RequestRoomsPacket } from '../../
 import Vue from 'vue';
 import { ServerPacketType } from '../../shared/network/ServerPackets';
 
+import RoomList from '../components/roomlist/RoomList.vue';
+
 $.ready.then(() => {
     var app = new Vue({
         el: "#app",
         data: {
             roomList: []
+        },
+        components: { 'room-list': RoomList },
+        methods: {
+            
         }
     });
 
@@ -19,6 +25,7 @@ $.ready.then(() => {
         if (id != undefined && id != "undefined" && socket.id !== id) {
             socket.send(new SocketChangePacket(id));
         }
+        socket.send()
 
     });
     

@@ -17,6 +17,7 @@ export class ServerRoom implements Room, Transmissible {
 
     constructor(
         public id: string,
+        public name: string,
         packs: Pack[],
         public settings: Settings = {}
     ) {
@@ -79,6 +80,7 @@ export class ServerRoom implements Room, Transmissible {
     getListTransmitData(): RoomListItem {
         return {
             id: this.id,
+            name: this.name,
             playerCount: this.players.length,
             maxPlayers: this.settings.maxPayers || -1
         }
@@ -87,6 +89,7 @@ export class ServerRoom implements Room, Transmissible {
     getTransmitData(): Room {
         return {
             id: this.id,
+            name: this.name,
             players: this.players.map(player => player.getTransmitData()),
             settings: this.settings
         }

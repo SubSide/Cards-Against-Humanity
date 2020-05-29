@@ -4,6 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <!-- Vue CDN-->
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/vuex@2.0.0/dist/vuex.min.js"></script>
 
         <!-- Socket.IO CDN -->
         <script 
@@ -37,12 +38,7 @@
             <button id="createRoom">Create room</button>
             <button id="refresh">Refresh</button>
 
-            <div class="row">
-                <div class="col-md-6 col-12" v-for="room in roomList">
-                    <h4>{{ room.id }}</h4>
-                    <span>{{ room.playerCount }} / {{ room.maxPlayers }}</span>
-                </div>
-            </div>
+            <room-list :rooms="roomList" />
         </div>
     </body>
 </html>

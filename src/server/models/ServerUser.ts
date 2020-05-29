@@ -10,7 +10,7 @@ export class ServerUser implements User, Transmissible {
     constructor(
         public id: string,
         public socket: SocketIO.Socket,
-        public username: string = 'user_' + (Math.random() * 899999999 + 100000000)
+        public username: string = 'user_' + Math.floor(Math.random() * 899999999 + 100000000)
     ){
         this.lastActive = 0;
     }

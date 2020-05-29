@@ -1,15 +1,20 @@
 const { src, dest, series, parallel, watch }  = require('gulp');
-const source = require('vinyl-source-stream');
 const del = require('del');
-const tsify = require('tsify');
-const sourcemaps = require('gulp-sourcemaps');
-const ts = require('gulp-typescript');
-// const uglify = require('gulp-uglify-es').default;
-const uglify = require('gulp-uglify-es').default;
-const buffer = require('vinyl-buffer');
+
 const browserify = require('browserify');
+const tsify = require('tsify');
+const vueify = require('vueify');
+const uglify = require('gulp-uglify-es').default;
+
+const ts = require('gulp-typescript');
 const util = require('gulp-util');
+
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const sourcemaps = require('gulp-sourcemaps');
+
 const liveReload = require('gulp-livereload');
+
 var { spawn, spawnSync } = require('child_process');
 var _console = console;
 
@@ -19,6 +24,7 @@ function clean(cb) {
 }
 
 let clientTs = 'src/client/**/*.ts';
+let clientVue = 'src/client/**/*.vue';
 function buildClientJavascript() {
     // We browserify main.ts
     return browserify( {
@@ -28,15 +34,13 @@ function buildClientJavascript() {
         cache: {},
         packageCache: {}
     })
+        .transform(vueify)
         .plugin(tsify)
-        .transform('browserify-shim')
-        .transform('babelify', {
-            presets: [
-                // ['@babel/preset-typescript', {}],
-                '@babel/preset-env',
-            ],
+        .transform('babelify', { 
+            presets: ['@babel/preset-env'],
             extensions: ['.ts']
         })
+        .transform('browserify-shim')
         .bundle()
         .on('error', err => {
             util.log(
@@ -59,7 +63,7 @@ function buildClientJavascript() {
 
 function buildClientOthers() {
     // Add all the other files
-    return src(['src/client/**', `!${clientTs}`]) // Here we do all non-ts files
+    return src(['src/client/**', `!${clientTs}`, `!${clientVue}`]) // Here we do all non-ts files
         .pipe(buffer())
         // And put it in our client folder
         .pipe(dest('dist/client'));
@@ -67,9 +71,9 @@ function buildClientOthers() {
 
 
 function buildServer() {
-    return src(['src/**/*.ts', `!${clientTs}`])
+    return src(['src/**/*.ts', `!${clientTs}`, `!${clientVue}`])
         .pipe(ts.createProject('tsconfig.json')())
-        .pipe(src(['src/**/*', '!src/**/*.ts', `!${clientTs}`]))
+        .pipe(src(['src/**/*', '!src/**/*.ts', `!${clientTs}`, `!${clientVue}`]))
         .pipe(src('.env.example', '.env')) // If there exists an .env in the root we want to copy that over too (as clean will remove it)
         .pipe(dest('dist/'));
 }
@@ -77,19 +81,23 @@ function buildServer() {
 function watchBuild(cb) {
     clean(() => {});
     build()(() => {});
-    watch(['src/**/*.ts', `!${clientTs}`], buildServer);
-    watch([clientTs, 'src/shared/**'], buildClientJavascript);
-    watch(['src/client/**', `!${clientTs}`], buildClientOthers);
+    watch(['src/**/*.ts', `!${clientTs}`, `!${clientVue}`], buildServer);
+    watch([clientTs, clientVue, 'src/shared/**'], buildClientJavascript);
+    watch(['src/client/**', `!${clientTs}`, `!${clientVue}`], buildClientOthers);
     cb();
 }
 
 function devRun() {
-    liveReload.listen();
     return parallel(
         function(cb) {
-            watch(['src/**/*.ts', `!${clientTs}`], series(buildServer, runServer));
-            watch([clientTs, 'src/shared/**'], series(buildClientJavascript, doLiveReload));
-            watch(['src/client/**', `!${clientTs}`], series(buildClientOthers, doLiveReload));
+            liveReload.listen();
+            cb();
+        },
+        function(cb) {
+            watch(['src/**/*.ts', `!${clientTs}`, `!${clientVue}`], series(buildServer, runServer));
+            watch([clientTs, clientVue, 'src/shared/**'], series(buildClientJavascript, doLiveReload));
+            watch(['src/client/**', `!${clientTs}`, `!${clientVue}`], series(buildClientOthers, doLiveReload));
+            // watch(['src/client/**', 'src/shared/**'], series(parallel(buildClientJavascript, buildClientOthers), doLiveReload));
             cb();
         },
         runServer
