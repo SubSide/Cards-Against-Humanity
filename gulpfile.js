@@ -92,8 +92,8 @@ function devRun() {
         startLiveReload,
         function(cb) {
             watch(['src/**/*.ts', `!${clientTs}`, `!${clientVue}`], series(buildServer, runServer));
-            watch([clientTs, clientVue, 'src/shared/**'], series(buildClientJavascript, doLiveReload));
-            watch(['src/client/**', `!${clientTs}`, `!${clientVue}`], series(buildClientOthers, doLiveReload));
+            watch([clientTs, clientVue, 'src/shared/**'], series(buildClientJavascript, delayedLiveReload));
+            watch(['src/client/**', `!${clientTs}`, `!${clientVue}`], series(buildClientOthers, delayedLiveReload));
             // watch(['src/client/**', 'src/shared/**'], series(parallel(buildClientJavascript, buildClientOthers), doLiveReload));
             cb();
         },
@@ -109,6 +109,12 @@ function startLiveReload(cb) {
 function doLiveReload(cb) {
     liveReload.reload();
     cb();
+}
+
+// We do a delayed reload because once in a full moon the server isn't
+// fully initialized yet and the browser doesn't know it is loaded.
+function delayedLiveReload(cb) {
+    setTimeout(doLiveReload.bind(this), 500, cb);
 }
 
 var currentNpm;

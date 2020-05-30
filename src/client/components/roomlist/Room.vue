@@ -1,7 +1,13 @@
 <template>
-    <div class="col-md-6 col-12">
-        <h4>{{ room.name }}</h4>
-        <span>{{ room.playerCount }} / {{ room.maxPlayers }} players</span>
+    <div class="card">
+        <div class="card-header text-center">{{ room.settings.name }}</div>
+        <div class="card-body">
+            <p class="card-text">Room settings like packs</p>
+        </div>
+        <div class="card-footer text-muted d-flex align-items-center justify-content-between">
+            <span class="">{{ room.playerCount }} / {{ room.settings.maxPlayers }} players</span>
+            <button class="btn btn-primary">Join</button>
+        </div>
     </div>
 </template>
 

@@ -106,13 +106,13 @@ export class GameManager {
             // If the error is of type ClientError we just want to know the client about it
             // This is because we use ClientError explicitly if it is a known and deliberate error.
             if ('name' in e && e.name == 'ClientError') {
-                socket.send(new ErrorPacket(e.message));
+                socket.emit('errorPacket', new ErrorPacket(e.message));
                 return;
             }
             
             // It is not of type ClientError, there might be something else going on. Let's throw it in console.
             console.warn('Malformed packet received: '+ e?.message, e);
-            socket.send(new ErrorPacket('An unknown error ocurred. If the error persists first try reloading, then try opening this page in a new tab.'));
+            socket.emit('errorPacket', new ErrorPacket('An unknown error ocurred. If the error persists first try reloading, then try opening this page in a new tab.'));
             
         }
     }

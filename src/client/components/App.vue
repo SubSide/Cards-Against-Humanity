@@ -20,6 +20,9 @@
                 if (id != undefined && id != "undefined" && this.$socket.id !== id) {
                     this.$socket.send(new SocketChangePacket(id));
                 }
+            },
+            errorPacket: function(packet) {
+                console.debug(packet);
             }
         }
     }

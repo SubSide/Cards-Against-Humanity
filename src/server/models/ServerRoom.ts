@@ -2,7 +2,7 @@ import { BlackCard, WhiteCard, Card } from '../../shared/models/Card';
 import io from 'socket.io';
 import { Room, RoomListItem } from '../../shared/models/Room';
 import { ServerUser } from './ServerUser';
-import { Settings } from '../../shared/models/Settings';
+import { Settings, RoomListSettings } from '../../shared/models/Settings';
 import { ServerPlayer } from './ServerPlayer';
 import { Pack } from './Pack';
 import ClientError from '../util/ClientError';
@@ -10,6 +10,7 @@ import ClientError from '../util/ClientError';
 export class ServerRoom implements Room, Transmissible {
     private blackDiscardPile: BlackCard[];
     private whiteDiscardPile: WhiteCard[];
+    private packIds: string[];
     private blackDeck: BlackCard[];
     private whiteDeck: WhiteCard[];
 
@@ -18,7 +19,6 @@ export class ServerRoom implements Room, Transmissible {
 
     constructor(
         public id: string,
-        public name: string,
         packs: Pack[],
         public settings: Settings = {}
     ) {
@@ -26,6 +26,8 @@ export class ServerRoom implements Room, Transmissible {
 
         this.blackDeck = [];
         this.whiteDeck = [];
+
+        this.packIds = packs.map(pack => pack.id);
 
         packs.forEach(pack => {
             this.blackDeck = this.blackDeck.concat.apply(this.blackDeck, pack.blackCards);
@@ -81,16 +83,23 @@ export class ServerRoom implements Room, Transmissible {
     getListTransmitData(): RoomListItem {
         return {
             id: this.id,
-            name: this.name,
-            playerCount: this.players.length,
-            maxPlayers: this.settings.maxPlayers || -1
+            settings: this.getListSettings(),
+            playerCount: this.players.length
+        }
+    }
+
+    getListSettings(): RoomListSettings {
+        return {
+            name: this.settings.name || 'Error',
+            maxPlayers: this.settings.maxPlayers || 8,
+            packIds: this.packIds,
+            hasCustomCards: false
         }
     }
 
     getTransmitData(): Room {
         return {
             id: this.id,
-            name: this.name,
             players: this.players.map(player => player.getTransmitData()),
             settings: this.settings
         }

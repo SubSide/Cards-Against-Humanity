@@ -3,7 +3,7 @@ import { Db } from "mongodb";
 import { CardManager } from './CardManager';
 import { ServerRoom } from '../models/ServerRoom';
 import { BlackCard, WhiteCard } from '../../shared/models/Card';
-import { Settings } from '../../shared/models/Settings';
+import { Settings, validatedSettings } from '../../shared/models/Settings';
 import { ServerUser } from '../models/ServerUser';
 import { ServerPlayer } from '../models/ServerPlayer';
 import ClientError from '../util/ClientError';
@@ -20,13 +20,18 @@ export class RoomManager {
         if (owner.player != null) {
             throw new ClientError("You can't create a new room as you're already in a room!");
         }
+
+        let validated = validatedSettings(settings);
+        if (validated == null) {
+            throw new ClientError("Invalid settings received.");
+        }
+        
         
         let room = new ServerRoom(
             UUID(),
-            "Room " + (Math.floor(Math.random() * 899999) + 100000),
             this.cardManager.packs,
-            settings
-        )
+            validated
+        );
 
         let ownerPlayer = room.join(owner);
         room.owner = ownerPlayer;

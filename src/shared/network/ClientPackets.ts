@@ -6,6 +6,7 @@ export type ClientPacketType =
     CreateRoomPacket |
     JoinRoomPacket |
     LeaveRoomPacket |
+    SendChatPacket |
     ChangeNicknamePacket
 
 
@@ -35,6 +36,12 @@ export class JoinRoomPacket implements ClientPacket {
 
 export class LeaveRoomPacket implements ClientPacket {
     type: 'leaveRoom' = 'leaveRoom';
+    constructor() {}
+}
+
+export class SendChatPacket implements ClientPacket {
+    type: 'sendChat' = 'sendChat';
+    constructor() {} // TODO
 }
 
 export class ChangeNicknamePacket implements ClientPacket {

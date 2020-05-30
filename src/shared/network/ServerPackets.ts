@@ -37,6 +37,11 @@ export class RoundUpdatePacket implements ServerPacket {
     constructor(round: Round) {}
 }
 
+export class ChatPacket implements ServerPacket {
+    type: 'chatEvent' = 'chatEvent';
+    constructor() {} // TODO
+}
+
 export class ErrorPacket implements ServerPacket {
     type: 'error' = 'error';
     constructor(public error: string) {}

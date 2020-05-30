@@ -1,20 +1,24 @@
 <template>
     <div class="row">
-        <div class="col-12">
-            <button @click="createRoom">Create room</button>
-            <button @click="requestRooms">Refresh</button>
+        <create-room />
+        <div class="col-12 p-3">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createRoomDialog">Create room</button>
+            <button class="btn btn-secondary" @click="requestRooms">Refresh</button>
         </div>
 
-        <room v-for="room in rooms" :key="room.id" :room="room"></room>
+        <div class="col-lg-4 col-sm-6" v-for="room in rooms" :key="room.id">
+            <room :room="room"></room>
+        </div>
 
-        <div class="col" v-if="rooms.length < 1">
-            No servers created yet! Click <button>here</button> to create your own.
+        <div class="col alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
+            No servers created yet! Click <button class="btn btn-sm btn-outline-dark">here</button> to create your own.
         </div>
     </div>
 </template>
 
 <script>
     import Room from './Room.vue';
+    import CreateRoom from './CreateRoom.vue';
     import { RequestRoomsPacket, CreateRoomPacket } from '../../../shared/network/ClientPackets';
     
     module.exports = {
@@ -40,6 +44,6 @@
                 this.$socket.send(new RequestRoomsPacket());
             }
         },
-        components: { 'room': Room }
+        components: { 'room': Room, 'create-room': CreateRoom }
     }
 </script>
