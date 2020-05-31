@@ -6,12 +6,12 @@
 
 <script>
     import sessionStorage from 'sessionstorage';
-    import { SocketChangePacket } from '../../shared/network/ClientPackets';
+    import { SocketChangePacket, RequestStateUpdatePacket } from '../../common/network/ClientPackets';
     import RoomList from './roomlist/RoomList.vue';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
 
-    module.exports = {
+    export default {
         components: { 'room-list': RoomList },
         sockets: {
             connect: function() {
@@ -21,9 +21,7 @@
                     this.$socket.send(new SocketChangePacket(id));
                 }
             },
-            errorPacket: function(packet) {
-                console.debug(packet);
-            }
+            errorPacket: function(packet) {}
         }
     }
 </script>

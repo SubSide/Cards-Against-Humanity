@@ -1,10 +1,12 @@
 import { Room, RoomListItem } from "../models/Room";
 import { Round } from "../models/Round";
+import { User } from "../models/User";
 
 export type ServerPacketType =
     RoomListPacket |
     RoomJoinedPacket |
     RoomLeftPacket |
+    UserStateUpdatePacket |
     RoomChangedPacket |
     ErrorPacket
 
@@ -34,7 +36,15 @@ export class RoomChangedPacket implements ServerPacket {
 
 export class RoundUpdatePacket implements ServerPacket {
     type: 'roundUpdate' = 'roundUpdate';
-    constructor(round: Round) {}
+    constructor(public round: Round) {}
+}
+
+export class UserStateUpdatePacket implements ServerPacket {
+    type: 'stateUpdate' = 'stateUpdate';
+    constructor(
+        public user: User,
+        public room?: Room
+    ) {}
 }
 
 export class ChatPacket implements ServerPacket {

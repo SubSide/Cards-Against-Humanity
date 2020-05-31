@@ -1,3 +1,0 @@
-interface Transmissible {
-    getTransmitData(): object;
-}

@@ -1,7 +1,8 @@
-import { User } from "../../shared/models/User";
+import { User } from "../../common/models/User";
 import { ServerPlayer } from './ServerPlayer';
 import SocketIO from "socket.io";
-import { ServerPacketType } from "../../shared/network/ServerPackets";
+import { ServerPacketType, UserStateUpdatePacket } from "../../common/network/ServerPackets";
+import { Transmissible } from '../../common/network/Transmissible';
 
 export class ServerUser implements User, Transmissible {
     public lastActive: number;
@@ -21,7 +22,14 @@ export class ServerUser implements User, Transmissible {
         }
     }
 
-    sendPacket(socket: SocketIO.Server, packet: ServerPacketType) {
-        socket.to(this.id).emit(packet.type, packet);
+    sendPacket(packet: ServerPacketType) {
+        this.socket.emit(packet.type, packet);
+    }
+
+    sendUpdateState() {
+        this.sendPacket(new UserStateUpdatePacket(
+            this.getTransmitData(),
+            this.player?.game?.getTransmitData()
+        ))
     }
 }

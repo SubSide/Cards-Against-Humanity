@@ -6,14 +6,22 @@
         </div>
         <div class="card-footer text-muted d-flex align-items-center justify-content-between">
             <span class="">{{ room.playerCount }} / {{ room.settings.maxPlayers }} players</span>
-            <button class="btn btn-primary">Join</button>
+            <button class="btn btn-primary" @click="joinRoom(room.id)">Join</button>
         </div>
     </div>
 </template>
 
 <script>
-    module.exports = {
+    import { JoinRoomPacket } from '../../../common/network/ClientPackets.ts';
+
+    export default {
         name: 'room',
         props: [ 'room' ],
+        methods: {
+            joinRoom(roomId) {
+                console.debug(roomId);
+                this.$socket.send(new JoinRoomPacket(roomId));
+            }
+        }
     }
 </script>

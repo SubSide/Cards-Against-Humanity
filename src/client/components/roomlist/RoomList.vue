@@ -19,9 +19,9 @@
 <script>
     import Room from './Room.vue';
     import CreateRoom from './CreateRoom.vue';
-    import { RequestRoomsPacket, CreateRoomPacket } from '../../../shared/network/ClientPackets';
+    import { RequestRoomsPacket, CreateRoomPacket } from '../../../common/network/ClientPackets';
     
-    module.exports = {
+    export default {
         name: 'room-list',
         data() {
             return {

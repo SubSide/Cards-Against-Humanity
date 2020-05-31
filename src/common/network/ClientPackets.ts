@@ -5,6 +5,7 @@ export type ClientPacketType =
     RequestRoomsPacket |
     CreateRoomPacket |
     JoinRoomPacket |
+    RequestStateUpdatePacket |
     LeaveRoomPacket |
     SendChatPacket |
     ChangeNicknamePacket
@@ -32,6 +33,11 @@ export class CreateRoomPacket implements ClientPacket {
 export class JoinRoomPacket implements ClientPacket {
     type: 'joinRoom' = 'joinRoom';
     constructor(public roomId: string, public password: string = null) {}
+}
+
+export class RequestStateUpdatePacket implements ClientPacket {
+    type: 'requestStateUpdate' = 'requestStateUpdate';
+    constructor() {}
 }
 
 export class LeaveRoomPacket implements ClientPacket {

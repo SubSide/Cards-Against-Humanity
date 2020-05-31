@@ -2,8 +2,8 @@ import { v4 as UUID } from 'uuid';
 import { Db } from "mongodb";
 import { CardManager } from './CardManager';
 import { ServerRoom } from '../models/ServerRoom';
-import { BlackCard, WhiteCard } from '../../shared/models/Card';
-import { Settings, validatedSettings } from '../../shared/models/Settings';
+import { BlackCard, WhiteCard } from '../../common/models/Card';
+import { Settings, validatedSettings } from '../../common/models/Settings';
 import { ServerUser } from '../models/ServerUser';
 import { ServerPlayer } from '../models/ServerPlayer';
 import ClientError from '../util/ClientError';
@@ -41,5 +41,9 @@ export class RoomManager {
         console.info(`Room #${room.id} created by: ${owner.username}`);
 
         return room;
+    }
+
+    public getRoom(id: string): ServerRoom {
+        return this.rooms.find(room => room.id == id);
     }
 };

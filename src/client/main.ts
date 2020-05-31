@@ -6,12 +6,24 @@ import App from './components/App.vue';
 $.ready.then(() => {
     const store = new Vuex.Store({
         state: {
-            appState: '',
             user: {},
+            currentRoom: {}
+        },
+        mutations: {
+            SOCKET_stateUpdate(state, packet) {
+                state.user = packet.user;
+                state.currentRoom = packet.room;
+            },
+            SOCKET_roomJoined(state, packet) {
+                state.currentRoom = packet.room;
+            },
+            SCOKET_roomLeft(state, packet) {
+                state.currentRoom = null;
+            }
         }
     });
 
-    Vue.use(new VueSocketIO({
+    (Vue as any).use(new VueSocketIO({
         debug: true,
         vuex: {
             store,

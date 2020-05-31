@@ -3,10 +3,10 @@ import { CardManager } from './managers/CardManager';
 import { PacketHandler } from './managers/PacketHandler';
 import { Db, Server } from 'mongodb';
 import { ServerUser } from './models/ServerUser';
-import { ClientPacketType } from '../shared/network/ClientPackets';
-import { ErrorPacket, ServerPacketType } from '../shared/network/ServerPackets';
+import { ClientPacketType } from '../common/network/ClientPackets';
+import { ErrorPacket, ServerPacketType } from '../common/network/ServerPackets';
 import ClientError from './util/ClientError';
-import { Pair } from '../shared/utils/Pair';
+import { Pair } from '../common/utils/Pair';
 
 export class GameManager {
     public cardManager: CardManager;
@@ -20,7 +20,7 @@ export class GameManager {
     constructor(db: Db, serverIO: SocketIO.Server) {
         this.cardManager = new CardManager(db);
         this.roomManager = new RoomManager(db);
-        this.packetHandler = new PacketHandler(this, serverIO);
+        this.packetHandler = new PacketHandler(this);
 
         this.users = new Map();
         setInterval(this.tick.bind(this), 15000);
@@ -88,6 +88,8 @@ export class GameManager {
                     this.users.delete(packet.oldId); // delete the user from the old id
                     this.users.set(socket.id, user); // Set the user to the new id
                     console.debug(`Succesfully changed Socket ID for user '${user.username}'. From '${packet.oldId}' to '${socket.id}'`);
+                    // Send an update state so the user is back up to speed on where it was.
+                    user.sendUpdateState();
                 }
                 return;
             }

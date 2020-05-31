@@ -1,8 +1,9 @@
-import { Player } from '../../shared/models/Player';
-import { WhiteCard } from '../../shared/models/Card';
+import { Player } from '../../common/models/Player';
+import { WhiteCard } from '../../common/models/Card';
 import { ServerUser } from './ServerUser';
 import { ServerRoom } from './ServerRoom';
-import { ServerPacketType } from '../../shared/network/ServerPackets';
+import { ServerPacketType } from '../../common/network/ServerPackets';
+import { Transmissible } from '../../common/network/Transmissible';
 
 export class ServerPlayer implements Player, Transmissible {
     public cards: WhiteCard[];
@@ -23,7 +24,7 @@ export class ServerPlayer implements Player, Transmissible {
         }
     }
 
-    sendPacket(socket: SocketIO.Server, packet: ServerPacketType) {
-        this.user.sendPacket(socket, packet);
+    sendPacket(packet: ServerPacketType) {
+        this.user.sendPacket(packet);
     }
 }

@@ -42,9 +42,9 @@
 </template>
 
 <script>
-    import { CreateRoomPacket } from '../../../shared/network/ClientPackets';
+    import { CreateRoomPacket } from '../../../common/network/ClientPackets';
 
-    module.exports = {
+    export default {
         name: 'createRoom',
         data() {
             return {

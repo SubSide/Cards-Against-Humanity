@@ -1,22 +1,17 @@
-import express from 'express';
-import http from 'http';
 import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import { GameManager } from './GameManager';
-import { ClientPacketType } from '../shared/network/ClientPackets';
+import { ClientPacketType } from '../common/network/ClientPackets';
 require('dotenv').config({ path: __dirname+'/../.env' });
 
 const MONGODB_URL = process.env.MONGODB_URL;
 const MONGODB_DB = process.env.MONGODB_DB;
 const WEB_PORT = process.env.WEB_PORT;
 const SERVER_PORT = process.env.SERVER_PORT;
+const DEBUG = process.env.DEBUG;
 
-var server: http.Server;
-
-const app = express();
-app.use(express.static(__dirname+'/../client'));
-const webServer = app.listen(WEB_PORT, () => console.debug(`App listening at http://localhost:${WEB_PORT}`));
-
+// var server: http.Server;
+var ioServer: socketIO.Server;
 
 MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
     .then(client => client.db(MONGODB_DB))
@@ -29,14 +24,14 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
         });
     })
     .then(db => {
-        server = http.createServer(app);
-        const io = socketIO(server);
-        const gameManager = new GameManager(db as Db, io);
+        ioServer = socketIO();
+        const gameManager = new GameManager(db as Db, ioServer);
 
-        io.on('connection', client => {
+        ioServer.on('connection', client => {
             gameManager.onConnect(client);
             
             client.on('message', data => {
+                if (DEBUG) console.debug("Packet received:", data);
                 gameManager.onPacket(client, data as ClientPacketType);
              });
 
@@ -45,7 +40,7 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
              });
         });
         
-        server.listen(SERVER_PORT);
+        ioServer.listen(SERVER_PORT);
 
     });
 
@@ -55,13 +50,7 @@ process.on('SIGINT', shutDown)
 
 function shutDown() {
     console.warn("!!! SERVER CLOSED !!!");
-    webServer.close(err => {
-        server?.close(err2 => {
-            if (err || err2) {
-                process.exit();
-            } else {
-                process.exit(1);
-            }
-        });
+    ioServer?.close(() => {
+        process.exit();
     });
 }

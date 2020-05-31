@@ -1,11 +1,13 @@
-import { BlackCard, WhiteCard, Card } from '../../shared/models/Card';
+import { BlackCard, WhiteCard, Card } from '../../common/models/Card';
 import io from 'socket.io';
-import { Room, RoomListItem } from '../../shared/models/Room';
+import { Room, RoomListItem } from '../../common/models/Room';
 import { ServerUser } from './ServerUser';
-import { Settings, RoomListSettings } from '../../shared/models/Settings';
+import { Settings, RoomListSettings } from '../../common/models/Settings';
 import { ServerPlayer } from './ServerPlayer';
 import { Pack } from './Pack';
 import ClientError from '../util/ClientError';
+import { RoomJoinedPacket } from '../../common/network/ServerPackets';
+import { Transmissible } from '../../common/network/Transmissible';
 
 export class ServerRoom implements Room, Transmissible {
     private blackDiscardPile: BlackCard[];
@@ -47,6 +49,9 @@ export class ServerRoom implements Room, Transmissible {
         user.player = player;
 
         this.players.push(player);
+        
+        // Send the player the packet about that he joined
+        player.sendPacket(new RoomJoinedPacket(this.getTransmitData()));
 
         return player;
 

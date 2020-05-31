@@ -1,5 +1,5 @@
 import { Db, CommandCursor } from 'mongodb';
-import { BlackCard, WhiteCard } from '../../shared/models/Card';
+import { BlackCard, WhiteCard } from '../../common/models/Card';
 import { Pack } from '../models/Pack';
 
 export class CardManager {

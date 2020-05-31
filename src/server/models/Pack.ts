@@ -1,4 +1,4 @@
-import { Card, BlackCard, WhiteCard } from '../../shared/models/Card';
+import { Card, BlackCard, WhiteCard } from '../../common/models/Card';
 
 export interface Pack {
     id?: string;
