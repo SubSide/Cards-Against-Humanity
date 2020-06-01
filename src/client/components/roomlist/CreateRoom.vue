@@ -41,15 +41,16 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+    import Vue from 'vue';
     import { CreateRoomPacket } from '../../../common/network/ClientPackets';
 
-    export default {
+    export default Vue.extend({
         name: 'createRoom',
         data() {
             return {
                 roomName: "",
-                maxPlayers: ""
+                maxPlayers: 0
             }
         },
         methods: {
@@ -61,5 +62,5 @@
                 }));
             }
         }
-    }
+    });
 </script>

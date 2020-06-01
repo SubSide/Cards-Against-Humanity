@@ -16,12 +16,14 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+    import Vue from 'vue';
     import Room from './Room.vue';
     import CreateRoom from './CreateRoom.vue';
     import { RequestRoomsPacket, CreateRoomPacket } from '../../../common/network/ClientPackets';
+    import { RoomListPacket } from '../../../common/network/ServerPackets';
     
-    export default {
+    export default Vue.extend({
         name: 'room-list',
         data() {
             return {
@@ -29,8 +31,8 @@
             }
         },
         sockets: {
-            roomList: function(data) {
-                this.rooms = data.roomList;
+            roomList: function(data: RoomListPacket) {
+                this.$data.rooms = data.roomList;
             }
         },
         mounted: function() {
@@ -45,5 +47,5 @@
             }
         },
         components: { 'room': Room, 'create-room': CreateRoom }
-    }
+    })
 </script>

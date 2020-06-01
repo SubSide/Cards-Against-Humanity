@@ -11,17 +11,18 @@
     </div>
 </template>
 
-<script>
-    import { JoinRoomPacket } from '../../../common/network/ClientPackets.ts';
+<script lang="ts">
+    import Vue from 'vue';
+    import { JoinRoomPacket } from '../../../common/network/ClientPackets';
 
-    export default {
+    export default Vue.extend({
         name: 'room',
         props: [ 'room' ],
         methods: {
-            joinRoom(roomId) {
+            joinRoom(roomId: string) {
                 console.debug(roomId);
                 this.$socket.send(new JoinRoomPacket(roomId));
             }
         }
-    }
+    });
 </script>

@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import App from './components/App.vue';
 
+sessionStorage.getItem
 $.ready.then(() => {
     const store = new Vuex.Store({
         state: {
@@ -17,13 +18,13 @@ $.ready.then(() => {
             SOCKET_roomJoined(state, packet) {
                 state.currentRoom = packet.room;
             },
-            SCOKET_roomLeft(state, packet) {
+            SOCKET_roomLeft(state, packet) {
                 state.currentRoom = null;
             }
         }
     });
 
-    (Vue as any).use(new VueSocketIO({
+    Vue.use(new VueSocketIO({
         debug: true,
         vuex: {
             store,

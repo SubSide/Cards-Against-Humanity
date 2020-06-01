@@ -31,7 +31,7 @@ function clean(cb) {
 };
 
 function buildServer(cb) {
-    exec("tsc", err => {
+    exec("tsc -p tsconfig.server.json", err => {
         if (err) console.error(err);
         cb();
     })
@@ -51,7 +51,7 @@ function runServer(cb) {
 
 function buildWatchedServer(cb) {
     // We need to suffix .cmd after it to make it work for windows32
-    let serverSpawn = spawn(appendForWindows('tsc'), ['--watch']);
+    let serverSpawn = spawn(appendForWindows('tsc'), ['-p', 'tsconfig.server.json', '--watch']);
     serverSpawn.on('exit', () => {cb();});
 }
 
