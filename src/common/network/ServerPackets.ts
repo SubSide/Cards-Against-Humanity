@@ -1,6 +1,7 @@
 import { Room, RoomListItem } from "../models/Room";
 import { Round } from "../models/Round";
 import { User } from "../models/User";
+import { PlayerState } from '../models/Player'
 
 export type ServerPacketType =
     RoomListPacket |
@@ -43,7 +44,8 @@ export class UserStateUpdatePacket implements ServerPacket {
     type: 'stateUpdate' = 'stateUpdate';
     constructor(
         public user: User,
-        public room?: Room
+        public room?: Room,
+        public playerState?: PlayerState
     ) {}
 }
 

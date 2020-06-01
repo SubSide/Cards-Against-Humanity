@@ -3,6 +3,7 @@ import { ServerPlayer } from './ServerPlayer';
 import SocketIO from "socket.io";
 import { ServerPacketType, UserStateUpdatePacket } from "../../common/network/ServerPackets";
 import { Transmissible } from '../../common/network/Transmissible';
+import { PlayerState } from '../../common/models/Player';
 
 export class ServerUser implements User, Transmissible {
     public lastActive: number;
@@ -29,7 +30,8 @@ export class ServerUser implements User, Transmissible {
     sendUpdateState() {
         this.sendPacket(new UserStateUpdatePacket(
             this.getTransmitData(),
-            this.player?.game?.getTransmitData()
+            this.player?.game?.getTransmitData(),
+            this.player?.getPlayerState()
         ))
     }
 }

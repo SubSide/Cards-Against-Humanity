@@ -1,4 +1,4 @@
-import { Player } from '../../common/models/Player';
+import { Player, PlayerState } from '../../common/models/Player';
 import { WhiteCard } from '../../common/models/Card';
 import { ServerUser } from './ServerUser';
 import { ServerRoom } from './ServerRoom';
@@ -21,6 +21,13 @@ export class ServerPlayer implements Player, Transmissible {
         return {
             user: this.user.getTransmitData(),
             points: this.points
+        }
+    }
+
+    getPlayerState(): PlayerState {
+        return {
+            player: this.getTransmitData(),
+            cards: this.cards
         }
     }
 

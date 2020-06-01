@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-        <room-list />
+        <game v-if="currentRoom != null" />
+        <room-list v-else />
     </div>
 </template>
 
@@ -10,16 +11,23 @@
     import { SocketChangePacket, RequestStateUpdatePacket } from '../../common/network/ClientPackets';
     import { ErrorPacket } from '../../common/network/ServerPackets';
     import RoomList from './roomlist/RoomList.vue';
+    import Game from './game/Game.vue';
+    import { User } from '../../common/models/User';
+    import { Room } from '../../common/models/Room';
+    import { mapGetters } from 'vuex';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
 
     export default Vue.extend({
-        methods: {
-            test() {
-                this.$socket.send("");
+        components: { 
+            'room-list': RoomList,
+            'game': Game
+        },
+        computed: {
+            currentRoom(): Room {
+                return this.$store.state.game.roomState;
             }
         },
-        components: { 'room-list': RoomList },
         sockets: {
             connect: function() {
                 let id = sessionStorage.getItem(STORAGE_PREVIOUS_ID);

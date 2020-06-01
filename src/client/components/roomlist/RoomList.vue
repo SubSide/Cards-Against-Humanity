@@ -11,7 +11,7 @@
         </div>
 
         <div class="col alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
-            No servers created yet! Click <button class="btn btn-sm btn-outline-dark">here</button> to create your own.
+            No servers created yet! Click <button class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#createRoomDialog">here</button> to create your own.
         </div>
     </div>
 </template>

@@ -1,29 +1,11 @@
 import VueSocketIO from 'vue-socket.io';
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Store from './store/index';
 import App from './components/App.vue';
 
 sessionStorage.getItem
 $.ready.then(() => {
-    const store = new Vuex.Store({
-        state: {
-            user: {},
-            currentRoom: {}
-        },
-        mutations: {
-            SOCKET_stateUpdate(state, packet) {
-                state.user = packet.user;
-                state.currentRoom = packet.room;
-            },
-            SOCKET_roomJoined(state, packet) {
-                state.currentRoom = packet.room;
-            },
-            SOCKET_roomLeft(state, packet) {
-                state.currentRoom = null;
-            }
-        }
-    });
-
+    const store = Store;
     Vue.use(new VueSocketIO({
         debug: true,
         vuex: {
@@ -36,6 +18,7 @@ $.ready.then(() => {
 
     var app = new Vue({
         el: "#app",
+        store: store,
         render: c => c(App)
     });
 })

@@ -1,5 +1,6 @@
 import { Settings, RoomListSettings } from "./Settings";
 import { Player } from "./Player";
+import { WhiteCard } from "./Card";
 
 export interface Room {
     id: string;
