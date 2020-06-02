@@ -9,8 +9,7 @@ export default new Vuex.Store({
     },
     mutations: {
         SOCKET_stateUpdate(state, packet: UserStateUpdatePacket) {
-            console.debug('packet received in store index:', packet);
-            state.user = packet.user;
+            state.user = packet.state.user;
         },
     },
     getters: {

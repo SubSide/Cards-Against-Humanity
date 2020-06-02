@@ -1,3 +1,3 @@
-export interface Transmissible {
-    getTransmitData(): object;
+export interface Transmissible<T> {
+    getTransmitData(): T;
 }

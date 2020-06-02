@@ -10,13 +10,6 @@ export interface Settings {
     customWhiteCards?: WhiteCard[];
 }
 
-export interface RoomListSettings {
-    name: string;
-    maxPlayers: number;
-    packIds: string[];
-    hasCustomCards: boolean;
-}
-
 export function validatedSettings(settings: Settings): Settings {
 
     // -- Name check --

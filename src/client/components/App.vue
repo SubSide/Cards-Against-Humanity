@@ -25,7 +25,7 @@
         },
         computed: {
             currentRoom(): Room {
-                return this.$store.state.game.roomState;
+                return this.$store.state.game.room;
             }
         },
         sockets: {

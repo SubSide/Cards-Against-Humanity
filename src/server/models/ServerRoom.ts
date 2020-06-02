@@ -1,15 +1,17 @@
 import { BlackCard, WhiteCard, Card } from '../../common/models/Card';
 import io from 'socket.io';
-import { Room, RoomListItem } from '../../common/models/Room';
+import { Room } from '../../common/models/Room';
 import { ServerUser } from './ServerUser';
-import { Settings, RoomListSettings } from '../../common/models/Settings';
+import { Settings } from '../../common/models/Settings';
 import { ServerPlayer } from './ServerPlayer';
 import { Pack } from './Pack';
 import ClientError from '../util/ClientError';
 import { RoomJoinedPacket } from '../../common/network/ServerPackets';
 import { Transmissible } from '../../common/network/Transmissible';
+import { Round } from '../../common/models/Round';
+import { RoomListItem, RoomListSettings } from '../../common/network/NetworkModels';
 
-export class ServerRoom implements Room, Transmissible {
+export class ServerRoom implements Transmissible<Room> {
     private blackDiscardPile: BlackCard[];
     private whiteDiscardPile: WhiteCard[];
     private packIds: string[];
@@ -18,6 +20,7 @@ export class ServerRoom implements Room, Transmissible {
 
     players: ServerPlayer[];
     owner: ServerPlayer;
+    round: Round;
 
     constructor(
         public id: string,
@@ -28,6 +31,8 @@ export class ServerRoom implements Room, Transmissible {
 
         this.blackDeck = [];
         this.whiteDeck = [];
+
+        this.round = null;
 
         this.packIds = packs.map(pack => pack.id);
 

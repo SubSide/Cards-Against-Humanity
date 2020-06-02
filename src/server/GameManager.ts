@@ -60,7 +60,7 @@ export class GameManager {
             let player = pair.value?.player;
             // Remove the player from the game if he is in any
             if (player != null) {
-                player.game.leave(player);
+                player.room.leave(player);
             }
         });
     }
