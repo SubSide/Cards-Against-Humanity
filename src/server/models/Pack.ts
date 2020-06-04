@@ -1,8 +1,10 @@
-import { Card, BlackCard, WhiteCard } from '../../common/models/Card';
+import { PromptCard, ResponseCard } from '../../common/models/Card';
 
 export interface Pack {
-    id?: string;
-    name?: string;
-    blackCards?: BlackCard[];
-    whiteCards?: WhiteCard[];
+    id: string;
+    name: string;
+    promptCount: Number;
+    responseCount: Number;
+    prompts: PromptCard[];
+    responses: ResponseCard[];
 }

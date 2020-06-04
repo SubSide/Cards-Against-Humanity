@@ -1,4 +1,4 @@
-import { BlackCard, WhiteCard, Card } from '../../common/models/Card';
+import { PromptCard, ResponseCard, Card } from '../../common/models/Card';
 import io from 'socket.io';
 import { Room } from '../../common/models/Room';
 import { ServerUser } from './ServerUser';
@@ -12,11 +12,11 @@ import { Round } from '../../common/models/Round';
 import { RoomListItem, RoomListSettings } from '../../common/network/NetworkModels';
 
 export class ServerRoom implements Transmissible<Room> {
-    private blackDiscardPile: BlackCard[];
-    private whiteDiscardPile: WhiteCard[];
+    private promptDiscardPile: PromptCard[];
+    private responseDiscardPile: ResponseCard[];
     private packIds: string[];
-    private blackDeck: BlackCard[];
-    private whiteDeck: WhiteCard[];
+    private prompts: PromptCard[];
+    private responses: ResponseCard[];
 
     players: ServerPlayer[];
     owner: ServerPlayer;
@@ -29,20 +29,20 @@ export class ServerRoom implements Transmissible<Room> {
     ) {
         this.players = [];
 
-        this.blackDeck = [];
-        this.whiteDeck = [];
+        this.prompts = [];
+        this.responses = [];
 
         this.round = null;
 
         this.packIds = packs.map(pack => pack.id);
 
         packs.forEach(pack => {
-            this.blackDeck = this.blackDeck.concat.apply(this.blackDeck, pack.blackCards);
-            this.whiteDeck = this.whiteDeck.concat.apply(this.whiteDeck, pack.whiteCards);
+            this.prompts = this.prompts.concat.apply(this.prompts, pack.prompts);
+            this.responses = this.responses.concat.apply(this.responses, pack.responses);
         });
 
-        this.blackDiscardPile = [];
-        this.whiteDiscardPile = [];
+        this.promptDiscardPile = [];
+        this.responseDiscardPile = [];
     };
 
     public join(user: ServerUser): ServerPlayer {
@@ -68,25 +68,25 @@ export class ServerRoom implements Transmissible<Room> {
         player.user.player = null;
     }
 
-    public drawCard(): WhiteCard {
-        if (this.whiteDeck.length < 1) {
-            this.whiteDeck = this.whiteDiscardPile;
-            this.whiteDeck = [];
+    public drawCard(): ResponseCard {
+        if (this.responses.length < 1) {
+            this.responses = this.responseDiscardPile;
+            this.responses = [];
         }
 
         // Get random card from deck
-        let card = this.whiteDeck.splice(Math.floor(Math.random() * this.whiteDeck.length), 1)[0];    
+        let card = this.responses.splice(Math.floor(Math.random() * this.responses.length), 1)[0];    
         return card;
     }
 
-    public drawBlackCard(): BlackCard {
-        if (this.blackDeck.length < 1) {
-            this.blackDeck = this.blackDiscardPile;
-            this.blackDeck = [];
+    public drawPromptCard(): PromptCard {
+        if (this.prompts.length < 1) {
+            this.prompts = this.promptDiscardPile;
+            this.prompts = [];
         }
 
         // Get random card from deck
-        let card = this.blackDeck.splice(Math.floor(Math.random() * this.blackDeck.length), 1)[0];    
+        let card = this.prompts.splice(Math.floor(Math.random() * this.prompts.length), 1)[0];    
         return card;
     }
 

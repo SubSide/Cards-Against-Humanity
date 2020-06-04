@@ -1,9 +1,8 @@
 import { Db, CommandCursor } from 'mongodb';
-import { BlackCard, WhiteCard } from '../../common/models/Card';
-import { Pack } from '../models/Pack';
+import { PackGroup } from '../models/PackGroup';
 
 export class CardManager {
-    public packs: Pack[] = [];
+    public groups: PackGroup[] = [];
 
     constructor(db: Db) {
         this.retrieveCards(db);
@@ -11,6 +10,6 @@ export class CardManager {
 
     async retrieveCards(db: Db) {
         let result = await db.collection('packs').find().toArray();
-        this.packs = result as Pack[];
+        this.groups = result as PackGroup[];
     }
 }

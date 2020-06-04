@@ -1,5 +1,5 @@
 import { Player } from "../models/Player";
-import { WhiteCard } from "../models/Card";
+import { ResponseCard } from "../models/Card";
 import { Room } from "../models/Room";
 import { User } from "../models/User";
 
@@ -27,5 +27,5 @@ export interface OwnState {
     user: User;
     player?: Player;
     room?: Room;
-    cards?: WhiteCard[];
+    cards?: ResponseCard[];
 }

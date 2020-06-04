@@ -1,4 +1,4 @@
-import { BlackCard, WhiteCard } from "./Card";
+import { PromptCard, ResponseCard } from "./Card";
 
 export interface Settings {
     name?: string;
@@ -6,8 +6,8 @@ export interface Settings {
     pointsToWin?: number;
     timeToRespond?: number;
     packsIds?: string[];
-    customBlackCards?: BlackCard[];
-    customWhiteCards?: WhiteCard[];
+    customPromptCards?: PromptCard[];
+    customResponseCards?: ResponseCard[];
 }
 
 export function validatedSettings(settings: Settings): Settings {

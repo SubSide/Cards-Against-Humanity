@@ -10,7 +10,7 @@
     import Vue from 'vue';
     import { Player } from '../../../common/models/Player';
     import { Room } from '../../../common/models/Room';
-    import { WhiteCard } from '../../../common/models/Card';
+    import { PromptCard } from '../../../common/models/Card';
     
     export default Vue.extend({
         name: 'game',
@@ -21,7 +21,7 @@
             room(): Room {
                 return this.$store.state.game.room;
             },
-            cards(): WhiteCard[] {
+            cards(): PromptCard[] {
                 return this.$store.state.game.cards;
             }
         }

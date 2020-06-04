@@ -4,13 +4,13 @@ import { UserStateUpdatePacket, RoomJoinedPacket, RoomLeftPacket } from '../../.
 import { Room } from '../../../common/models/Room';
 import { OwnState } from '../../../common/network/NetworkModels';
 import { Player } from '../../../common/models/Player';
-import { WhiteCard } from '../../../common/models/Card';
+import { ResponseCard } from '../../../common/models/Card';
 
 @Module
 export default class GameState extends VuexModule {
     player: Player = null;
     room: Room = null;
-    cards: WhiteCard[] = null;
+    cards: ResponseCard[] = null;
 
     @Mutation
     SOCKET_stateUpdate(packet: UserStateUpdatePacket) {

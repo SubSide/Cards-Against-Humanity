@@ -2,11 +2,11 @@ import { v4 as UUID } from 'uuid';
 import { Db } from "mongodb";
 import { CardManager } from './CardManager';
 import { ServerRoom } from '../models/ServerRoom';
-import { BlackCard, WhiteCard } from '../../common/models/Card';
 import { Settings, validatedSettings } from '../../common/models/Settings';
 import { ServerUser } from '../models/ServerUser';
 import { ServerPlayer } from '../models/ServerPlayer';
 import ClientError from '../util/ClientError';
+import { Pack } from '../models/Pack';
 
 export class RoomManager {
     private cardManager: CardManager;
@@ -26,10 +26,14 @@ export class RoomManager {
             throw new ClientError("Invalid settings received.");
         }
         
+        let packs: Pack[] = [];
+        this.cardManager.groups.forEach(group => {
+            packs.concat(group.packs)
+        });
         
         let room = new ServerRoom(
             UUID(),
-            this.cardManager.packs,
+            packs,
             validated
         );
 

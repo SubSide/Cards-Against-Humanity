@@ -1,19 +1,20 @@
-export type Card = BlackCard | WhiteCard;
+export type Card = PromptCard | ResponseCard;
 
-export class BlackCard {
-    type: 'black';
+export class PromptCard {
+    type: 'prompt' = 'prompt';
 
     constructor(
         public id: string,
         public text: string,
-        public requiredCards: number
+        public draw: number,
+        public pick: number,
     ) {
 
     }
 }
 
-export class WhiteCard {
-    type: 'white';
+export class ResponseCard {
+    type: 'response' = 'response';
 
     constructor(
         public id: string,

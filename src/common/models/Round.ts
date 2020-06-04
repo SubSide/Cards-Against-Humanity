@@ -1,8 +1,8 @@
 import { Player } from "./Player";
-import { BlackCard } from "./Card";
+import { PromptCard } from "./Card";
 
 export interface  Round {
     czar: Player;
-    blackCard: BlackCard;
+    promptCard: PromptCard;
     roundNumber: number;
 }

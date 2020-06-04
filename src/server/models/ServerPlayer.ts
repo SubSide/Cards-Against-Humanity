@@ -1,12 +1,12 @@
 import { Player } from '../../common/models/Player';
-import { WhiteCard } from '../../common/models/Card';
+import { ResponseCard } from '../../common/models/Card';
 import { ServerUser } from './ServerUser';
 import { ServerRoom } from './ServerRoom';
 import { ServerPacketType } from '../../common/network/ServerPackets';
 import { Transmissible } from '../../common/network/Transmissible';
 
 export class ServerPlayer implements Transmissible<Player> {
-    public cards: WhiteCard[];
+    public cards: Response[];
     public points: number;
     public hasPlayedCard: boolean;
 

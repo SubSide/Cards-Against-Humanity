@@ -2,3 +2,5 @@
 dist/*
 node_modules/*
 tsconfig.tsbuildinfo
+package-lock.json
+card_crawler/*.xlsx
