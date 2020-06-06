@@ -1,26 +1,25 @@
 import { RoomManager } from './managers/RoomManager';
-import { CardManager } from './managers/CardManager';
 import { PacketHandler } from './managers/PacketHandler';
-import { Db, Server } from 'mongodb';
+import { Db } from 'mongodb';
 import { ServerUser } from './models/ServerUser';
-import { ClientPacketType } from '../common/network/ClientPackets';
-import { ErrorPacket, ServerPacketType } from '../common/network/ServerPackets';
+import { ErrorPacket } from '../common/network/ServerPackets';
 import ClientError from './util/ClientError';
 import { Pair } from '../common/utils/Pair';
+import UserRetriever from './db/UserRetriever';
 
 export class GameManager {
-    public cardManager: CardManager;
     public roomManager: RoomManager;
     public packetHandler: PacketHandler;
+    public userRetriever: UserRetriever;
 
     private users: Map<string, ServerUser>;
 
     private static PLAYER_TIMEOUT = 5 * 60 * 1000;
 
     constructor(db: Db, serverIO: SocketIO.Server) {
-        this.cardManager = new CardManager(db);
         this.roomManager = new RoomManager(db);
         this.packetHandler = new PacketHandler(this);
+        this.userRetriever = new UserRetriever(db);
 
         this.users = new Map();
         setInterval(this.tick.bind(this), 15000);

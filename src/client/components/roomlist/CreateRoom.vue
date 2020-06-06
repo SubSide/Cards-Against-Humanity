@@ -1,6 +1,6 @@
 <template>
     <div class="modal fade" id="createRoomDialog" tabindex="-1" role="dialog" aria-labelledby="createRoomModalLabel" aria-hidden="true">
-        <form class="modal-dialog" v-on:submit.prevent="onSubmit">
+        <form class="modal-dialog" v-on:submit.prevent="onCreateRoom">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createRoomModalLabel">Create a new room</h5>
@@ -54,7 +54,7 @@
             }
         },
         methods: {
-            onSubmit: function() {
+            onCreateRoom: function() {
                 $("#createRoomDialog").modal('hide');
                 this.$socket.send(new CreateRoomPacket({
                     name: this.roomName,

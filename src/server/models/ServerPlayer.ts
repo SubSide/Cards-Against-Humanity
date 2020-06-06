@@ -6,7 +6,7 @@ import { ServerPacketType } from '../../common/network/ServerPackets';
 import { Transmissible } from '../../common/network/Transmissible';
 
 export class ServerPlayer implements Transmissible<Player> {
-    public cards: Response[];
+    public cards: ResponseCard[];
     public points: number;
     public hasPlayedCard: boolean;
 

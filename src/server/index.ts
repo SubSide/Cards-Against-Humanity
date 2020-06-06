@@ -13,14 +13,23 @@ const DEBUG = process.env.DEBUG;
 // var server: http.Server;
 var ioServer: socketIO.Server;
 
+async function createCollections(db: Db) {
+    let awaits: Promise<any>[] = [];
+    awaits.push(db.createCollection("packGroups"));
+    awaits.push(db.createCollection("hashes"));
+    awaits.push(db.createCollection("bans").then(collection => {
+        collection.createIndex("type")
+    }))
+
+
+    await Promise.all(awaits);
+}
+
 MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
     .then(client => client.db(MONGODB_DB))
     .then(db => {
         return new Promise((resolve, reject) => {
-            db.createCollection("packs").then(
-                () => resolve(db),
-                err => reject(err)
-            );
+            createCollections(db).then(() => resolve(db));
         });
     })
     .then(db => {
@@ -31,7 +40,10 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
             gameManager.onConnect(client);
             
             client.on('message', data => {
-                if (DEBUG) console.debug("Packet received:", data);
+                if (DEBUG) {
+                    if ((data as ClientPacketType).type != 'changeNickname')
+                        console.debug("Packet received:", data);
+                }
                 gameManager.onPacket(client, data as ClientPacketType);
              });
 

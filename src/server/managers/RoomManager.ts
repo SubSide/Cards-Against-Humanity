@@ -1,6 +1,6 @@
 import { v4 as UUID } from 'uuid';
 import { Db } from "mongodb";
-import { CardManager } from './CardManager';
+import { CardRetriever } from '../db/CardRetriever';
 import { ServerRoom } from '../models/ServerRoom';
 import { Settings, validatedSettings } from '../../common/models/Settings';
 import { ServerUser } from '../models/ServerUser';
@@ -9,11 +9,11 @@ import ClientError from '../util/ClientError';
 import { Pack } from '../models/Pack';
 
 export class RoomManager {
-    private cardManager: CardManager;
+    private cardRetriever: CardRetriever;
     public rooms: ServerRoom[] = [];
 
     public constructor(db: Db) {
-        this.cardManager = new CardManager(db);
+        this.cardRetriever = new CardRetriever(db);
     }
     
     public createRoom(owner: ServerUser, settings: Settings): ServerRoom {
@@ -27,7 +27,7 @@ export class RoomManager {
         }
         
         let packs: Pack[] = [];
-        this.cardManager.groups.forEach(group => {
+        this.cardRetriever.groups.forEach(group => {
             packs.concat(group.packs)
         });
         

@@ -52,5 +52,5 @@ export class SendChatPacket implements ClientPacket {
 
 export class ChangeNicknamePacket implements ClientPacket {
     type: 'changeNickname' = 'changeNickname';
-    constructor(public newNickname: string) {}
+    constructor(public newNickname: string, public hash: string) {}
 }

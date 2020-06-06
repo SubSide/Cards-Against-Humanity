@@ -1,8 +1,10 @@
-import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket } from "../../common/network/ClientPackets";
+import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket } from "../../common/network/ClientPackets";
 import { ServerUser } from "../models/ServerUser";
 import { GameManager } from "../GameManager";
 import { RoomListPacket } from "../../common/network/ServerPackets";
 import ClientError from "../util/ClientError";
+import { Server } from "mongodb";
+import Role from "../../common/models/Role";
 
 export class PacketHandler {
     
@@ -22,6 +24,9 @@ export class PacketHandler {
                 break;
             case 'requestStateUpdate':
                 this.requestStateUpdate(user, packet);
+                break;
+            case 'changeNickname':
+                this.handleNicknameChange(user, packet);
                 break;
         }
         
@@ -49,5 +54,35 @@ export class PacketHandler {
         user.sendPacket(new RoomListPacket(
             this.gameManager.roomManager.rooms.map(map => map.getListTransmitData())
         ))
+    }
+
+    private handleNicknameChange(user: ServerUser, packet: ChangeNicknamePacket) {
+        if (!user.canDo("nicknameChange", 5000)) {
+            throw new ClientError("Wait a moment before changing your nickname again.");
+        }
+
+        let nicknameRegex = new RegExp('^[a-zA-Z0-9]{4,24}$');
+        if (
+            packet.newNickname == null || 
+            packet.newNickname.length < 6 ||
+            !nicknameRegex.test(packet.newNickname) ||
+            (packet.hash != null && packet.hash.length > 100)
+        ) {
+            throw new ClientError("Nickname and/or hash are malformed");
+        }
+
+        (async () => {
+            user.username = packet.newNickname;
+            user.hash = null;
+            user.role = Role.Default;
+    
+            if (packet.hash != null && packet.hash != "") {
+                let info = await this.gameManager.userRetriever.getHashInfo(packet.newNickname, packet.hash);
+                user.hash = info.hash;
+                user.role = info.role;
+            }
+            
+            user.sendUpdateState();
+        })();
     }
 }

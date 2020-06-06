@@ -419,7 +419,7 @@ import pymongo
 
 mongoClient = pymongo.MongoClient("mongodb://localhost:27017/")
 mongoDb = mongoClient["cah"]
-packCol = mongoDb["decks"]
+packCol = mongoDb["packGroups"]
 print("Deleting all previous packs")
 packCol.delete_many({})
 print("Inserting processed packs")

@@ -51,6 +51,6 @@ export class ChatPacket implements ServerPacket {
 }
 
 export class ErrorPacket implements ServerPacket {
-    type: 'error' = 'error';
+    type: 'errorPacket' = 'errorPacket';
     constructor(public error: string) {}
 }

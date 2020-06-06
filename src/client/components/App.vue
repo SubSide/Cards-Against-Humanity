@@ -1,42 +1,38 @@
 <template>
     <div class="body">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">CAH</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <div class="navbar navbar-expand-sm navbar-light bg-light">
+            <span class="navbar-brand order-0" href="#">CAH</span>
+            <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link 1</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Disabled</a>
+                        <a class="nav-link" href="#">Link 2</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
             </div>
-        </nav>
+            <div class="nav-item mx-auto"></div>
+            <div class="navbar-nav dropdown">
+                <div class="navbar-text order-4 btn btn-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
+                    <username :user="user" />
+                </div>
+                <div class="dropdown-menu dropdown-menu-right" style="position: absolute" aria-labelledby="navbarDropdown">
+                    <button class="dropdown-item btn btn-text" data-toggle="modal" data-target="#changeUsernameDialog">Change username</button>
+                    <!-- <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a> -->
+                </div>
+            </div>
+            <button class="navbar-toggler order-6" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
         <div class="container">
+            <login />
             <game v-if="currentRoom != null" />
             <room-list v-else />
+            <error-toast />
         </div>
     </div>
 </template>
@@ -51,15 +47,24 @@
     import { User } from '../../common/models/User';
     import { Room } from '../../common/models/Room';
     import { mapGetters } from 'vuex';
+    import Login from './common/Login.vue';
+    import ErrorToast from './utils/ErrorToast.vue';
+    import Username from './utils/Username.vue';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
 
     export default Vue.extend({
         components: { 
             'room-list': RoomList,
-            'game': Game
+            'game': Game,
+            'login': Login,
+            'error-toast': ErrorToast,
+            'username': Username
         },
         computed: {
+            user(): User {
+                return this.$store.state.user;
+            },
             currentRoom(): Room {
                 return this.$store.state.game.room;
             }
@@ -72,7 +77,9 @@
                     this.$socket.send(new SocketChangePacket(id));
                 }
             },
-            errorPacket: function(packet: ErrorPacket) {}
+            errorPacket: function(packet: ErrorPacket) {
+                $("#toast-holder").toast()
+            }
         }
     });
     

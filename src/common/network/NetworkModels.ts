@@ -2,6 +2,7 @@ import { Player } from "../models/Player";
 import { ResponseCard } from "../models/Card";
 import { Room } from "../models/Room";
 import { User } from "../models/User";
+import Role from "../models/Role";
 
 export interface RoomListSettings {
     name: string;

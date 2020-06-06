@@ -3,7 +3,10 @@ import Vue from 'vue';
 import Store from './store/index';
 import App from './components/App.vue';
 
-sessionStorage.getItem
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+});
+
 $.ready.then(() => {
     const store = Store;
     Vue.use(new VueSocketIO({
