@@ -30,6 +30,11 @@ export class ServerUser implements Transmissible<User> {
         }
     }
 
+    leaveRoom() {
+        this.player = null;
+        this.sendUpdateState();
+    }
+
     sendPacket(packet: ServerPacketType) {
         this.socket.emit(packet.type, packet);
     }

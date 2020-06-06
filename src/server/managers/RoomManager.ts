@@ -28,10 +28,11 @@ export class RoomManager {
         
         let packs: Pack[] = [];
         this.cardRetriever.groups.forEach(group => {
-            packs.concat(group.packs)
+            packs = packs.concat(group.packs)
         });
         
         let room = new ServerRoom(
+            this,
             UUID(),
             packs,
             validated
@@ -47,7 +48,18 @@ export class RoomManager {
         return room;
     }
 
+    public deleteRoom(room: ServerRoom) {
+        // Remove all players from the room
+        room.players.forEach(player => {
+            player.user.leaveRoom();
+        });
+
+        // Remove the room from the list
+        this.rooms.splice(this.rooms.indexOf(room), 1);
+    }
+
     public getRoom(id: string): ServerRoom {
         return this.rooms.find(room => room.id == id);
     }
+    
 };

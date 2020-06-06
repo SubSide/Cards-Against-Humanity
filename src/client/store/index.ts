@@ -1,6 +1,7 @@
 import Vuex from 'vuex';
 import { UserStateUpdatePacket, RoomJoinedPacket, RoomLeftPacket } from '../../common/network/ServerPackets';
 import GameState from './modules/GameState';
+import SettingsState from './modules/SettingsState';
 import { User } from '../../common/models/User';
 
 export default new Vuex.Store({
@@ -18,6 +19,7 @@ export default new Vuex.Store({
         }
     },
     modules: {
-        game: GameState
+        game: GameState,
+        settings: SettingsState
     }
 });

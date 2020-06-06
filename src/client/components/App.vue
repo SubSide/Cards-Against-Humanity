@@ -19,6 +19,7 @@
                 </div>
                 <div class="dropdown-menu dropdown-menu-right" style="position: absolute" aria-labelledby="navbarDropdown">
                     <button class="dropdown-item btn btn-text" data-toggle="modal" data-target="#changeUsernameDialog">Change username</button>
+                    <button class="dropdown-item btn btn-text" data-toggle="modal" data-target="#settingsDialog">Settings</button>
                     <!-- <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Action</a>
                     <a class="dropdown-item" href="#">Another action</a> -->
@@ -30,6 +31,7 @@
         </div>
         <div class="container">
             <login />
+            <settings />
             <game v-if="currentRoom != null" />
             <room-list v-else />
             <error-toast />
@@ -50,6 +52,7 @@
     import Login from './common/Login.vue';
     import ErrorToast from './utils/ErrorToast.vue';
     import Username from './utils/Username.vue';
+    import Settings from './common/Settings.vue';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
 
@@ -59,7 +62,8 @@
             'game': Game,
             'login': Login,
             'error-toast': ErrorToast,
-            'username': Username
+            'username': Username,
+            'settings': Settings
         },
         computed: {
             user(): User {

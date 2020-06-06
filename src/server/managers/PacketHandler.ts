@@ -1,4 +1,4 @@
-import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket } from "../../common/network/ClientPackets";
+import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket } from "../../common/network/ClientPackets";
 import { ServerUser } from "../models/ServerUser";
 import { GameManager } from "../GameManager";
 import { RoomListPacket } from "../../common/network/ServerPackets";
@@ -22,6 +22,9 @@ export class PacketHandler {
             case 'joinRoom':
                 this.handleJoinRoom(user, packet);
                 break;
+            case 'leaveRoom':
+                this.handleLeaveRoom(user, packet);
+                break;
             case 'requestStateUpdate':
                 this.requestStateUpdate(user, packet);
                 break;
@@ -40,6 +43,15 @@ export class PacketHandler {
         }
 
         room.join(user);
+    }
+
+    private handleLeaveRoom(user: ServerUser, packet: LeaveRoomPacket) {
+        let room = user.player?.room;
+        if (room == null) {
+            throw new ClientError("You are not currently in a room.");
+        }
+
+        room.leave(user.player);
     }
 
     private handleCreateRoom(user: ServerUser, packet: CreateRoomPacket) {

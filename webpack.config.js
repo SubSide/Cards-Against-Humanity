@@ -19,6 +19,7 @@ module.exports = {
     vue: 'Vue',
     socketIO: 'socket.io-client',
     vuex: 'Vuex',
+    'js-cookie': 'js-cookie'
   },
   module: {
     rules: [
@@ -35,17 +36,17 @@ module.exports = {
           appendTsSuffixTo: [/\.vue$/]
         }
       },
-      // {
-      //   test: /\.js$/,
-      //   loader: 'babel-loader'
-      // }, 
-      // {
-      //   test: /\.css$/,
-      //   loader: [
-      //     'vue-style-loader',
-      //     'css-loader'
-      //   ]
-      // }
+      {
+        test: /\.js$/,
+        loader: 'babel-loader'
+      }, 
+      {
+        test: /\.css$/,
+        loader: [
+          'vue-style-loader',
+          'css-loader'
+        ]
+      }
     ],
   },
   resolve: {

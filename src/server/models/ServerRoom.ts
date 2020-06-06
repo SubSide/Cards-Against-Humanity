@@ -10,6 +10,8 @@ import { RoomJoinedPacket } from '../../common/network/ServerPackets';
 import { Transmissible } from '../../common/network/Transmissible';
 import { Round } from '../../common/models/Round';
 import { RoomListItem, RoomListSettings } from '../../common/network/NetworkModels';
+import { GameManager } from '../GameManager';
+import { RoomManager } from '../managers/RoomManager';
 
 export class ServerRoom implements Transmissible<Room> {
     private promptDiscardPile: PromptCard[];
@@ -23,6 +25,7 @@ export class ServerRoom implements Transmissible<Room> {
     round: Round;
 
     constructor(
+        public roomManager: RoomManager,
         public id: string,
         packs: Pack[],
         public settings: Settings = {}
@@ -54,18 +57,31 @@ export class ServerRoom implements Transmissible<Room> {
         user.player = player;
 
         this.players.push(player);
+        this.fixPlayer(player);
         
         // Send the player the packet about that he joined
         player.sendPacket(new RoomJoinedPacket(this.getTransmitData()));
+        
+        // Send the player an update on the current state
+        user.sendUpdateState();
 
         return player;
-
-        // TODO init player
     }
 
     public leave(player: ServerPlayer) {
+        // Remove the player from the list of players in this room
         this.players.splice(this.players.indexOf(player), 1);
-        player.user.player = null;
+
+        // Return all the players' cards to the discard pile
+        player.cards.forEach(card => this.responseDiscardPile.push(card));
+        
+        // Let the player leave the room
+        player.user.leaveRoom();
+
+        // If we don't have any players anymore, we remove ourselves
+        if (this.players.length <= 0) {
+            this.roomManager.deleteRoom(this);
+        }
     }
 
     public drawCard(): ResponseCard {
@@ -75,8 +91,18 @@ export class ServerRoom implements Transmissible<Room> {
         }
 
         // Get random card from deck
-        let card = this.responses.splice(Math.floor(Math.random() * this.responses.length), 1)[0];    
+        let card = this.responses.splice(Math.floor(Math.random() * this.responses.length), 1)[0];
         return card;
+    }
+
+    public nextRound() {
+
+    }
+
+    public fixPlayer(player: ServerPlayer) {
+        while (player.cards.length < 10) {
+            player.cards.push(this.drawCard());
+        }
     }
 
     public drawPromptCard(): PromptCard {

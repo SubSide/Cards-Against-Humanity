@@ -58,12 +58,15 @@
                 if (!($("#loginForm").get(0) as any).reportValidity()) {
                     return;
                 }
-                
+
                 $("#changeUsernameDialog").modal('hide');
                 this.$socket.send(new ChangeNicknamePacket(
                     this.username,
                     this.identification
                 ));
+                
+                this.username = "";
+                this.identification = "";
             }
         }
     });
