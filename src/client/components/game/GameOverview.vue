@@ -5,7 +5,7 @@
                 <button class="btn btn-secondary" @click="leaveRoom">Leave room</button>
             </div>
             <game v-if="room.round" />
-            <game-settings v-else />
+            <room-settings v-else />
         </div>
         <player-list class="footer" />
     </div>
@@ -16,7 +16,7 @@
     import Player from '../../../common/models/Player';
     import Room from '../../../common/models/Room';
     import Game from './Game.vue';
-    import GameSettings from './GameSettings.vue';
+    import RoomSettings from './RoomSettings.vue';
     import { LeaveRoomPacket } from '../../../common/network/ClientPackets';
     import PlayerList from './PlayerList.vue';
     
@@ -34,7 +34,7 @@
         },
         components: {
             'game': Game,
-            'game-settings': GameSettings,
+            'room-settings': RoomSettings,
             'player-list': PlayerList
         }
     })

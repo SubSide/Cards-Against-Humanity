@@ -2,8 +2,11 @@ import VueSocketIO from 'vue-socket.io';
 import Vue from 'vue';
 import Store from './store/index';
 import App from './components/App.vue';
+import Username from './components/utils/Username.vue';
 
 $.ready.then(() => {
+    Vue.component('username', Username);
+
     const store = Store;
     Vue.use(new VueSocketIO({
         debug: true,

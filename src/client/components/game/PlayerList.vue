@@ -17,7 +17,6 @@
 <script lang="ts">
     import Vue from 'vue';
     import Player from '../../../common/models/Player';
-    import Username from '../utils/Username.vue';
     import Room from '../../../common/models/Room';
     import Role from '../../../common/models/Role';
     import { Type } from '../../../common/models/Tag';
@@ -58,9 +57,6 @@
                 // }
                 // return list;
             }
-        },
-        components: {
-            'username': Username
         }
     })
 </script>

@@ -33,10 +33,9 @@
     */
     import Vue from 'vue';
     import Room from '../../../common/models/Room';
-    import PlayerList from './PlayerList.vue';
     
     export default Vue.extend({
-        name: 'game-settings',
+        name: 'room-settings',
         data: function() {
             return {
                 settings: {},
@@ -48,9 +47,6 @@
                 this.$data.settings = room.settings;
                 return room;
             }
-        },
-        components: {
-            "player-list": PlayerList
         }
     })
 </script>

@@ -34,7 +34,7 @@
             <settings />
             <game-overview v-if="currentRoom != null" />
             <room-list v-else />
-            <error-toast />
+            <toasts />
         </div>
     </div>
 </template>
@@ -50,8 +50,7 @@
     import Room from '../../common/models/Room';
     import { mapGetters } from 'vuex';
     import Login from './common/Login.vue';
-    import ErrorToast from './utils/ErrorToast.vue';
-    import Username from './utils/Username.vue';
+    import Toasts from './toasts/ToastHolder.vue';
     import Settings from './common/Settings.vue';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
@@ -61,8 +60,7 @@
             'room-list': RoomList,
             'game-overview': GameOverview,
             'login': Login,
-            'error-toast': ErrorToast,
-            'username': Username,
+            'toasts': Toasts,
             'settings': Settings
         },
         computed: {
@@ -85,9 +83,6 @@
                 } else {
                     this.$socket.send(new RequestStateUpdatePacket());
                 }
-            },
-            errorPacket: function(packet: ErrorPacket) {
-                $("#toast-holder").toast()
             }
         }
     });

@@ -36,6 +36,9 @@ export default class PacketHandler {
     
     private handleJoinRoom(user: ServerUser, packet: JoinRoomPacket) {
         let room = this.gameManager.roomManager.getRoom(packet.roomId);
+        if (!user.canDo("joinRoom", 1000)) {
+            throw new ClientError("Wait a moment before joining another room.");
+        }
         
         if (room == null) {
             throw new ClientError('This room doesn\'t exist.');
@@ -54,6 +57,9 @@ export default class PacketHandler {
     }
 
     private handleCreateRoom(user: ServerUser, packet: CreateRoomPacket) {
+        if (!user.canDo("createRoom", 1000)) {
+            throw new ClientError("Wait a moment before create a room again.");
+        }
         this.gameManager.roomManager.createRoom(user);
     }
 
@@ -62,6 +68,9 @@ export default class PacketHandler {
     }
 
     private handleRequestRooms(user: ServerUser, packet: RequestRoomsPacket) {
+        if (!user.canDo("nicknameChange", 1000)) {
+            throw new ClientError("Wait a moment before requesting rooms again.");
+        }
         user.sendPacket(new RoomListPacket(
             this.gameManager.roomManager.rooms.map(map => map.getListTransmitData())
         ))
