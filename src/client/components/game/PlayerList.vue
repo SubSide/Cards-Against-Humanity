@@ -44,6 +44,7 @@
                 //     }
                 //     list.push({
                 //         user: { 
+                //             id: randHash,
                 //             username: Math.random().toString(36).substring(2, 8 + Math.floor(Math.random() * 8)),
                 //             hash: randHash,
                 //             tags: [{

@@ -1,5 +1,9 @@
 <template>
-    <span class="user-badge badge" :class="tagClass" data-toggle="tooltip" data-placement="top" :title="title">{{ text }}</span>
+    
+    <span class="user-badge badge" :class="tagClass" data-toggle="tooltip" :data-placement="side" :title="title">
+        {{ text }}
+        <span></span>
+    </span>
 </template>
 
 <script lang="ts">
@@ -10,8 +14,11 @@
 
     export default Vue.extend({
         name: 'username',
-        props: [ "tag" ],
+        props: [ "tag", "tagSide" ],
         computed: {
+            side: function(): string {
+                return this.tagSide || "bottom";
+            },
             title: function(): string {
                 return this.tag.text;
             },
@@ -21,6 +28,15 @@
             tagClass: function(): string {
                 return 'badge-'+getTag(this.tag.type);
             }
+        },
+        
+        mounted: function() {
+            $(this.$el).tooltip({
+                container: this.$el.children[0]
+            });
+        },
+        beforeDestroy: function() {
+            $(this.$el).tooltip('dispose');
         }
     });
     

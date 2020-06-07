@@ -4,10 +4,6 @@ import Store from './store/index';
 import App from './components/App.vue';
 
 $.ready.then(() => {
-    $('body').tooltip({
-        selector: '[data-toggle="tooltip"]'
-    });
-
     const store = Store;
     Vue.use(new VueSocketIO({
         debug: true,

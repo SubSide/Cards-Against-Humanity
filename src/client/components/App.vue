@@ -15,7 +15,7 @@
             <div class="nav-item mx-auto"></div>
             <div class="navbar-nav dropdown">
                 <div class="navbar-text order-4 btn btn-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
-                    <username :user="user" />
+                    <username :user="user" :tagSide="left" />
                 </div>
                 <div class="dropdown-menu dropdown-menu-right" style="position: absolute" aria-labelledby="navbarDropdown">
                     <button class="dropdown-item btn btn-text" data-toggle="modal" data-target="#changeUsernameDialog">Change username</button>
@@ -66,6 +66,9 @@
             'settings': Settings
         },
         computed: {
+            left(): string {
+                return "left";
+            },
             user(): User {
                 return this.$store.state.user;
             },

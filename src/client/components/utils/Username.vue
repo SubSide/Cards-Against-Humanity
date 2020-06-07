@@ -1,7 +1,7 @@
 <template>
     <span>
         <span v-bind:title="hash">{{ username }}</span><tag 
-            v-for="tag in tags" :tag="tag" :key="tag.text"/>
+            v-for="tag in tags" :tag="tag" :tagSide="tagSide" :key="tag.text"/>
     </span>
 </template>
 
@@ -14,7 +14,7 @@
 
     export default Vue.extend({
         name: 'username',
-        props: [ "user" ],
+        props: [ "user", "tagSide" ],
         computed: {
             username: function(): string {
                 return (this.user as any).username;
