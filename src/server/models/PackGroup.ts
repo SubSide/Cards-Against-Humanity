@@ -1,6 +1,7 @@
 import Pack from './Pack';
 
 export default interface PackGroup {
-    name: String;
+    name: string;
+    orderNumber: number;
     packs: Pack[];
 }

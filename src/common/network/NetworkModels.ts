@@ -5,10 +5,6 @@ import User from "../models/User";
 import Pack from "../models/Pack";
 import Role from "../models/Role";
 
-export interface ServerState {
-    packs: Pack[]
-}
-
 export interface RoomListSettings {
     name: string;
     players: Player[];

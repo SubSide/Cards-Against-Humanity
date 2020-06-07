@@ -2,7 +2,7 @@ import RoomManager from './managers/RoomManager';
 import PacketHandler from './managers/PacketHandler';
 import { Db } from 'mongodb';
 import ServerUser from './models/ServerUser';
-import { ErrorPacket } from '../common/network/ServerPackets';
+import { ErrorPacket, ServerStatePacket } from '../common/network/ServerPackets';
 import ClientError from './util/ClientError';
 import Pair from '../common/utils/Pair';
 import UserRetriever from './db/UserRetriever';
@@ -127,6 +127,9 @@ export default class GameManager {
         let newUser = new ServerUser(socket.id, socket);
         this.users.set(socket.id, newUser);
         console.debug(`New user '${newUser.username}' connected with id: ${newUser.id}`);
+        
+        // Send the user the current state of the server
+        newUser.sendPacket(new ServerStatePacket(this.roomManager.cardRetriever.packTree));
     }
 
     /**

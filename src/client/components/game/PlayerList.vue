@@ -1,5 +1,5 @@
 <template>
-    <div class="card-holder d-flex flex-wrap-reverse justify-content-center">
+    <div class="card-holder d-flex flex-wrap-reverse pt-5 justify-content-center">
         <div 
             class="card d-inline-block p-3 pb-4" 
             :class="{ 'bg-info text-white':  self.user.id == czar, 'bg-secondary text-white': player.user.id == self.user.id && player.user.id != czar }" 

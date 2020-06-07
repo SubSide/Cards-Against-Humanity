@@ -3,9 +3,11 @@ import Vue from 'vue';
 import Store from './store/index';
 import App from './components/App.vue';
 import Username from './components/utils/Username.vue';
+import TreeList from './components/utils/TreeList.vue';
 
 $.ready.then(() => {
     Vue.component('username', Username);
+    Vue.component('tree', TreeList);
 
     const store = Store;
     Vue.use(new VueSocketIO({

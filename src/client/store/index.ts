@@ -2,6 +2,7 @@ import Vuex from 'vuex';
 import { UserStateUpdatePacket } from '../../common/network/ServerPackets';
 import GameState from './modules/GameState';
 import SettingsState from './modules/SettingsState';
+import ServerState from './modules/ServerState';
 import User from '../../common/models/User';
 import Role from '../../common/models/Role';
 
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     },
     modules: {
         game: GameState,
-        settings: SettingsState
+        settings: SettingsState,
+        server: ServerState
     }
 });

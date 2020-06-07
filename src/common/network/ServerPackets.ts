@@ -1,9 +1,11 @@
 import Room from "../models/Room";
 import { RoomListItem, OwnState } from "./NetworkModels";
+import TreeItem from "../utils/TreeItem";
 
 export type ServerPacketType =
     RoomListPacket |
     UserStateUpdatePacket |
+    ServerStatePacket |
     ErrorPacket
 
 
@@ -34,4 +36,11 @@ export class ChatPacket implements ServerPacket {
 export class ErrorPacket implements ServerPacket {
     type: 'errorPacket' = 'errorPacket';
     constructor(public error: string) {}
+}
+
+export class ServerStatePacket implements ServerPacket {
+    type: 'serverState' = 'serverState';
+    constructor(
+        public packs: TreeItem
+    ) {}
 }

@@ -20,6 +20,18 @@
                     id="pointsToWin"
                     name="pointsToWin" />
             </div>
+            <div class="form-group">
+                <label for="timeToRespond">Time to respond:</label>
+                <input
+                    type="range"
+                    class="form-control"
+                    id="timeToRespond"
+                    name="timeToRespond" />
+            </div>
+            <div class="form-group">
+                <label for="packIds">Time to respond:</label>
+                <tree :data="packs" />
+            </div>
         </div>
     </div>
 </template>
@@ -33,6 +45,7 @@
     */
     import Vue from 'vue';
     import Room from '../../../common/models/Room';
+    import TreeItem from '../../../common/utils/TreeItem';
     
     export default Vue.extend({
         name: 'room-settings',
@@ -46,6 +59,9 @@
                 let room = this.$store.state.game.room;
                 this.$data.settings = room.settings;
                 return room;
+            },
+            packs(): TreeItem {
+                return this.$store.state.server.packs;
             }
         }
     })

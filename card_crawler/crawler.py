@@ -400,9 +400,10 @@ for pack in processedPacks:
 
 oldGroups = groups
 groups = []
-for group in oldGroups:
+for index, group in enumerate(oldGroups):
     groups.append({
         "name": group,
+        "orderNumber": index+1,
         "packs": oldGroups[group]
     })
 
