@@ -1,7 +1,7 @@
 import { Db } from "mongodb";
 import Role from "../../common/models/Role";
-import ClientError from "../util/ClientError";
 import crypto from 'crypto';
+import Tag from "../../common/models/Tag";
 
 export default class UserRetriever {
     constructor(private db: Db) {}
@@ -17,11 +17,11 @@ export default class UserRetriever {
 
         if (hashObj && "role" in hashObj) {
             switch (hashObj["role"]) {
-                case Role.WebMaster:
-                    role = Role.WebMaster;
-                    break;
                 case Role.Administrator:
                     role = Role.Administrator;
+                    break;
+                case Role.Staff:
+                    role = Role.Staff;
                     break;
                 case Role.Moderator:
                     role = Role.Moderator;
@@ -29,9 +29,15 @@ export default class UserRetriever {
             }
         }
 
+        var tags: Tag[] = hashObj["tags"];
+        if (!Array.isArray(tags)) {
+            tags = null;
+        }
+
         return {
             hash: hash,
-            role: role
+            role: role,
+            tags: tags
         }
     }
     
@@ -54,4 +60,5 @@ export default class UserRetriever {
 interface HashInfo {
     hash: string;
     role: Role;
+    tags: Tag[];
 }

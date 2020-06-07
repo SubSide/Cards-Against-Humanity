@@ -1,6 +1,6 @@
-import { Pack } from './Pack';
+import Pack from './Pack';
 
-export interface PackGroup {
+export default interface PackGroup {
     name: String;
     packs: Pack[];
 }

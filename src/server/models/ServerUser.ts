@@ -1,32 +1,32 @@
-import { User } from "../../common/models/User";
-import { ServerPlayer } from './ServerPlayer';
+import User from "../../common/models/User";
+import ServerPlayer from './ServerPlayer';
 import SocketIO from "socket.io";
-import { ServerPacketType, UserStateUpdatePacket } from "../../common/network/ServerPackets";
-import { Transmissible } from '../../common/network/Transmissible';
+import { UserStateUpdatePacket, ServerPacket } from "../../common/network/ServerPackets";
+import Transmissible from '../../common/network/Transmissible';
 import Role from "../../common/models/Role";
+import Tag from "../../common/models/Tag";
 
-export class ServerUser implements Transmissible<User> {
-    public lastActive: number;
-    public hash: string;
+export default class ServerUser implements Transmissible<User> {
+    public lastActive: number = 0;
     public player?: ServerPlayer;
-    private cooldowns: Map<String, number>;
+    private cooldowns: Map<string, number> = new Map();
+    
+    public hash: string = null;
+    public tags: Tag[] = [];
+    public role: Role = Role.Default
 
     constructor(
         public id: string,
         public socket: SocketIO.Socket,
         public username: string = 'user_' + Math.floor(Math.random() * 899999999 + 100000000),
-        public role: Role = Role.Default
-    ) {
-        this.lastActive = 0;
-        this.hash = null;
-        this.cooldowns = new Map();
-    }
+    ) {}
 
     getTransmitData(): User {
         return {
+            id: this.id,
             username: this.username,
             hash: this.hash,
-            role: this.role
+            tags: this.tags
         }
     }
 
@@ -35,7 +35,7 @@ export class ServerUser implements Transmissible<User> {
         this.sendUpdateState();
     }
 
-    sendPacket(packet: ServerPacketType) {
+    sendPacket(packet: ServerPacket) {
         this.socket.emit(packet.type, packet);
     }
 
@@ -55,6 +55,7 @@ export class ServerUser implements Transmissible<User> {
         this.sendPacket(new UserStateUpdatePacket({
             user: this.getTransmitData(),
             player: this.player?.getTransmitData(),
+            role: this.role,
             room: this.player?.room?.getTransmitData(),
             cards: this.player?.cards,
         }))

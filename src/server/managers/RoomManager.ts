@@ -1,29 +1,24 @@
 import { v4 as UUID } from 'uuid';
 import { Db } from "mongodb";
-import { CardRetriever } from '../db/CardRetriever';
-import { ServerRoom } from '../models/ServerRoom';
-import { Settings, validatedSettings } from '../../common/models/Settings';
-import { ServerUser } from '../models/ServerUser';
-import { ServerPlayer } from '../models/ServerPlayer';
+import CardRetriever from '../db/CardRetriever';
+import ServerRoom from '../models/ServerRoom';
+import Settings from '../../common/models/Settings';
+import ServerUser from '../models/ServerUser';
 import ClientError from '../util/ClientError';
-import { Pack } from '../models/Pack';
+import Pack from '../models/Pack';
+import { validatedSettings } from '../util/SettingsUtils';
 
-export class RoomManager {
-    private cardRetriever: CardRetriever;
+export default class RoomManager {
+    public cardRetriever: CardRetriever;
     public rooms: ServerRoom[] = [];
 
     public constructor(db: Db) {
         this.cardRetriever = new CardRetriever(db);
     }
     
-    public createRoom(owner: ServerUser, settings: Settings): ServerRoom {
+    public createRoom(owner: ServerUser): ServerRoom {
         if (owner.player != null) {
             throw new ClientError("You can't create a new room as you're already in a room!");
-        }
-
-        let validated = validatedSettings(settings);
-        if (validated == null) {
-            throw new ClientError("Invalid settings received.");
         }
         
         let packs: Pack[] = [];
@@ -34,12 +29,8 @@ export class RoomManager {
         let room = new ServerRoom(
             this,
             UUID(),
-            packs,
-            validated
+            owner
         );
-
-        let ownerPlayer = room.join(owner);
-        room.owner = ownerPlayer;
 
         this.rooms.push(room);
 

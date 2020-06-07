@@ -1,6 +1,6 @@
-import { User } from "./User";
+import User from "./User";
 
-export interface Player {
+export default interface Player {
     user: User;
     points: number;
     hasPlayedCard: boolean;

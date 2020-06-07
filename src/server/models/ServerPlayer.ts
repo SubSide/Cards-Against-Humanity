@@ -1,11 +1,11 @@
-import { Player } from '../../common/models/Player';
+import Player from '../../common/models/Player';
 import { ResponseCard } from '../../common/models/Card';
-import { ServerUser } from './ServerUser';
-import { ServerRoom } from './ServerRoom';
-import { ServerPacketType } from '../../common/network/ServerPackets';
-import { Transmissible } from '../../common/network/Transmissible';
+import ServerUser from './ServerUser';
+import ServerRoom from './ServerRoom';
+import { ServerPacket } from '../../common/network/ServerPackets';
+import Transmissible from '../../common/network/Transmissible';
 
-export class ServerPlayer implements Transmissible<Player> {
+export default class ServerPlayer implements Transmissible<Player> {
     public cards: ResponseCard[];
     public points: number;
     public hasPlayedCard: boolean;
@@ -27,7 +27,7 @@ export class ServerPlayer implements Transmissible<Player> {
         }
     }
 
-    sendPacket(packet: ServerPacketType) {
+    sendPacket(packet: ServerPacket) {
         this.user.sendPacket(packet);
     }
 }

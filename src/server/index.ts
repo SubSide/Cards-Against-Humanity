@@ -1,6 +1,6 @@
 import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
-import { GameManager } from './GameManager';
+import GameManager from './GameManager';
 import { ClientPacketType } from '../common/network/ClientPackets';
 require('dotenv').config({ path: __dirname+'/../.env' });
 

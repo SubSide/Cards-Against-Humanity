@@ -1,14 +1,9 @@
-import { Room } from "../models/Room";
-import { Round } from "../models/Round";
-import { User } from "../models/User";
+import Room from "../models/Room";
 import { RoomListItem, OwnState } from "./NetworkModels";
 
 export type ServerPacketType =
     RoomListPacket |
-    RoomJoinedPacket |
-    RoomLeftPacket |
     UserStateUpdatePacket |
-    RoomChangedPacket |
     ErrorPacket
 
 
@@ -21,23 +16,9 @@ export class RoomListPacket implements RoomListPacket {
     constructor(public roomList: RoomListItem[]) {}
 }
 
-export class RoomJoinedPacket implements ServerPacket {
-    type: 'roomJoined' = 'roomJoined';
+export class RoomStatePacket implements ServerPacket {
+    type: 'roomState' = 'roomState';
     constructor(public room: Room) {}
-}
-
-export class RoomLeftPacket implements ServerPacket {
-    type: 'roomLeft' = 'roomLeft';
-}
-
-export class RoomChangedPacket implements ServerPacket {
-    type: 'roomChanged' = 'roomChanged';
-    constructor(public room: Room) {}
-}
-
-export class RoundUpdatePacket implements ServerPacket {
-    type: 'roundUpdate' = 'roundUpdate';
-    constructor(public round: Round) {}
 }
 
 export class UserStateUpdatePacket implements ServerPacket {

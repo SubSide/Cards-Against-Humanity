@@ -1,13 +1,14 @@
-import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import Cookie from 'js-cookie';
+/// <
+import { Module, VuexModule, Mutation } from 'vuex-module-decorators';
+import Cookies from 'js-cookie';
 
 @Module
 export default class SettingsState extends VuexModule {
-    cardSize: number = parseInt(Cookie.get("settings.cardSize"));
+    cardSize: number = parseInt(Cookies.get("settings.cardSize"));
 
     @Mutation
     updateCardSize(cardSize: number) {
         this.cardSize = cardSize;
-        Cookie.set("settings.cardSize", cardSize.toString());
+        Cookies.set("settings.cardSize", cardSize.toString());
     }
 };

@@ -16,8 +16,8 @@
                             type="username" 
                             class="form-control" 
                             id="username"
-                            pattern="[a-zA-Z0-9]{4,24}"
-                            title="Username must be between 4 and 24 characters long"
+                            pattern="[a-zA-Z0-9]{4,16}"
+                            title="Username must be between 4 and 16 characters long"
                             v-model.trim.lazy="username"
                             required>
                     </div>

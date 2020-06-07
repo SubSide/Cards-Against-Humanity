@@ -1,10 +1,9 @@
-import Vuex from 'vuex';
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { UserStateUpdatePacket, RoomJoinedPacket, RoomLeftPacket } from '../../../common/network/ServerPackets';
-import { Room } from '../../../common/models/Room';
-import { OwnState } from '../../../common/network/NetworkModels';
-import { Player } from '../../../common/models/Player';
+import { UserStateUpdatePacket } from '../../../common/network/ServerPackets';
+import Room from '../../../common/models/Room';
+import Player from '../../../common/models/Player';
 import { ResponseCard } from '../../../common/models/Card';
+import Role from '../../../common/models/Role';
 
 @Module
 export default class GameState extends VuexModule {
@@ -18,14 +17,4 @@ export default class GameState extends VuexModule {
         this.player = packet.state.player;
         this.cards = packet.state.cards;
     };
-
-    @Mutation
-    SOCKET_roomJoined(packet: RoomJoinedPacket) {
-        this.room = packet.room;
-    }
-    
-    @Mutation
-    SOCKET_roomLeft(packet: RoomLeftPacket) {
-        this.room = null;
-    }
 };

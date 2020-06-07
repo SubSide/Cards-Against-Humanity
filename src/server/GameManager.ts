@@ -1,13 +1,13 @@
-import { RoomManager } from './managers/RoomManager';
-import { PacketHandler } from './managers/PacketHandler';
+import RoomManager from './managers/RoomManager';
+import PacketHandler from './managers/PacketHandler';
 import { Db } from 'mongodb';
-import { ServerUser } from './models/ServerUser';
+import ServerUser from './models/ServerUser';
 import { ErrorPacket } from '../common/network/ServerPackets';
 import ClientError from './util/ClientError';
-import { Pair } from '../common/utils/Pair';
+import Pair from '../common/utils/Pair';
 import UserRetriever from './db/UserRetriever';
 
-export class GameManager {
+export default class GameManager {
     public roomManager: RoomManager;
     public packetHandler: PacketHandler;
     public userRetriever: UserRetriever;

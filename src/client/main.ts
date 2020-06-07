@@ -3,11 +3,11 @@ import Vue from 'vue';
 import Store from './store/index';
 import App from './components/App.vue';
 
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-});
-
 $.ready.then(() => {
+    $('body').tooltip({
+        selector: '[data-toggle="tooltip"]'
+    });
+
     const store = Store;
     Vue.use(new VueSocketIO({
         debug: true,

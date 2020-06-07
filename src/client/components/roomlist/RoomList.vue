@@ -1,8 +1,7 @@
 <template>
     <div class="row">
-        <create-room />
         <div class="col-12 p-3">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#createRoomDialog">Create room</button>
+            <button class="btn btn-primary" @click="createRoom">Create room</button>
             <button class="btn btn-secondary" @click="requestRooms">Refresh</button>
         </div>
 
@@ -11,7 +10,7 @@
         </div>
 
         <div class="col alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
-            No servers created yet! Click <button class="btn btn-sm btn-outline-dark" data-toggle="modal" data-target="#createRoomDialog">here</button> to create your own.
+            No servers created yet! Click <button class="btn btn-sm btn-outline-dark" @click="createRoom">here</button> to create your own.
         </div>
     </div>
 </template>
@@ -19,7 +18,6 @@
 <script lang="ts">
     import Vue from 'vue';
     import Room from './Room.vue';
-    import CreateRoom from './CreateRoom.vue';
     import { RequestRoomsPacket, CreateRoomPacket } from '../../../common/network/ClientPackets';
     import { RoomListPacket } from '../../../common/network/ServerPackets';
     
@@ -40,12 +38,12 @@
         },
         methods: {
             createRoom() {
-                this.$socket.send(new CreateRoomPacket({maxPlayers: 8}));
+                this.$socket.send(new CreateRoomPacket());
             },
             requestRooms() {
                 this.$socket.send(new RequestRoomsPacket());
             }
         },
-        components: { 'room': Room, 'create-room': CreateRoom }
+        components: { 'room': Room }
     })
 </script>

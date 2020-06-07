@@ -1,7 +1,8 @@
-import Role from "./Role";
+import Tag from "./Tag";
 
-export interface User {
+export default interface User {
+    id: string;
     username: string;
     hash: string;
-    role: Role;
+    tags?: Tag[]
 }

@@ -1,4 +1,4 @@
-import { Settings } from "../models/Settings";
+import Settings from "../models/Settings";
 
 export type ClientPacketType =
     SocketChangePacket |
@@ -27,7 +27,7 @@ export class RequestRoomsPacket implements ClientPacket {
 
 export class CreateRoomPacket implements ClientPacket {
     type: 'createRoom' = 'createRoom';
-    constructor(public roomSettings: Settings) {}
+    constructor() {}
 }
 
 export class JoinRoomPacket implements ClientPacket {

@@ -1,14 +1,18 @@
-import { Player } from "../models/Player";
+import Player from "../models/Player";
 import { ResponseCard } from "../models/Card";
-import { Room } from "../models/Room";
-import { User } from "../models/User";
+import Room from "../models/Room";
+import User from "../models/User";
+import Pack from "../models/Pack";
 import Role from "../models/Role";
+
+export interface ServerState {
+    packs: Pack[]
+}
 
 export interface RoomListSettings {
     name: string;
-    maxPlayers: number;
+    players: Player[];
     packIds: string[];
-    hasCustomCards: boolean;
 }
 
 export interface RoomListItem {
@@ -17,15 +21,9 @@ export interface RoomListItem {
     playerCount: number;
 }
 
-
-export interface RoomState {
-    room: Room;
-    round?: Number;
-}
-
-
 export interface OwnState {
     user: User;
+    role: Role,
     player?: Player;
     room?: Room;
     cards?: ResponseCard[];

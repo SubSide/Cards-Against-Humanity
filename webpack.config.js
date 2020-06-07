@@ -19,7 +19,7 @@ module.exports = {
     vue: 'Vue',
     socketIO: 'socket.io-client',
     vuex: 'Vuex',
-    'js-cookie': 'js-cookie'
+    Cookies: "js-cookie"
   },
   module: {
     rules: [

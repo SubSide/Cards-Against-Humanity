@@ -1,5 +1,5 @@
 <template>
-    <div class="body">
+    <div class="body d-flex flex-column">
         <div class="navbar navbar-expand-sm navbar-light bg-light">
             <span class="navbar-brand order-0" href="#">CAH</span>
             <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
@@ -29,10 +29,10 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
-        <div class="container">
+        <div class="container position-relative">
             <login />
             <settings />
-            <game v-if="currentRoom != null" />
+            <game-overview v-if="currentRoom != null" />
             <room-list v-else />
             <error-toast />
         </div>
@@ -45,9 +45,9 @@
     import { SocketChangePacket, RequestStateUpdatePacket } from '../../common/network/ClientPackets';
     import { ErrorPacket } from '../../common/network/ServerPackets';
     import RoomList from './roomlist/RoomList.vue';
-    import Game from './game/Game.vue';
-    import { User } from '../../common/models/User';
-    import { Room } from '../../common/models/Room';
+    import GameOverview from './game/GameOverview.vue';
+    import User from '../../common/models/User';
+    import Room from '../../common/models/Room';
     import { mapGetters } from 'vuex';
     import Login from './common/Login.vue';
     import ErrorToast from './utils/ErrorToast.vue';
@@ -59,7 +59,7 @@
     export default Vue.extend({
         components: { 
             'room-list': RoomList,
-            'game': Game,
+            'game-overview': GameOverview,
             'login': Login,
             'error-toast': ErrorToast,
             'username': Username,
@@ -79,6 +79,8 @@
                 sessionStorage.setItem(STORAGE_PREVIOUS_ID, this.$socket.id);
                 if (id != undefined && id != "undefined" && this.$socket.id !== id) {
                     this.$socket.send(new SocketChangePacket(id));
+                } else {
+                    this.$socket.send(new RequestStateUpdatePacket());
                 }
             },
             errorPacket: function(packet: ErrorPacket) {
@@ -88,3 +90,17 @@
     });
     
 </script>
+
+<style scoped>
+    .body {
+        height: 100%;
+    }
+
+    .navbar {
+        flex-shrink: 0;
+    }
+
+    .container {
+        flex: 1 0 auto;
+    }
+</style>

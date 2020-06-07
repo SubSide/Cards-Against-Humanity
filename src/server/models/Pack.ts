@@ -1,10 +1,10 @@
 import { PromptCard, ResponseCard } from '../../common/models/Card';
 
-export interface Pack {
+export default interface Pack {
     id: string;
     name: string;
-    promptCount: Number;
-    responseCount: Number;
+    promptCount: number;
+    responseCount: number;
     prompts: PromptCard[];
     responses: ResponseCard[];
 }

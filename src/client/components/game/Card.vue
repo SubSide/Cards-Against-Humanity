@@ -17,8 +17,8 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { Player } from '../../../common/models/Player';
-    import { Room } from '../../../common/models/Room';
+    import Player from '../../../common/models/Player';
+    import Room from '../../../common/models/Room';
     import { PromptCard, ResponseCard } from '../../../common/models/Card';
     
 

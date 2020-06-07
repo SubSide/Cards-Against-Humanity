@@ -1,12 +1,11 @@
 import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket } from "../../common/network/ClientPackets";
-import { ServerUser } from "../models/ServerUser";
-import { GameManager } from "../GameManager";
+import ServerUser from "../models/ServerUser";
+import GameManager from "../GameManager";
 import { RoomListPacket } from "../../common/network/ServerPackets";
 import ClientError from "../util/ClientError";
-import { Server } from "mongodb";
 import Role from "../../common/models/Role";
 
-export class PacketHandler {
+export default class PacketHandler {
     
     constructor(public gameManager: GameManager) {
     }
@@ -55,7 +54,7 @@ export class PacketHandler {
     }
 
     private handleCreateRoom(user: ServerUser, packet: CreateRoomPacket) {
-        this.gameManager.roomManager.createRoom(user, packet.roomSettings);
+        this.gameManager.roomManager.createRoom(user);
     }
 
     private requestStateUpdate(user: ServerUser, packet: RequestStateUpdatePacket) {
@@ -73,10 +72,9 @@ export class PacketHandler {
             throw new ClientError("Wait a moment before changing your nickname again.");
         }
 
-        let nicknameRegex = new RegExp('^[a-zA-Z0-9]{4,24}$');
+        let nicknameRegex = new RegExp('^[a-zA-Z0-9]{4,16}$');
         if (
-            packet.newNickname == null || 
-            packet.newNickname.length < 6 ||
+            packet.newNickname == null ||
             !nicknameRegex.test(packet.newNickname) ||
             (packet.hash != null && packet.hash.length > 100)
         ) {
@@ -92,6 +90,7 @@ export class PacketHandler {
                 let info = await this.gameManager.userRetriever.getHashInfo(packet.newNickname, packet.hash);
                 user.hash = info.hash;
                 user.role = info.role;
+                user.tags = info.tags
             }
             
             user.sendUpdateState();
