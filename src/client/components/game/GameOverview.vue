@@ -1,8 +1,11 @@
 <template>
     <div class="body d-flex flex-column">
+        <prompt ref="leavePrompt" :title="'Leaving room'" :content="'Are you sure you want to leave this room?'" :onConfirm="leaveRoom" />
         <div class="content">
-            <div class="col-12">
-                <button class="btn btn-secondary" @click="leaveRoom">Leave room</button>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-secondary" @click="openLeaveRoom">Leave room</button>
+                </div>
             </div>
             <game v-if="room.round" />
             <room-settings v-else />
@@ -28,6 +31,9 @@
             },
         },
         methods: {
+            openLeaveRoom() {
+                (this.$refs.leavePrompt as any).show();
+            },
             leaveRoom: function() {
                 this.$socket.send(new LeaveRoomPacket());
             }

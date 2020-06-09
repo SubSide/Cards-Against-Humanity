@@ -2,11 +2,9 @@ import { v4 as UUID } from 'uuid';
 import { Db } from "mongodb";
 import CardRetriever from '../db/CardRetriever';
 import ServerRoom from '../models/ServerRoom';
-import Settings from '../../common/models/Settings';
 import ServerUser from '../models/ServerUser';
 import ClientError from '../util/ClientError';
-import Pack from '../models/Pack';
-import { validatedSettings } from '../util/SettingsUtils';
+import Pack from '../models/ServerPack';
 
 export default class RoomManager {
     public cardRetriever: CardRetriever;

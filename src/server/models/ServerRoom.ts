@@ -1,21 +1,22 @@
 import { PromptCard, ResponseCard } from '../../common/models/Card';
-import Room from '../../common/models/Room';
+import Room, { PartialRoom } from '../../common/models/Room';
 import ServerUser from './ServerUser';
 import Settings from '../../common/models/Settings';
 import ServerPlayer from './ServerPlayer';
 import ClientError from '../util/ClientError';
 import Transmissible from '../../common/network/Transmissible';
 import Round from '../../common/models/Round';
-import { RoomStatePacket } from '../../common/network/ServerPackets';
-import { RoomListItem, RoomListSettings } from '../../common/network/NetworkModels';
+import { ServerPacket, PartialRoomStatePacket } from '../../common/network/ServerPackets';
+import { RoomListItem } from '../../common/network/NetworkModels';
 import RoomManager from '../managers/RoomManager';
 import { getDefaultSettings } from '../util/SettingsUtils';
+import User from '../../common/models/User';
 
 export default class ServerRoom implements Transmissible<Room> {
     private prompts: DrawingDeck<PromptCard> = new DrawingDeck();
     private responses: DrawingDeck<ResponseCard> = new DrawingDeck();
     private czars: DrawingDeck<ServerPlayer> = new DrawingDeck();
-    private settings: Settings = getDefaultSettings();
+    public settings: Settings = getDefaultSettings();
 
     players: ServerPlayer[] = [];
     private round: Round = null;
@@ -55,8 +56,11 @@ export default class ServerRoom implements Transmissible<Room> {
         // Add the player to our player list
         this.players.push(player);
         
-        // Send the player an update on the current state
+        // Send the player a complete update on the current state
         user.sendUpdateState();
+        
+        // Update all other players
+        this.sendAllPartialUpdate([user], 'players');
 
         return player;
     }
@@ -78,6 +82,9 @@ export default class ServerRoom implements Transmissible<Room> {
             // If the player left is the room owner we change the owner to a random player
             this.owner = this.players[Math.floor(Math.random() * this.players.length)].user;
         }
+        
+        // Update all other players
+        this.sendAllPartialUpdate([], 'players', 'owner');
     }
 
     public nextRound() {
@@ -102,17 +109,36 @@ export default class ServerRoom implements Transmissible<Room> {
     getListTransmitData(): RoomListItem {
         return {
             id: this.id,
-            settings: this.getListSettings(),
-            playerCount: this.players.length
-        }
-    }
-
-    getListSettings(): RoomListSettings {
-        return {
-            name: `${this.owner}'s Room`,
+            name: `${this.owner.username}'s Room`,
+            maxPlayers: this.settings.maxPlayers,
             players: this.players.map(player => player.getTransmitData()),
             packIds: this.settings.packIds
         }
+    }
+
+    createPartialRoom(...props: string[]): PartialRoom {
+        let part: PartialRoom = {};
+        let whole = this.getTransmitData();
+        props.forEach(prop => {
+            if (prop in whole) {
+                (part as any)[prop] = (whole as any)[prop];
+            }
+        });
+
+        return part;
+    }
+
+    sendAllPartialUpdate(exclude: User[], ...props: string[]) {
+        this.sendAllPlayers(new PartialRoomStatePacket(this.createPartialRoom(...props)), exclude);
+    }
+
+    sendAllPlayers(serverPacket: ServerPacket, exclude: User[] = []) {
+        this.players.forEach(player => {
+            if (exclude.indexOf(player.user) >= 0) {
+                return;
+            }
+            player.sendPacket(serverPacket);
+        });
     }
 
     getTransmitData(): Room {

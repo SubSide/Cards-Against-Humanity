@@ -129,7 +129,7 @@ export default class GameManager {
         console.debug(`New user '${newUser.username}' connected with id: ${newUser.id}`);
         
         // Send the user the current state of the server
-        newUser.sendPacket(new ServerStatePacket(this.roomManager.cardRetriever.packTree));
+        newUser.sendPacket(new ServerStatePacket(this.roomManager.cardRetriever.packetCache));
     }
 
     /**

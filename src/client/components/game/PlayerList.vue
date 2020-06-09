@@ -9,7 +9,8 @@
             <username :user="player.user" />
             <span v-if="room.round && !player.hasPlayedCard">(Playing)</span>
             <br />
-            <small>{{ player.points }} points</small>
+            <small class="float-left pr-1">{{ player.points }} points</small>
+            <small class="float-right pl-1" v-if="player.user.id == room.owner.id">(Host)</small>
         </div>
     </div>
 </template>

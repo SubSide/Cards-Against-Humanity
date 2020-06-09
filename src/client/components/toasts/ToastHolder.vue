@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="toast-holder" style="position: fixed; bottom: 0; right: 0;"></div>
+        <div class="toast-holder p-2" style="position: fixed; bottom: 0; right: 0;"></div>
         <div class="toast-template d-none">
             <div class="toast" role="alert" data-delay="10000" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">

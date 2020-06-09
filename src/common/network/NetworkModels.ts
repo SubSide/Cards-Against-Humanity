@@ -5,16 +5,13 @@ import User from "../models/User";
 import Pack from "../models/Pack";
 import Role from "../models/Role";
 
-export interface RoomListSettings {
-    name: string;
-    players: Player[];
-    packIds: string[];
-}
 
 export interface RoomListItem {
-    id: string;
-    settings: RoomListSettings,
-    playerCount: number;
+    name: string,
+    id: string,
+    maxPlayers: number,
+    packIds: string[],
+    players: Player[]
 }
 
 export interface OwnState {

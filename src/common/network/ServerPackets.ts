@@ -1,6 +1,6 @@
-import Room from "../models/Room";
+import Room, { PartialRoom } from "../models/Room";
 import { RoomListItem, OwnState } from "./NetworkModels";
-import TreeItem from "../utils/TreeItem";
+import { PackGroup } from "../models/Pack";
 
 export type ServerPacketType =
     RoomListPacket |
@@ -23,6 +23,11 @@ export class RoomStatePacket implements ServerPacket {
     constructor(public room: Room) {}
 }
 
+export class PartialRoomStatePacket implements ServerPacket {
+    type: 'partialRoomState' = 'partialRoomState';
+    constructor(public room: PartialRoom) {}
+}
+
 export class UserStateUpdatePacket implements ServerPacket {
     type: 'stateUpdate' = 'stateUpdate';
     constructor(public state: OwnState) {}
@@ -40,7 +45,5 @@ export class ErrorPacket implements ServerPacket {
 
 export class ServerStatePacket implements ServerPacket {
     type: 'serverState' = 'serverState';
-    constructor(
-        public packs: TreeItem
-    ) {}
+    constructor(public packGroups: PackGroup[]) {}
 }

@@ -1,12 +1,11 @@
 import { Db, CommandCursor } from 'mongodb';
-import PackGroup from '../models/PackGroup';
-import Pack from '../models/Pack';
-import TreeItem from '../../common/utils/TreeItem';
+import Pack, { ServerPackGroup } from '../models/ServerPack';
+import { PackGroup } from '../../common/models/Pack';
 
 export default class CardRetriever {
-    public groups: PackGroup[] = [];
+    public groups: ServerPackGroup[] = [];
     private packs: Map<String, Pack> = new Map();
-    public packTree: TreeItem;
+    public packetCache: PackGroup[];
 
     constructor(db: Db) {
         this.retrieveCards(db);
@@ -14,7 +13,7 @@ export default class CardRetriever {
 
     async retrieveCards(db: Db) {
         let result = await db.collection('packGroups').find().toArray();
-        this.groups = result as PackGroup[];
+        this.groups = result as ServerPackGroup[];
         this.packs = new Map();
 
         this.groups.forEach(packGroup => {
@@ -22,33 +21,25 @@ export default class CardRetriever {
                 this.packs.set(pack.id, pack);
             });
         });
-        this.packTree = this.createPackTree();
+        this.packetCache = this.createPacketCache();
     }
 
     findPack(id: string): Pack {
         return this.packs.get(id);
     }
 
-    private createPackTree(): TreeItem {
-        return {
-            id: "OwO",
-            includeSelf: false,
-            showSelf: false,
-            text: "Group",
-            children: this.groups.sort((a,b) => a.orderNumber - b.orderNumber).map(group => {
-                return {
-                    id: group.name,
-                    text: group.name,
-                    includeSelf: false,
-                    children: group.packs.sort(this.sortTreeItem).map(pack => {
-                        return {
-                            id: pack.id,
-                            text: pack.name
-                        }
-                    })
-                }
-            })
-        }
+    private createPacketCache(): PackGroup[] {
+        return this.groups.map(group => {
+            return {
+                title: group.name,
+                packs: group.packs.map(pack => {
+                    return {
+                        id: pack.id,
+                        name: pack.name
+                    }
+                })
+            }
+        })
     }
 
     private sortTreeItem(itemA: Pack, itemB: Pack): number {

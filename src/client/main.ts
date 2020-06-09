@@ -3,11 +3,11 @@ import Vue from 'vue';
 import Store from './store/index';
 import App from './components/App.vue';
 import Username from './components/utils/Username.vue';
-import TreeList from './components/utils/TreeList.vue';
+import Prompt from './components/utils/Prompt.vue';
 
 $.ready.then(() => {
     Vue.component('username', Username);
-    Vue.component('tree', TreeList);
+    Vue.component('prompt', Prompt);
 
     const store = Store;
     Vue.use(new VueSocketIO({

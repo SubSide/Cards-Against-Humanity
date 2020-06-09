@@ -8,6 +8,7 @@ export type ClientPacketType =
     RequestStateUpdatePacket |
     LeaveRoomPacket |
     SendChatPacket |
+    ChangeRoomSettingsPacket |
     ChangeNicknamePacket
 
 
@@ -43,6 +44,11 @@ export class RequestStateUpdatePacket implements ClientPacket {
 export class LeaveRoomPacket implements ClientPacket {
     type: 'leaveRoom' = 'leaveRoom';
     constructor() {}
+}
+
+export class ChangeRoomSettingsPacket implements ClientPacket {
+    type: 'changeRoomSettings' = 'changeRoomSettings';
+    constructor(public roomSettings: Settings) {}
 }
 
 export class SendChatPacket implements ClientPacket {
