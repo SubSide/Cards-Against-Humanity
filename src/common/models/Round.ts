@@ -1,8 +1,8 @@
-import Player from "./Player";
 import { PromptCard } from "./Card";
+import User from "./User";
 
 export default interface Round {
-    czar: Player;
+    czar: User;
     promptCard: PromptCard;
     roundNumber: number;
 }

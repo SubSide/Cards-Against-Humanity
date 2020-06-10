@@ -1,5 +1,5 @@
 import Room, { PartialRoom } from "../models/Room";
-import { RoomListItem, OwnState } from "./NetworkModels";
+import { RoomListItem, OwnState, PartialOwnState } from "./NetworkModels";
 import { PackGroup } from "../models/Pack";
 
 export type ServerPacketType =
@@ -31,6 +31,11 @@ export class PartialRoomStatePacket implements ServerPacket {
 export class UserStateUpdatePacket implements ServerPacket {
     type: 'stateUpdate' = 'stateUpdate';
     constructor(public state: OwnState) {}
+}
+
+export class PartialUserStateUpdatePacket implements ServerPacket {
+    type: 'partialStateUpdate' = 'partialStateUpdate';
+    constructor(public state: PartialOwnState) {}
 }
 
 export class ChatPacket implements ServerPacket {

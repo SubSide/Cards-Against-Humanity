@@ -29,9 +29,9 @@ export default class UserRetriever {
             }
         }
 
-        var tags: Tag[] = hashObj["tags"];
-        if (!Array.isArray(tags)) {
-            tags = null;
+        var tags: Tag[] = [];
+        if ('tags' in hashObj && Array.isArray(hashObj["tags"])) {
+            tags = hashObj["tags"];
         }
 
         return {

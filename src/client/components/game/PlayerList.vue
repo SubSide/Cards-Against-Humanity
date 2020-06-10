@@ -1,16 +1,16 @@
 <template>
     <div class="card-holder d-flex flex-wrap-reverse pt-5 justify-content-center">
         <div 
-            class="card d-inline-block p-3 pb-4" 
-            :class="{ 'bg-info text-white':  self.user.id == czar, 'bg-secondary text-white': player.user.id == self.user.id && player.user.id != czar }" 
             v-for="(player, index) in players" 
+            class="card d-inline-block p-3 pb-4" 
+            :class="{ 'bg-info text-white':  player.user.id == czar, 'bg-secondary text-white': player.user.id == self.user.id && player.user.id != czar }" 
             :style="{ 'z-index': (1000-index) }" 
-            :key="player.username">
+            :key="player.user.id">
             <username :user="player.user" />
-            <span v-if="room.round && !player.hasPlayedCard">(Playing)</span>
             <br />
             <small class="float-left pr-1">{{ player.points }} points</small>
-            <small class="float-right pl-1" v-if="player.user.id == room.owner.id">(Host)</small>
+            <small class="float-right pl-1" v-if="room.round && !player.hasPlayedCard">(Playing)</small>
+            <small class="float-right px-1" v-if="player.user.id == room.owner.id">(Host)</small>
         </div>
     </div>
 </template>
@@ -32,7 +32,7 @@
                 return this.$store.state.game.room;
             },
             czar(): string {
-                return this.room.round?.czar?.user.id;
+                return this.room.round?.czar?.id;
             },
             players(): Player[] {
                 return this.room.players;

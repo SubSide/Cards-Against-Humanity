@@ -52,6 +52,11 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-success" @click="startGame" :disabled="!canEdit">Start</button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -67,7 +72,7 @@
     import Room from '../../../common/models/Room';
     import Settings from '../../../common/models/Settings';
     import debounce from 'debounce';
-    import { ChangeRoomSettingsPacket } from '../../../common/network/ClientPackets';
+    import { ChangeRoomSettingsPacket, StartGamePacket } from '../../../common/network/ClientPackets';
     import User from '../../../common/models/User';
     import Role from '../../../common/models/Role';
     import { PackGroup } from '../../../common/models/Pack';
@@ -106,13 +111,19 @@
             },
             _sendSettingsChange() {
                 if (!this.canEdit) return;
-                this.$socket.send(new ChangeRoomSettingsPacket({
+                this.$socket.send(new ChangeRoomSettingsPacket(this.createSettingsObject()));
+            },
+            createSettingsObject(): Settings {
+                return {
                     maxPlayers: this.maxPlayers,
                     pointsToWin: this.pointsToWin,
                     timeToRespond: this.timeToRespond,
                     packIds: this.packIds
-                }));
+                }
             },
+            startGame() {
+                this.$socket.send(new StartGamePacket(this.createSettingsObject()));
+            }
         },
         mounted: function() {
             this.$data.debouncer = debounce(this._sendSettingsChange.bind(this), 2000);

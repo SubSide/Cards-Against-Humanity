@@ -16,8 +16,8 @@ export default class CardRetriever {
         this.groups = result as ServerPackGroup[];
         this.packs = new Map();
 
-        this.groups.forEach(packGroup => {
-            packGroup.packs.forEach(pack => {
+        this.groups.sort((a, b) => a.orderNumber - b.orderNumber).forEach(packGroup => {
+            packGroup.packs.sort(this.sortPacks).forEach(pack => {
                 this.packs.set(pack.id, pack);
             });
         });
@@ -42,7 +42,7 @@ export default class CardRetriever {
         })
     }
 
-    private sortTreeItem(itemA: Pack, itemB: Pack): number {
+    private sortPacks(itemA: Pack, itemB: Pack): number {
         var textA = itemA.name.toUpperCase();
         var textB = itemB.name.toUpperCase();
 

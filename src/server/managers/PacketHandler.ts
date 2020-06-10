@@ -1,10 +1,10 @@
-import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket, ChangeRoomSettingsPacket } from "../../common/network/ClientPackets";
+import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket, ChangeRoomSettingsPacket, StartGamePacket } from "../../common/network/ClientPackets";
 import ServerUser from "../models/ServerUser";
 import GameManager from "../GameManager";
-import { RoomListPacket } from "../../common/network/ServerPackets";
+import { RoomListPacket, ErrorPacket } from "../../common/network/ServerPackets";
 import ClientError from "../util/ClientError";
 import Role from "../../common/models/Role";
-import { validatedSettings } from "../util/SettingsUtils";
+import { validatedSettings, areSettingsPleasant } from "../util/SettingsUtils";
 
 export default class PacketHandler {
     
@@ -33,6 +33,9 @@ export default class PacketHandler {
                 break;
             case 'changeRoomSettings':
                 this.handleChangeRoomSettings(user, packet);
+                break;
+            case 'startGame':
+                this.handleStartGame(user, packet);
                 break;
         }
         
@@ -103,7 +106,7 @@ export default class PacketHandler {
                 let info = await this.gameManager.userRetriever.getHashInfo(packet.newNickname, packet.hash);
                 user.hash = info.hash;
                 user.role = info.role;
-                user.tags = info.tags
+                user.tags = info.tags;
             }
             
             user.sendUpdateState();
@@ -122,7 +125,7 @@ export default class PacketHandler {
             throw new ClientError("Settings should only be send every 2 seconds");
         }
         
-        if (user.player == null || (user.player.room.owner != user && user.role < Role.Staff)) {
+        if (user.player == null || !user.player.canEditRoom()) {
             throw new ClientError("You don't have permissions to edit this room!");
         }
 
@@ -134,22 +137,12 @@ export default class PacketHandler {
         // Here we do duplicate checking
         let currentSettings = user.player.room.settings;
         duplicateTesting: {
-            if (settings.maxPlayers != currentSettings.maxPlayers) {
-                console.debug("maxPlayers changed!");
-                break duplicateTesting;
-            }
-            if (settings.pointsToWin != currentSettings.pointsToWin) {
-                console.debug("pointsToWin changed!");
-                break duplicateTesting;
-            }
-            if (settings.timeToRespond != currentSettings.timeToRespond) {
-                console.debug("timeToRespond changed!");
-                break duplicateTesting;
-            }
+            if (settings.maxPlayers != currentSettings.maxPlayers) break duplicateTesting;
+            if (settings.pointsToWin != currentSettings.pointsToWin) break duplicateTesting;
+            if (settings.timeToRespond != currentSettings.timeToRespond) break duplicateTesting;
             
             // This is a b!tch to fix
             if (settings.packIds.length != currentSettings.packIds.length) {
-                console.debug("packIds lengths are not the same!");
                 break duplicateTesting;
             }
 
@@ -160,7 +153,6 @@ export default class PacketHandler {
                 }
             }
 
-            console.debug("No changes!");
             return; // No changes!!
         }
         // ---
@@ -168,5 +160,29 @@ export default class PacketHandler {
 
         user.player.room.settings = settings;
         user.player.room.sendAllPartialUpdate([user], 'settings');
+    }
+
+    private handleStartGame(user: ServerUser, startGamePacket: StartGamePacket) {
+        if (!user.canDo("startGame", 2000)) {
+            throw new ClientError("Wait a moment before trying this action again!");
+        }
+
+        if (user.player == null || !user.player.canEditRoom()) {
+            throw new ClientError("You don't have permissions to edit this room!");
+        }
+
+        let room = user.player.room;
+
+        let settings = startGamePacket.settings;
+
+        // Make sure we have pleasant settings
+        areSettingsPleasant(this.gameManager.roomManager.cardRetriever, settings);
+
+
+        // Set the settings
+        room.settings = settings;
+
+        // Start the game
+        room.start();
     }
 }

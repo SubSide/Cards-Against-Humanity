@@ -9,7 +9,8 @@ export type ClientPacketType =
     LeaveRoomPacket |
     SendChatPacket |
     ChangeRoomSettingsPacket |
-    ChangeNicknamePacket
+    ChangeNicknamePacket |
+    StartGamePacket
 
 
 export interface ClientPacket {
@@ -49,6 +50,11 @@ export class LeaveRoomPacket implements ClientPacket {
 export class ChangeRoomSettingsPacket implements ClientPacket {
     type: 'changeRoomSettings' = 'changeRoomSettings';
     constructor(public roomSettings: Settings) {}
+}
+
+export class StartGamePacket implements ClientPacket {
+    type: 'startGame' = 'startGame';
+    constructor(public settings: Settings) {}
 }
 
 export class SendChatPacket implements ClientPacket {

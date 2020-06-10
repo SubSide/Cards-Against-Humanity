@@ -1,10 +1,11 @@
 import User from "../../common/models/User";
 import ServerPlayer from './ServerPlayer';
 import SocketIO from "socket.io";
-import { UserStateUpdatePacket, ServerPacket } from "../../common/network/ServerPackets";
+import { UserStateUpdatePacket, ServerPacket, PartialUserStateUpdatePacket } from "../../common/network/ServerPackets";
 import Transmissible from '../../common/network/Transmissible';
 import Role from "../../common/models/Role";
 import Tag from "../../common/models/Tag";
+import { PartialOwnState, OwnState } from "../../common/network/NetworkModels";
 
 export default class ServerUser implements Transmissible<User> {
     public lastActive: number = 0;
@@ -60,5 +61,28 @@ export default class ServerUser implements Transmissible<User> {
             cards: this.player?.cards,
         }))
     }
+
+    sendPartialUpdate(...props: string[]) {
+        let part: PartialOwnState = {};
+        let whole = this.createOwnState();
+        props.forEach(prop => {
+            if (prop in whole) {
+                (part as any)[prop] = (whole as any)[prop];
+            }
+        });
+
+        this.sendPacket(new PartialUserStateUpdatePacket(part));
+    }
+
+    createOwnState(): OwnState {
+        return {
+            user: this.getTransmitData(),
+            player: this.player?.getTransmitData(),
+            role: this.role,
+            room: this.player?.room?.getTransmitData(),
+            cards: this.player?.cards,
+        }
+    }
+
     
 }

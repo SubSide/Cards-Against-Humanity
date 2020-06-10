@@ -77,11 +77,11 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
 export function areSettingsPleasant(cardRetriever: CardRetriever, settings: Settings) {
     let error = new ClientError("Settings were malformed.");
 
+    // First we make sure we actually have correct settings
+    validatedSettings(cardRetriever, settings);
+
+
     let packIds = settings.packIds;
-    if (!Array.isArray(packIds) || packIds.length < 1 || packIds.length > 100) {
-        console.log("Received a packet where packIds was incorrect");
-        throw error;
-    }
 
     // Remove the duplicates 
     let packsSet = new Set(packIds);

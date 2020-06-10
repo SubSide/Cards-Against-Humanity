@@ -14,9 +14,17 @@ export interface RoomListItem {
     players: Player[]
 }
 
-export interface OwnState {
+export interface OwnState extends PartialOwnState {
     user: User;
     role: Role,
+    player?: Player;
+    room?: Room;
+    cards?: ResponseCard[];
+}
+
+export interface PartialOwnState {
+    user?: User;
+    role?: Role,
     player?: Player;
     room?: Room;
     cards?: ResponseCard[];

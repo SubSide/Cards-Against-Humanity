@@ -13,7 +13,7 @@
     import Tag, { Type } from '../../../common/models/Tag';
 
     export default Vue.extend({
-        name: 'username',
+        name: 'tag',
         props: [ "tag", "tagSide" ],
         computed: {
             side: function(): string {

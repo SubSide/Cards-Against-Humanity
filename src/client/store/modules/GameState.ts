@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { UserStateUpdatePacket, RoomStatePacket, PartialRoomStatePacket } from '../../../common/network/ServerPackets';
+import { UserStateUpdatePacket, RoomStatePacket, PartialRoomStatePacket, PartialUserStateUpdatePacket } from '../../../common/network/ServerPackets';
 import Room from '../../../common/models/Room';
 import Player from '../../../common/models/Player';
 import { ResponseCard } from '../../../common/models/Card';
@@ -17,15 +17,23 @@ export default class GameState extends VuexModule {
         this.room = packet.state.room;
         this.player = packet.state.player;
         this.cards = packet.state.cards;
-        console.debug(this);
         if (packet.state.room != null && packet.state.room.settings != this.settings)
             this.settings = packet.state.room.settings;
     };
 
     @Mutation
+    SOCKET_partialStateUpdate(packet: PartialUserStateUpdatePacket) {
+        if (packet.state.player != null) this.player = packet.state.player;
+        if (packet.state.room != null) {
+            this.room = packet.state.room;
+            this.settings = packet.state.room.settings;
+        }
+        if (packet.state.cards != null) this.cards = packet.state.cards;
+    }
+
+    @Mutation
     SOCKET_roomState(packet: RoomStatePacket) {
         this.room = packet.room;
-        this.context.commit('setSettings', packet.room.settings);
         if (packet.room.settings != this.settings)
             this.settings = packet.room.settings;
     }

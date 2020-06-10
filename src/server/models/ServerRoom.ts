@@ -6,16 +6,17 @@ import ServerPlayer from './ServerPlayer';
 import ClientError from '../util/ClientError';
 import Transmissible from '../../common/network/Transmissible';
 import Round from '../../common/models/Round';
-import { ServerPacket, PartialRoomStatePacket } from '../../common/network/ServerPackets';
+import { ServerPacket, PartialRoomStatePacket, RoomStatePacket } from '../../common/network/ServerPackets';
 import { RoomListItem } from '../../common/network/NetworkModels';
 import RoomManager from '../managers/RoomManager';
 import { getDefaultSettings } from '../util/SettingsUtils';
 import User from '../../common/models/User';
+import Role from '../../common/models/Role';
 
 export default class ServerRoom implements Transmissible<Room> {
     private prompts: DrawingDeck<PromptCard> = new DrawingDeck();
     private responses: DrawingDeck<ResponseCard> = new DrawingDeck();
-    private czars: DrawingDeck<ServerPlayer> = new DrawingDeck();
+    private czars: DrawingDeck<ServerUser> = new DrawingDeck();
     public settings: Settings = getDefaultSettings();
 
     players: ServerPlayer[] = [];
@@ -31,16 +32,23 @@ export default class ServerRoom implements Transmissible<Room> {
     };
 
     public start() {
-        // TODO
-        // this.packIds = this.roomManager.cardRetriever.packs.map(pack => pack.id);
+        // Create our deck
+        let promptCards: PromptCard[] = [];
+        let responseCards: ResponseCard[] = [];
+        this.settings.packIds.forEach(packId => {
+            let pack = this.roomManager.cardRetriever.findPack(packId);
+            if (pack == null) throw Error("Something went wrong!");
 
-        // packs.forEach(pack => {
-        //     this.prompts = this.prompts.concat.apply(this.prompts, pack.prompts);
-        //     this.responses = this.responses.concat.apply(this.responses, pack.responses);
-        // });
+            promptCards = promptCards.concat(pack.prompts);
+            responseCards = responseCards.concat(pack.responses);
+        });
 
-        // this.promptDiscardPile = [];
-        // this.responseDiscardPile = [];
+        this.prompts.setDeck(promptCards);
+        this.responses.setDeck(responseCards);
+
+        // Start the round!
+        this.round = null;
+        this.nextRound();
     }
 
     public join(user: ServerUser): ServerPlayer {
@@ -55,6 +63,8 @@ export default class ServerRoom implements Transmissible<Room> {
 
         // Add the player to our player list
         this.players.push(player);
+        // And our Czar deck
+        this.czars.add(user);
         
         // Send the player a complete update on the current state
         user.sendUpdateState();
@@ -68,6 +78,9 @@ export default class ServerRoom implements Transmissible<Room> {
     public leave(player: ServerPlayer) {
         // Remove the player from the list of players in this room
         this.players.splice(this.players.indexOf(player), 1);
+
+        // Remove the player from the Czar deck
+        this.czars.remove(player.user);
 
         // Return all the players' cards to the discard pile
         player.cards.forEach(card => this.responses.add(card));
@@ -85,6 +98,11 @@ export default class ServerRoom implements Transmissible<Room> {
         
         // Update all other players
         this.sendAllPartialUpdate([], 'players', 'owner');
+
+        // If the player was the czar we skip to next round
+        if (this.round.czar == player.user) {
+            this.nextRound();
+        }
     }
 
     public nextRound() {
@@ -96,8 +114,20 @@ export default class ServerRoom implements Transmissible<Room> {
             }
         }
 
+        // Increment round number by 1
+        this.round.roundNumber += 1;
+        // Draw a czar and get a prompt card
         this.round.czar = this.czars.draw().getTransmitData();
         this.round.promptCard = this.prompts.draw(true);
+
+        // Fix all players
+        this.players.forEach(player => {
+            this.fixPlayer(player);
+            player.user.sendPartialUpdate('cards');
+        });
+
+        // And send all players an update
+        this.sendUpdate();
     }
 
     public fixPlayer(player: ServerPlayer) {
@@ -132,6 +162,10 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendAllPlayers(new PartialRoomStatePacket(this.createPartialRoom(...props)), exclude);
     }
 
+    sendUpdate() {
+        this.sendAllPlayers(new RoomStatePacket(this.getTransmitData()));
+    }
+
     sendAllPlayers(serverPacket: ServerPacket, exclude: User[] = []) {
         this.players.forEach(player => {
             if (exclude.indexOf(player.user) >= 0) {
@@ -139,6 +173,10 @@ export default class ServerRoom implements Transmissible<Room> {
             }
             player.sendPacket(serverPacket);
         });
+    }
+
+    canEdit(user: ServerUser): boolean {
+        return user == this.owner || user.role >= Role.Staff;
     }
 
     getTransmitData(): Room {
@@ -205,6 +243,10 @@ class DrawingDeck<T> {
 
         // Grab (and remove from the deck) a random item
         let item = this.deck.splice(Math.floor(Math.random() * this.deck.length), 1)[0];
+
+        if (item == null) {
+            throw Error("Couldn't draw card. No cards in deck :(");
+        }
 
         // If we want to discard it immediately we do that here, if not we have to do it manually
         if (andDiscard) {

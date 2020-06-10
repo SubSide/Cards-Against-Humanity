@@ -27,6 +27,10 @@ export default class ServerPlayer implements Transmissible<Player> {
         }
     }
 
+    canEditRoom(): boolean {
+        return this.room.canEdit(this.user);
+    }
+
     sendPacket(packet: ServerPacket) {
         this.user.sendPacket(packet);
     }
