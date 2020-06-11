@@ -1,7 +1,7 @@
 <template>
     <div class="body d-flex flex-column">
         <prompt ref="leavePrompt" :title="'Leaving room'" :content="'Are you sure you want to leave this room?'" :onConfirm="leaveRoom" />
-        <div class="content">
+        <div class="content mt-3">
             <div class="row">
                 <div class="col-12">
                     <button class="btn btn-secondary" @click="openLeaveRoom">Leave room</button>

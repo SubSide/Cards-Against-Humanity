@@ -2,7 +2,7 @@
     <div class="row pt-5">
         <div class="col-12">
             <div class="row">
-                <div class="col-2">
+                <div class="col-6 col-md-3 col-lg-2">
                     <prompt-card :card="promptCard" :played="selectedCards" />
                 </div>
             </div>
@@ -55,13 +55,16 @@
         },
         methods: {
             cardPick: function(card: ResponseCard) {
-                console.debug(card);
                 if (this.promptCard.pick == 1) {
                     this.playingCards = [card.id];
                     return;
                 }
 
                 if (this.playingCards.indexOf(card.id) < 0) {
+                    if (this.playingCards.length >= this.promptCard.pick) {
+                        return;
+                    }
+
                     this.playingCards.push(card.id);
                 } else {
                     this.playingCards.splice(this.playingCards.indexOf(card.id), 1);

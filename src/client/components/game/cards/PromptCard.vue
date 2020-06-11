@@ -1,16 +1,7 @@
 <template>
     <div class="position-relative">
         <div class="card bg-dark text-white cah-card">
-            <!-- <svg viewBox="0 0 225 350"> -->
-            <svg v-bind:viewBox="viewBox">
-                <switch>
-                    <foreignObject width="100%" height="100%" 
-                        requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
-                        <p xmlns="http://www.w3.org/1999/xhtml" style="font-weight: bold" v-html="text"></p>
-                    </foreignObject>
-                    <text x="0" y="0">{{ text }}</text>
-                </switch>
-            </svg>
+            <div class="resizing" ref="text" v-html="text"></div>
         </div>
     </div>
 </template>
@@ -20,26 +11,30 @@
     import Player from '../../../../common/models/Player';
     import Room from '../../../../common/models/Room';
     import { PromptCard, ResponseCard } from '../../../../common/models/Card';
-    
+    import textFit from '../../../js/textfit.min.js';
+
 
     export default Vue.extend({
         name: 'prompt-card',
         props: [ "card", 'played' ],
+        updated: function (){
+            textFit(this.$refs.text, {
+                "maxFontSize": this.cardSize
+            });
+        },
+        watch: {
+            cardSize: function() {
+                textFit(this.$refs.text, {
+                    "maxFontSize": this.cardSize
+                });
+            }
+        },
         computed: {
             id(): string {
                 return this.card.id;
             },
             cardSize(): number {
-                return (this.$store.state.settings.cardSize + 2) / 5;
-            },
-            width(): number {
-                return 225 / this.cardSize;
-            },
-            height(): number {
-                return 350 / this.cardSize;
-            },
-            viewBox(): string {
-                return "0 0 "+this.width+" " + this.height;
+                return 10 + this.$store.state.settings.cardSize;
             },
             text(): string {
                 if (!this.shouldInlineCards || this.played == undefined || this.played.length == 0) 
