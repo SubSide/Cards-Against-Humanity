@@ -52,6 +52,13 @@ mainDeckOptions = {
     ]
 }
 
+# Ordering
+packOrdering = {
+    "CAH Main Deck": 1,
+    "CAH Expansions": 2,
+    "CAH Packs": 3,
+}
+
 
 ############################################
 # -- From this point no more setting up -- #
@@ -403,7 +410,7 @@ groups = []
 for index, group in enumerate(oldGroups):
     groups.append({
         "name": group,
-        "orderNumber": index+1,
+        "orderNumber": packOrdering[group],
         "packs": oldGroups[group]
     })
 

@@ -1,14 +1,14 @@
 <template>
     <div class="position-relative">
-        <div class="card cah-card">
+        <div class="card bg-dark text-white cah-card">
             <!-- <svg viewBox="0 0 225 350"> -->
             <svg v-bind:viewBox="viewBox">
                 <switch>
                     <foreignObject width="100%" height="100%" 
                         requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
-                        <p xmlns="http://www.w3.org/1999/xhtml" style="font-weight: bold">{{ text }}</p>
+                        <p xmlns="http://www.w3.org/1999/xhtml" style="font-weight: bold" v-html="text"></p>
                     </foreignObject>
-                    <text x="0" y="0">Your browser doesn't support </text>
+                    <text x="0" y="0">{{ text }}</text>
                 </switch>
             </svg>
         </div>
@@ -17,14 +17,14 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import Player from '../../../common/models/Player';
-    import Room from '../../../common/models/Room';
-    import { PromptCard, ResponseCard } from '../../../common/models/Card';
+    import Player from '../../../../common/models/Player';
+    import Room from '../../../../common/models/Room';
+    import { PromptCard, ResponseCard } from '../../../../common/models/Card';
     
 
     export default Vue.extend({
-        name: 'card',
-        props: [ "card" ],
+        name: 'prompt-card',
+        props: [ "card", 'played' ],
         computed: {
             id(): string {
                 return this.card.id;
@@ -42,7 +42,20 @@
                 return "0 0 "+this.width+" " + this.height;
             },
             text(): string {
-                return this.card.text;
+                if (!this.shouldInlineCards || this.played == undefined || this.played.length == 0) 
+                    return this.card.text;
+
+                // var newText: string = this.card.text + this.card.text;
+                var newText: string = this.card.text;
+                this.played.forEach((card: ResponseCard) => {
+                    newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text}</span>`); 
+                })
+
+                return newText;
+            },
+
+            shouldInlineCards(): boolean {
+                return this.$store.state.settings.inlineCards;
             }
         }
     })
@@ -54,7 +67,7 @@
         width: 100%;
         position: relative;
     }
-    .cah-card svg {
+    .cah-card svg, .cah-card .resizing {
         position: absolute;
         margin: 5px;
         top: 0;

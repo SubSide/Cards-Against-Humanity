@@ -11,14 +11,25 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="range">Card text size:</label>
+                        <label for="cardSize">Card text size:</label>
                         <input 
                             type="range" 
                             class="form-control" 
-                            id="range"
+                            id="cardSize"
                             min="1"
                             max="10"
                             v-model.number="cardSize">
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="inlineCards"
+                            min="1"
+                            max="10"
+                            v-model.number="inlineCards">
+                        <label class="form-check-label" for="inlineCards">Inline card text with "fill in the blanks" cards:</label>
+                        
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -41,6 +52,14 @@
                 },
                 set(value) {
                     this.$store.commit('updateCardSize', value);
+                }
+            },
+            inlineCards: {
+                get() {
+                    return this.$store.state.settings.inlineCards;
+                },
+                set(value) {
+                    this.$store.commit('updateInlineCards', value);
                 }
             }
         }
