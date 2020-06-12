@@ -39,9 +39,9 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader'
-      }, 
+      },
       {
-        test: /\.css$/,
+        test: /^((?!\.min).)*.css$/,
         loader: [
           'vue-style-loader',
           'css-loader'
@@ -50,14 +50,15 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.vue' ],
+    extensions: [ '.tsx', '.ts', '.js', '.vue', '.css' ],
   },
   plugins: [
     new LiveReloadPlugin(),
     new VueLoaderPlugin(),
     new CopyPlugin({
       patterns: [
-        { context: './src/client', from: '**/*.html', to: '.' }
+        { context: './src/client', from: '**/*.html', to: '.' },
+        { context: './src/client', from: '**/*.min.css', to: '.' }
       ]
     })
   ],

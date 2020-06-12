@@ -1,6 +1,6 @@
 <template>
     <div class="position-relative">
-        <div class="card bg-dark text-white cah-card">
+        <div class="card bg-dark border-secondary text-white cah-card">
             <div class="resizing" ref="text" v-html="text"></div>
         </div>
     </div>
@@ -42,9 +42,15 @@
 
                 // var newText: string = this.card.text + this.card.text;
                 var newText: string = this.card.text;
-                this.played.forEach((card: ResponseCard) => {
-                    newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text}</span>`); 
-                })
+                if (newText.match(/\_{2,}/)) {
+                    this.played.forEach((card: ResponseCard) => {
+                        newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text}</span>`); 
+                    })
+                } else {
+                    newText += this.played
+                        .map((card: ResponseCard) => ` <span class="text-info">${card.text}</span>`)
+                        .join(" ");
+                }
 
                 return newText;
             },

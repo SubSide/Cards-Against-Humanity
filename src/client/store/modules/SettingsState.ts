@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 export default class SettingsState extends VuexModule {
     cardSize: number = parseInt(Cookies.get("settings.cardSize")) || 5;
     inlineCards: boolean = Cookies.get("settings.inlineCards") == "true";
+    lightTheme: boolean = Cookies.get("settings.lightTheme") == "true";
 
     @Mutation
     updateCardSize(cardSize: number) {
@@ -17,5 +18,11 @@ export default class SettingsState extends VuexModule {
     updateInlineCards(inlineCards: boolean) {
         this.inlineCards = inlineCards;
         Cookies.set("settings.inlineCards", inlineCards ? "true" : "false", { sameSite: 'Strict' });
+    }
+
+    @Mutation
+    updateLightTheme(lightTheme: boolean) {
+        this.lightTheme = lightTheme;
+        Cookies.set("settings.lightTheme", lightTheme ? "true" : "false", { sameSite: 'Strict' });
     }
 };

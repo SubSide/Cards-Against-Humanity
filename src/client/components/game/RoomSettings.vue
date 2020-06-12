@@ -43,7 +43,7 @@
                 <div class="col">
                     <h5>Card packs: <small class="text-muted">It is recommended to select a single main deck. (and just 1 as otherwise you get duplicates)</small></h5>
                     <div><button class="btn btn-primary" data-toggle="collapse" data-target="#packList"  aria-expanded="false" aria-controls="packList">Show/hide packs</button></div>
-                    <div id="packList" class="row mb-3 collapse" :class="{'show': canEdit}" v-for="group in packGroups" :key="group.title">
+                    <div id="packList" class="row my-3 collapse" :class="{'show': canEdit}" v-for="group in packGroups" :key="group.title">
                         <div class="col-12 mb-1">{{ group.title }}</div>
                         <div class="col-12 col-md-6 pl-5" v-for="pack in group.packs" :key="pack.id">
                             <input type="checkbox" :id="pack.id" :value="pack.id" v-model="packIds" :disabled="!canEdit" />

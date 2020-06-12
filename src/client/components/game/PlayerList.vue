@@ -9,7 +9,8 @@
             <username :user="player.user" />
             <br />
             <small class="float-left pr-1">{{ player.points }} points</small>
-            <small class="float-right pl-1" v-if="room.round && !player.hasPlayedCard">(Playing)</small>
+            <small class="float-right pl-1" v-if="room.round && !player.hasPlayedCard && player.user.id != czar">(Playing)</small>
+            <small class="float-right pl-1" v-if="room.round && player.user.id == czar">(Czar)</small>
             <small class="float-right px-1" v-if="player.user.id == room.owner.id">(Host)</small>
         </div>
     </div>

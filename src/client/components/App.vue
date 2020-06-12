@@ -1,6 +1,6 @@
 <template>
     <div class="body d-flex flex-column">
-        <div class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="navbar navbar-expand-sm navbar-dark bg-dark">
             <span class="navbar-brand order-0" href="#">CAH</span>
             <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
                 <ul class="navbar-nav">
@@ -72,6 +72,34 @@
             },
             currentRoom(): Room {
                 return this.$store.state.game.room;
+            },
+            isLightTheme(): boolean {
+                return this.$store.state.settings.lightTheme;
+            }
+        },
+        watch: {
+            isLightTheme: function() {
+                this.doTheming();
+            }
+        },
+        mounted: function() {
+            this.doTheming();
+        },
+        methods: {
+            doTheming: function() {
+                // var theme = "";
+                // if (this.isLightTheme) {
+                //     theme = "//stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css";
+                // } else {
+                //     theme = "./assets/css/darkly-bootstrap.min.css";
+                // }
+                if (this.isLightTheme) {
+                    $("#darkTheme").attr("disabled", "disabled");
+                    $("#lightTheme").removeAttr("disabled");
+                } else {
+                    $("#darkTheme").removeAttr("disabled");
+                    $("#lightTheme").attr("disabled", "disabled");
+                }
             }
         },
         sockets: {

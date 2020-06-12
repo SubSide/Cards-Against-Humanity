@@ -56,7 +56,11 @@
         methods: {
             cardPick: function(card: ResponseCard) {
                 if (this.promptCard.pick == 1) {
-                    this.playingCards = [card.id];
+                    if (this.playingCards.indexOf(card.id) < 0) {
+                        this.playingCards = [card.id];
+                    } else {
+                        this.playingCards = [];
+                    }
                     return;
                 }
 

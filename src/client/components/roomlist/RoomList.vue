@@ -10,7 +10,7 @@
         </div>
 
         <div class="col alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
-            No servers created yet! Click <button class="btn btn-sm btn-outline-dark" @click="createRoom">here</button> to create your own.
+            No servers created yet! Click <button class="btn btn-sm btn-secondary" @click="createRoom">here</button> to create your own.
         </div>
     </div>
 </template>

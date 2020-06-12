@@ -27,9 +27,18 @@
                             id="inlineCards"
                             min="1"
                             max="10"
-                            v-model.number="inlineCards">
-                        <label class="form-check-label" for="inlineCards">Inline card text with "fill in the blanks" cards:</label>
-                        
+                            v-model="inlineCards">
+                        <label class="form-check-label" for="inlineCards">Inline card text with "fill in the blanks" cards</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="lightThemeSetting"
+                            min="1"
+                            max="10"
+                            v-model="lightTheme">
+                        <label class="form-check-label" for="lightThemeSetting">Use light theme (why would you ever want this!?)</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -60,6 +69,14 @@
                 },
                 set(value) {
                     this.$store.commit('updateInlineCards', value);
+                }
+            },
+            lightTheme: {
+                get() {
+                    return this.$store.state.settings.lightTheme;
+                },
+                set(value) {
+                    this.$store.commit('updateLightTheme', value);
                 }
             }
         }

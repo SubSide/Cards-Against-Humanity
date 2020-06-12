@@ -1,6 +1,6 @@
 <template>
     <div class="position-relative">
-        <div class="card cah-card" :class="{'border-dark': badge }">
+        <div class="card bg-light text-dark cah-card" :class="{'border-dark': badge }">
             <div class="resizing" ref="text" v-html="text"></div>
             <div class="order badge badge-secondary" v-if="badge" v-html="badge"></div>
         </div>
