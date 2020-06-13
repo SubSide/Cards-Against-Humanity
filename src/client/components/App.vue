@@ -1,6 +1,6 @@
 <template>
     <div class="body d-flex flex-column">
-        <div class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="navbar navbar-expand-sm" :class="{ 'navbar-dark bg-dark': !isLightTheme, 'navbar-light bg-light': isLightTheme }">
             <span class="navbar-brand order-0" href="#">CAH</span>
             <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
                 <ul class="navbar-nav">

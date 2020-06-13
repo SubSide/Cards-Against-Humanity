@@ -46,11 +46,19 @@ module.exports = {
           'vue-style-loader',
           'css-loader'
         ]
+      }, {
+        test: /\.(svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name][hash].[ext]',
+          outputPath: 'images',
+          esModule: false,
+        },
       }
     ],
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.vue', '.css' ],
+    extensions: [ '.tsx', '.ts', '.js', '.vue', '.css', '.svg' ],
   },
   plugins: [
     new LiveReloadPlugin(),

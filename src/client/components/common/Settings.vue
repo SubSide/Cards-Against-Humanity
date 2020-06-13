@@ -20,7 +20,7 @@
                             max="10"
                             v-model.number="cardSize">
                     </div>
-                    <div class="form-check form-check-inline">
+                    <div class="form-check">
                         <input 
                             type="checkbox" 
                             class="form-check-input" 
@@ -28,9 +28,19 @@
                             min="1"
                             max="10"
                             v-model="inlineCards">
-                        <label class="form-check-label" for="inlineCards">Inline card text with "fill in the blanks" cards</label>
+                        <label class="form-check-label" for="inlineCards">Inline card text for easier reading</label>
                     </div>
-                    <div class="form-check form-check-inline">
+                    <div class="form-check">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="hideLogo"
+                            min="1"
+                            max="10"
+                            v-model="hideLogo">
+                        <label class="form-check-label" for="hideLogo">Hide card logo</label>
+                    </div>
+                    <div class="form-check">
                         <input 
                             type="checkbox" 
                             class="form-check-input" 
@@ -38,7 +48,7 @@
                             min="1"
                             max="10"
                             v-model="lightTheme">
-                        <label class="form-check-label" for="lightThemeSetting">Use light theme (why would you ever want this!?)</label>
+                        <label class="form-check-label" for="lightThemeSetting">Use light theme (Don't be that guy.)</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -77,6 +87,14 @@
                 },
                 set(value) {
                     this.$store.commit('updateLightTheme', value);
+                }
+            },
+            hideLogo: {
+                get() {
+                    return this.$store.state.settings.hideLogo;
+                },
+                set(value) {
+                    this.$store.commit('updateHideLogo', value);
                 }
             }
         }

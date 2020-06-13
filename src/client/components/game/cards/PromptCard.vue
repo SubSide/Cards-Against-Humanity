@@ -1,7 +1,11 @@
 <template>
     <div class="position-relative">
         <div class="card bg-dark border-secondary text-white cah-card">
-            <div class="resizing" ref="text" v-html="text"></div>
+            <div class="resizing" :class="{ 'with-icon': showLogo }" ref="text" v-html="text"></div>
+            <div class="icon-holder" v-if="showLogo">
+                <img class="icon" src="../../../assets/images/card_logo.svg" />
+                <small class="text-muted">Cards Against Humanity</small>
+            </div>
         </div>
     </div>
 </template>
@@ -18,12 +22,18 @@
         name: 'prompt-card',
         props: [ "card", 'played' ],
         updated: function (){
-            textFit(this.$refs.text, {
-                "maxFontSize": this.cardSize
-            });
+            this.doTextFit();
+        },
+        mounted: function() {
+            this.doTextFit();
         },
         watch: {
             cardSize: function() {
+                this.doTextFit();
+            }
+        },
+        methods: {
+            doTextFit: function() {
                 textFit(this.$refs.text, {
                     "maxFontSize": this.cardSize
                 });
@@ -35,6 +45,9 @@
             },
             cardSize(): number {
                 return 10 + this.$store.state.settings.cardSize;
+            },
+            showLogo(): boolean {
+                return !this.$store.state.settings.hideLogo;
             },
             text(): string {
                 if (!this.shouldInlineCards || this.played == undefined || this.played.length == 0) 
@@ -68,6 +81,7 @@
         width: 100%;
         position: relative;
     }
+
     .cah-card svg, .cah-card .resizing {
         position: absolute;
         margin: 5px;
@@ -75,5 +89,21 @@
         bottom: 0;
         left: 0;
         right: 0;
+    }
+
+    .icon-holder {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        font-size: 8px;
+    }
+
+    .icon {
+        width: 20%;
+        margin-right: 5px;
+    }
+
+    .cah-card .resizing.with-icon {
+        margin-bottom: 25px;
     }
 </style>

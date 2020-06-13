@@ -82,7 +82,7 @@ export default class GameManager {
                 let user = this.users.get(packet.oldId);
                 // This automatically makes it fail-safe, if the user doesn't exist, we ignore it.
                 if (user !== undefined) {
-                    user.id = socket.id; // Update the id
+                    user.socketId = socket.id; // Update the id
                     user.socket = socket; // Update the socket
                     this.users.delete(packet.oldId); // delete the user from the old id
                     this.users.set(socket.id, user); // Set the user to the new id
@@ -126,7 +126,7 @@ export default class GameManager {
     onConnect(socket: SocketIO.Socket) {
         let newUser = new ServerUser(socket.id, socket);
         this.users.set(socket.id, newUser);
-        console.debug(`New user '${newUser.username}' connected with id: ${newUser.id}`);
+        console.debug(`New user '${newUser.username}' connected with id: ${newUser.userId}`);
         
         // Send the user the current state of the server
         newUser.sendPacket(new ServerStatePacket(this.roomManager.cardRetriever.packetCache));
@@ -141,6 +141,6 @@ export default class GameManager {
         let user = this.users.get(socket.id);
         if (user == undefined) return;
 
-        console.debug(`User '${user.username}'(${user.id}) disconnected. After 5 mins he gets removed.`);
+        console.debug(`User '${user.username}'(${user.userId}) disconnected. After 5 mins he gets removed.`);
     }
 }

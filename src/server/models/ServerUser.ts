@@ -1,6 +1,7 @@
 import User from "../../common/models/User";
 import ServerPlayer from './ServerPlayer';
 import SocketIO from "socket.io";
+import { v4 as UUID } from 'uuid';
 import { UserStateUpdatePacket, ServerPacket, PartialUserStateUpdatePacket } from "../../common/network/ServerPackets";
 import Transmissible from '../../common/network/Transmissible';
 import Role from "../../common/models/Role";
@@ -17,14 +18,15 @@ export default class ServerUser implements Transmissible<User> {
     public role: Role = Role.Default
 
     constructor(
-        public id: string,
+        public socketId: string,
         public socket: SocketIO.Socket,
+        public userId: string = UUID(),
         public username: string = 'user_' + Math.floor(Math.random() * 899999999 + 100000000),
     ) {}
 
     getTransmitData(): User {
         return {
-            id: this.id,
+            id: this.userId,
             username: this.username,
             hash: this.hash,
             tags: this.tags
