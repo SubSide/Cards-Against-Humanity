@@ -7,7 +7,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 mt-5">
+        <div class="col-12 mt-3">
+            <button class="btn btn-primary" :disabled="!canPlay">{{ playButtonText }}</button>
+        </div>
+        <div class="col-12 mt-3">
             <div class="row">
                 <response-card 
                     class="col-6 col-md-3 col-lg-2 my-1" 
@@ -28,6 +31,7 @@
     import { PromptCard, ResponseCard } from '../../../common/models/Card';
     import ResponseCardVue from './cards/ResponseCard.vue';
     import PromptCardVue from './cards/PromptCard.vue';
+    import User from '../../../common/models/User';
     
     export default Vue.extend({
         name: 'game',
@@ -40,6 +44,12 @@
             player(): Player {
                 return this.$store.state.game.player;
             },
+            czar(): User {
+                return this.$store.state.game.round.czar;
+            },
+            isCzar(): boolean {
+                return this.czar.id == this.player.user.id;
+            },
             room(): Room {
                 return this.$store.state.game.room;
             },
@@ -51,10 +61,28 @@
             },
             selectedCards: function(): ResponseCard[] {
                 return this.playingCards.map((id: string) => this.cards.find(card => card.id == id))
+            },
+            playButtonText: function(): string {
+                if (this.isCzar) {
+                    return "You are the czar!";
+                }
+
+                if (this.selectedCards.length < this.promptCard.pick) {
+                    return `Pick ${this.promptCard.pick} card`+ ((this.promptCard.pick > 1) ? "s" : "")
+                }
+
+                return "Play";
+            },
+            canPlay: function(): boolean {
+                if (this.isCzar) return false;
+
+                return this.selectedCards.length == this.promptCard.pick;
             }
         },
         methods: {
             cardPick: function(card: ResponseCard) {
+                if (this.isCzar) return;
+
                 if (this.promptCard.pick == 1) {
                     if (this.playingCards.indexOf(card.id) < 0) {
                         this.playingCards = [card.id];

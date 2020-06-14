@@ -1,6 +1,7 @@
 import CardRetriever from "../db/CardRetriever";
 import Settings from "../../common/models/Settings";
 import ClientError from "./ClientError";
+import ServerRoom from "../models/ServerRoom";
 
 export function getDefaultSettings(): Settings {
     return {
@@ -74,11 +75,16 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
 }
 
 
-export function areSettingsPleasant(cardRetriever: CardRetriever, settings: Settings) {
+export function areSettingsPleasant(cardRetriever: CardRetriever, room: ServerRoom, settings: Settings) {
     let error = new ClientError("Settings were malformed.");
 
     // First we make sure we actually have correct settings
     validatedSettings(cardRetriever, settings);
+
+    // Check if we have enough players
+    if (room.players.length < 3) {
+        throw new ClientError("You need at least 3 players to start the game.");
+    }
 
 
     let packIds = settings.packIds;

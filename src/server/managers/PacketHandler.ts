@@ -176,7 +176,7 @@ export default class PacketHandler {
         let settings = startGamePacket.settings;
 
         // Make sure we have pleasant settings
-        areSettingsPleasant(this.gameManager.roomManager.cardRetriever, settings);
+        areSettingsPleasant(this.gameManager.roomManager.cardRetriever, room, settings);
 
 
         // Set the settings

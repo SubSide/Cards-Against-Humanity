@@ -65,6 +65,11 @@ export default class ServerRoom implements Transmissible<Room> {
         this.players.push(player);
         // And our Czar deck
         this.czars.add(user);
+
+        // If we are already playing, we "fix" the player
+        if (this.round != null) {
+            this.fixPlayer(player);
+        }
         
         // Send the player a complete update on the current state
         user.sendUpdateState();
@@ -100,7 +105,7 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendAllPartialUpdate([], 'players', 'owner');
 
         // If the player was the czar we skip to next round
-        if (this.round.czar == player.user) {
+        if (this.round.czar.id == player.user.userId) {
             this.nextRound();
         }
     }
@@ -158,7 +163,7 @@ export default class ServerRoom implements Transmissible<Room> {
         return part;
     }
 
-    sendAllPartialUpdate(exclude: User[], ...props: string[]) {
+    sendAllPartialUpdate(exclude: ServerUser[], ...props: string[]) {
         this.sendAllPlayers(new PartialRoomStatePacket(this.createPartialRoom(...props)), exclude);
     }
 
@@ -166,7 +171,7 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendAllPlayers(new RoomStatePacket(this.getTransmitData()));
     }
 
-    sendAllPlayers(serverPacket: ServerPacket, exclude: User[] = []) {
+    sendAllPlayers(serverPacket: ServerPacket, exclude: ServerUser[] = []) {
         this.players.forEach(player => {
             if (exclude.indexOf(player.user) >= 0) {
                 return;

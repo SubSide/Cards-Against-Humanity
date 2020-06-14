@@ -3,7 +3,7 @@
         <div 
             v-for="(player, index) in players" 
             class="card d-inline-block p-3 pb-4" 
-            :class="{ 'bg-info text-white':  player.user.id == czar, 'bg-secondary text-white': player.user.id == self.user.id && player.user.id != czar }" 
+            :class="{ 'bg-success text-white':  player.user.id == czar, 'bg-primary text-white': player.user.id == self.user.id && player.user.id != czar }" 
             :style="{ 'z-index': (1000-index) }" 
             :key="player.user.id">
             <username :user="player.user" />

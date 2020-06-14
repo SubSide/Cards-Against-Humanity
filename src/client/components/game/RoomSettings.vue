@@ -2,6 +2,9 @@
     <div class="row mt-4">
         <div class="col">
             <div class="row">
+                <p class="col-12">
+                    Change your settings here. You'll need at least 3 players to start the game.
+                </p>
                 <div class="col-12 col-md-6 form-group">
                     <label for="maxPlayers">Maximum amount of players: {{ maxPlayers }}</label>
                     <input
@@ -52,9 +55,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col">
-                    <button class="btn btn-success" @click="startGame" :disabled="!canEdit">Start</button>
+                    <button class="btn btn-success" @click="startGame" :disabled="!canStartGame">Start</button>
                 </div>
             </div>
         </div>
@@ -142,6 +145,13 @@
             },
             canEdit(): boolean {
                 return this.self.id == this.room.owner.id || this.$store.state.role >= Role.Staff;
+            },
+            canStartGame(): boolean {
+                if (!this.canEdit) return false;
+                if (this.room.players.length < 3) {
+                    return false;
+                }
+                return true;
             },
             room(): Room {
                 let room = this.$store.state.game.room;
