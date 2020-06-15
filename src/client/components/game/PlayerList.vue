@@ -21,7 +21,6 @@
     import Player from '../../../common/models/Player';
     import Room from '../../../common/models/Room';
     import Role from '../../../common/models/Role';
-    import { Type } from '../../../common/models/Tag';
     
     export default Vue.extend({
         name: 'PlayerList',
@@ -37,27 +36,6 @@
             },
             players(): Player[] {
                 return this.room.players;
-                // let list: Player[] = this.room.players.slice(0, 1);
-                // for (var i = 0; i < 24; i++) {
-                //     let randHash = Math.random().toString(36).substring(2);
-                //     if (Math.random() < 0.5) {
-                //         randHash = "";
-                //     }
-                //     list.push({
-                //         user: { 
-                //             id: randHash,
-                //             username: Math.random().toString(36).substring(2, 8 + Math.floor(Math.random() * 8)),
-                //             hash: randHash,
-                //             tags: [{
-                //                 text: "Test",
-                //                 type: Type.Primary
-                //             }]
-                //         },
-                //         points: Math.floor(Math.random() * 8),
-                //         hasPlayedCard: Math.floor(Math.random() * 2) == 1
-                //     });
-                // }
-                // return list;
             }
         }
     })

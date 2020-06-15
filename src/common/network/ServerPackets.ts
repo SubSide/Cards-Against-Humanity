@@ -1,12 +1,17 @@
 import Room, { PartialRoom } from "../models/Room";
 import { RoomListItem, OwnState, PartialOwnState } from "./NetworkModels";
 import { PackGroup } from "../models/Pack";
+import User from "../models/User";
+import Role from "../models/Role";
+import Player from "../models/Player";
 
 export type ServerPacketType =
     RoomListPacket |
     UserStateUpdatePacket |
     ServerStatePacket |
-    ErrorPacket
+    InfoPacket |
+    ErrorPacket |
+    UserManagementPacket
 
 
 export interface ServerPacket {
@@ -48,7 +53,22 @@ export class ErrorPacket implements ServerPacket {
     constructor(public error: string) {}
 }
 
+export class InfoPacket implements ServerPacket {
+    type: 'infoPacket' = 'infoPacket';
+    constructor(public info: string) {}
+}
+
 export class ServerStatePacket implements ServerPacket {
     type: 'serverState' = 'serverState';
     constructor(public packGroups: PackGroup[]) {}
+}
+
+
+export class UserManagementPacket implements ServerPacket {
+    type: 'userManagement' = 'userManagement';
+    constructor(
+        public user: User,
+        public role: Role,
+        public player?: Player
+    ) {}
 }

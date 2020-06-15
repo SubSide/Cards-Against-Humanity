@@ -1,4 +1,5 @@
 import Settings from "../models/Settings";
+import { UserManagement } from "./UserManagement";
 
 export type ClientPacketType =
     SocketChangePacket |
@@ -10,7 +11,9 @@ export type ClientPacketType =
     SendChatPacket |
     ChangeRoomSettingsPacket |
     ChangeNicknamePacket |
-    StartGamePacket
+    StartGamePacket |
+    RequestUserManagementPacket |
+    DoUserManagementPacket
 
 
 export interface ClientPacket {
@@ -65,4 +68,17 @@ export class SendChatPacket implements ClientPacket {
 export class ChangeNicknamePacket implements ClientPacket {
     type: 'changeNickname' = 'changeNickname';
     constructor(public newNickname: string, public hash: string) {}
+}
+
+export class RequestUserManagementPacket implements ClientPacket {
+    type: 'requestUserManagement' = 'requestUserManagement';
+    constructor(public userId: string) {}
+}
+
+export class DoUserManagementPacket implements ClientPacket {
+    type: 'doUserManagement' = 'doUserManagement';
+    constructor(
+        public userId: string,
+        public payload: UserManagement
+    ) {}
 }

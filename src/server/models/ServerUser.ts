@@ -33,6 +33,20 @@ export default class ServerUser implements Transmissible<User> {
         }
     }
 
+    /**
+     * Used for when the username/hash or tags changed
+     * This is so we have 1 entry point to update every place we need
+     */
+    updateGlobal() {
+        // When we update the user, we send the user itself an update
+        this.sendUpdateState();
+
+        // We also send the room he might be in an update
+        if (this.player != null) {
+            this.player.room.sendAllPartialUpdate([this], 'players', 'owner');
+        }
+    }
+
     leaveRoom() {
         this.player = null;
         this.sendUpdateState();
@@ -64,7 +78,7 @@ export default class ServerUser implements Transmissible<User> {
         }))
     }
 
-    sendPartialUpdate(...props: string[]) {
+    sendPartialUpdate(...props: (keyof PartialOwnState)[]) {
         let part: PartialOwnState = {};
         let whole = this.createOwnState();
         props.forEach(prop => {
@@ -85,6 +99,4 @@ export default class ServerUser implements Transmissible<User> {
             cards: this.player?.cards,
         }
     }
-
-    
 }

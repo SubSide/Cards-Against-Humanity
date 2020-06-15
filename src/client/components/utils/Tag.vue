@@ -10,7 +10,8 @@
     import Vue from 'vue';
     import { ErrorPacket } from '../../../common/network/ServerPackets';
     import Role from '../../../common/models/Role';
-    import Tag, { Type } from '../../../common/models/Tag';
+    import Tag, { TagType } from '../../../common/models/Tag';
+    import { TagTypes } from '../../utils/TagTypeUtils';
 
     export default Vue.extend({
         name: 'tag',
@@ -26,7 +27,7 @@
                 return this.tag.text.substring(0, 1);
             },
             tagClass: function(): string {
-                return 'badge-'+getTag(this.tag.type);
+                return 'badge-'+TagTypes.get(this.tag.type);
             }
         },
         
@@ -39,27 +40,6 @@
             $(this.$el).tooltip('dispose');
         }
     });
-    
-    function getTag(type: Type): string {
-        switch (type) {
-            case Type.Primary:
-                return 'primary';
-            case Type.Secondary:
-                return 'secondary';
-            case Type.Success:
-                return 'success';
-            case Type.Danger:
-                return 'danger';
-            case Type.Warning:
-                return 'warning';
-            case Type.Info:
-                return 'info';
-            case Type.Dark:
-                return 'dark';
-        }
-
-        return 'light';
-    }
 </script>
 
 <style scoped>

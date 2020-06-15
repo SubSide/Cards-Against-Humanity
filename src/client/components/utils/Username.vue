@@ -1,6 +1,6 @@
 <template>
     <span>
-        <span v-bind:title="hash">{{ username }}</span><tag 
+        <span v-bind:title="hash" ref="diz" v-on:dblclick="openUserManagement">{{ username }}</span><tag 
             v-for="tag in tags" :tag="tag" :tagSide="tagSide" :key="tag.text"/>
     </span>
 </template>
@@ -11,6 +11,7 @@
     import Role from '../../../common/models/Role';
     import Tag from '../../../common/models/Tag';
     import TagVue from './Tag.vue';
+    import { RequestUserManagementPacket } from '../../../common/network/ClientPackets';
 
     export default Vue.extend({
         name: 'username',
@@ -25,8 +26,16 @@
             tags: function(): Tag[] {
                 return (this.user as any).tags;
             },
+            canOpenManagement: function(): boolean {
+                return this.$store.state.role >= Role.Moderator;
+            }
         },
         methods: {
+            openUserManagement() {
+                if (this.canOpenManagement) {
+                    this.$socket.send(new RequestUserManagementPacket(this.user.id));
+                }
+            },
             getTagClasses(tag: Tag): string {
                 return 'user-badge badge badge-'+tag.type;
             }

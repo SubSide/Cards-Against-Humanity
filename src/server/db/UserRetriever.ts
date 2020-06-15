@@ -2,6 +2,7 @@ import { Db } from "mongodb";
 import Role from "../../common/models/Role";
 import crypto from 'crypto';
 import Tag from "../../common/models/Tag";
+import ServerUser from "../models/ServerUser";
 
 export default class UserRetriever {
     constructor(private db: Db) {}
@@ -39,6 +40,66 @@ export default class UserRetriever {
             role: role,
             tags: tags
         }
+    }
+
+    async addTag(user: ServerUser, tag: Tag) {
+        await this.db.collection("hashes").updateOne(
+            { username: user.username, hash: user.hash },
+            {
+                $setOnInsert: {
+                    username: user.username,
+                    hash: user.hash,
+                    role: Role.Default
+                },
+                $push: {
+                    tags: tag
+                }
+            },
+            { upsert: true }
+        )
+    }
+
+    async removeTag(user: ServerUser, tagText: string) {
+        await this.db.collection("hashes").updateOne(
+            { username: user.username, hash: user.hash },
+            {
+                $pull: {
+                    tags: {
+                        text: tagText
+                    }
+                }
+            }
+        )
+
+        await this.removeUnneededHashes();
+    }
+
+    async setRole(user: ServerUser, role: Role) {
+        await this.db.collection("hashes").updateOne(
+            { username: user.username, hash: user.hash },
+            {
+                $setOnInsert: {
+                    username: user.username,
+                    hash: user.hash,
+                    tags: []
+                },
+                $set: {
+                    role: role
+                }
+            },
+            { upsert: true }
+        )
+
+        await this.removeUnneededHashes();
+    }
+
+    async removeUnneededHashes() {
+        await this.db.collection("hashes").deleteMany(
+            {
+                role: Role.Default,
+                tags: []
+            }
+        )
     }
     
     /**

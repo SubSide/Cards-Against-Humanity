@@ -1,9 +1,9 @@
 export default interface Tag {
     text: string,
-    type: Type
+    type: TagType
 }
 
-export enum Type {
+export enum TagType {
     Primary = 0,
     Secondary = 1,
     Success = 2,

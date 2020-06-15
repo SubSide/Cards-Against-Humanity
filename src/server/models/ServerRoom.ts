@@ -105,7 +105,7 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendAllPartialUpdate([], 'players', 'owner');
 
         // If the player was the czar we skip to next round
-        if (this.round.czar.id == player.user.userId) {
+        if (this.round != null && this.round.czar.id == player.user.userId) {
             this.nextRound();
         }
     }
@@ -151,7 +151,7 @@ export default class ServerRoom implements Transmissible<Room> {
         }
     }
 
-    createPartialRoom(...props: string[]): PartialRoom {
+    createPartialRoom(...props: (keyof PartialRoom)[]): PartialRoom {
         let part: PartialRoom = {};
         let whole = this.getTransmitData();
         props.forEach(prop => {
@@ -163,7 +163,7 @@ export default class ServerRoom implements Transmissible<Room> {
         return part;
     }
 
-    sendAllPartialUpdate(exclude: ServerUser[], ...props: string[]) {
+    sendAllPartialUpdate(exclude: ServerUser[], ...props: (keyof PartialRoom)[]) {
         this.sendAllPlayers(new PartialRoomStatePacket(this.createPartialRoom(...props)), exclude);
     }
 

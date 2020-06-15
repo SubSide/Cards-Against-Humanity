@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import { UserStateUpdatePacket } from '../../common/network/ServerPackets';
+import { UserStateUpdatePacket, PartialUserStateUpdatePacket } from '../../common/network/ServerPackets';
 import GameState from './modules/GameState';
 import SettingsState from './modules/SettingsState';
 import ServerState from './modules/ServerState';
@@ -16,6 +16,10 @@ export default new Vuex.Store({
             state.user = packet.state.user;
             state.role = packet.state.role;
         },
+        SOCKET_partialStateUpdate(state, packet: PartialUserStateUpdatePacket) {
+            if (packet.state.user != null) state.user = packet.state.user;
+            if (packet.state.role != null) state.role = packet.state.role;
+        }
     },
     getters: {
         user: function(state): User {

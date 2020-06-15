@@ -30,6 +30,7 @@
             </button>
         </div>
         <div class="container position-relative">
+            <user-management />
             <login />
             <settings />
             <game-overview v-if="currentRoom != null" />
@@ -52,6 +53,7 @@
     import Login from './common/Login.vue';
     import Toasts from './toasts/ToastHolder.vue';
     import Settings from './common/Settings.vue';
+    import UserManagement from './common/UserManagement.vue';
 
     const STORAGE_PREVIOUS_ID = 'STORAGE_PREVIOUS_ID';
 
@@ -61,7 +63,8 @@
             'game-overview': GameOverview,
             'login': Login,
             'toasts': Toasts,
-            'settings': Settings
+            'settings': Settings,
+            'user-management': UserManagement
         },
         computed: {
             left(): string {

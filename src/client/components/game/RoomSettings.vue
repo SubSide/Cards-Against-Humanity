@@ -65,12 +65,6 @@
 </template>
 
 <script lang="ts">
-    /*
-    maxPlayers: number;
-    pointsToWin: number;
-    timeToRespond: number;
-    packIds: string[];
-    */
     import Vue from 'vue';
     import Room from '../../../common/models/Room';
     import Settings from '../../../common/models/Settings';

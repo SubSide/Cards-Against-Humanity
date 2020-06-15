@@ -12,7 +12,7 @@ export default class GameManager {
     public packetHandler: PacketHandler;
     public userRetriever: UserRetriever;
 
-    private users: Map<string, ServerUser>;
+    public users: Map<string, ServerUser>;
 
     private static PLAYER_TIMEOUT = 5 * 60 * 1000;
 
@@ -116,6 +116,19 @@ export default class GameManager {
             socket.emit('errorPacket', new ErrorPacket('An unknown error ocurred. If the error persists first try reloading, then try opening this page in a new tab.'));
             
         }
+    }
+
+    getUserById(userId: string): ServerUser {
+        var found: ServerUser = null;
+        this.users.forEach(function(value) {
+            if (found != null) return;
+
+            if (value.userId == userId) {
+                found = value;
+            }
+        });
+
+        return found;
     }
 
     /**

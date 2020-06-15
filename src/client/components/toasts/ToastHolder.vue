@@ -23,7 +23,7 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import { ErrorPacket } from '../../../common/network/ServerPackets';
+    import { ErrorPacket, InfoPacket } from '../../../common/network/ServerPackets';
 
     export default Vue.extend({
         name: 'toast-holder',
@@ -31,6 +31,10 @@
             errorPacket: function(data: ErrorPacket) {
                 console.error(data.error);
                 (this as any).createToast("Error", data.error, "#FF0000");
+            },
+            infoPacket: function(data: InfoPacket) {
+                console.info(data.info);
+                (this as any).createToast("Info", data.info, "#7777FF");
             }
         },
         methods: {
@@ -60,3 +64,9 @@
         }
     });
 </script>
+
+<style scoped>
+    .toast-holder {
+        z-index: 9999;
+    }
+</style>
