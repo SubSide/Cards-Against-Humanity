@@ -7,7 +7,7 @@ export default interface Room extends PartialRoom {
     id: string;
     settings: Settings;
     owner: User;
-    round?: Round;
+    round: Round;
     players: Player[];
 }
 

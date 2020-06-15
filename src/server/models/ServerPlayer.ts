@@ -8,7 +8,7 @@ import Transmissible from '../../common/network/Transmissible';
 export default class ServerPlayer implements Transmissible<Player> {
     public cards: ResponseCard[];
     public points: number;
-    public hasPlayedCard: boolean;
+    public playedCards: string[];
 
     constructor(
         public room: ServerRoom,
@@ -16,14 +16,14 @@ export default class ServerPlayer implements Transmissible<Player> {
     ) {
         this.cards = [];
         this.points = 0;
-        this.hasPlayedCard = false;
+        this.playedCards = [];
     }
 
     getTransmitData(): Player {
         return {
             user: this.user.getTransmitData(),
             points: this.points,
-            hasPlayedCard: this.hasPlayedCard,
+            hasPlayedCards: this.playedCards.length != 0,
         }
     }
 

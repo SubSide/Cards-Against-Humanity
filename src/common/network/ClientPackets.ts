@@ -8,10 +8,10 @@ export type ClientPacketType =
     JoinRoomPacket |
     RequestStateUpdatePacket |
     LeaveRoomPacket |
-    SendChatPacket |
     ChangeRoomSettingsPacket |
     ChangeNicknamePacket |
     StartGamePacket |
+    PlayCardPacket |
     RequestUserManagementPacket |
     DoUserManagementPacket
 
@@ -60,9 +60,9 @@ export class StartGamePacket implements ClientPacket {
     constructor(public settings: Settings) {}
 }
 
-export class SendChatPacket implements ClientPacket {
-    type: 'sendChat' = 'sendChat';
-    constructor() {} // TODO
+export class PlayCardPacket implements ClientPacket {
+    type: 'playCard' = 'playCard';
+    constructor(public cardIds: string[]) {}
 }
 
 export class ChangeNicknamePacket implements ClientPacket {

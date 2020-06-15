@@ -12,14 +12,17 @@
                 <div class="modal-body" v-if="user != null">
                     <p class="col-12">
                         User: <username :user="user" /><br />
-                        Role: 
-                        <select class="form-control" v-model="role" :disabled="!isUnique || !canDoAction">
-                            <option v-for="role in roles" :key="role" :value="role" :disabled="role >= selfRole">{{ getRoleText(role) }}</option>
-                        </select>
+                        Hash:  <span>{{ user.hash }}</span>
                         
                         <br />
                     </p>
                     <div class="col-12">
+                        <label for="userRole">Role:</label>
+                        <select id="userRole" class="form-control" v-model="role" :disabled="!isUnique || !canDoAction">
+                            <option v-for="role in roles" :key="role" :value="role" :disabled="role >= selfRole">{{ getRoleText(role) }}</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-4">
                         Tags:
                         <span>
                             <span v-for="tag in user.tags" :key="tag.text" class="badge badge-lg ml-2" :class="badgeClass(tag)">

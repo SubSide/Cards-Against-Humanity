@@ -11,6 +11,7 @@ export default class GameState extends VuexModule {
     player: Player = null;
     room: Room = null;
     cards: ResponseCard[] = null;
+    playedCards: string[] = null;
     settings: Settings = null;
     round: Round = null;
 
@@ -20,6 +21,7 @@ export default class GameState extends VuexModule {
         this.round = packet.state.room?.round;
         this.player = packet.state.player;
         this.cards = packet.state.cards;
+        this.playedCards = packet.state.playedCards;
         if (packet.state.room != null && packet.state.room.settings != this.settings)
             this.settings = packet.state.room.settings;
     };
@@ -33,6 +35,7 @@ export default class GameState extends VuexModule {
             this.settings = packet.state.room.settings;
         }
         if (packet.state.cards != null) this.cards = packet.state.cards;
+        if (packet.state.playedCards != null) this.playedCards = packet.state.playedCards;
     }
 
     @Mutation

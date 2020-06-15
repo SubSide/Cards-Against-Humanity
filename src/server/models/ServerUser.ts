@@ -7,6 +7,8 @@ import Transmissible from '../../common/network/Transmissible';
 import Role from "../../common/models/Role";
 import Tag from "../../common/models/Tag";
 import { PartialOwnState, OwnState } from "../../common/network/NetworkModels";
+import UserRetriever from "../db/UserRetriever";
+import ClientError from "../util/ClientError";
 
 export default class ServerUser implements Transmissible<User> {
     public lastActive: number = 0;
@@ -47,9 +49,37 @@ export default class ServerUser implements Transmissible<User> {
         }
     }
 
+    /** Update username */
+    async updateUsername(userRetriever: UserRetriever, newUsername: string, newHash: string) {
+        let nicknameRegex = new RegExp('^[a-zA-Z0-9]{4,16}$');
+        if (
+            newUsername == null ||
+            !nicknameRegex.test(newUsername) ||
+            (newHash != null && newHash.length > 100)
+        ) {
+            throw new ClientError("Nickname and/or hash are malformed");
+        }
+
+        this.username = newUsername;
+        this.hash = null;
+        this.role = Role.Default;
+
+        if (newHash != null && newHash != "") {
+            let info = await userRetriever.getHashInfo(newUsername, newHash);
+            this.hash = info.hash;
+            this.role = info.role;
+            this.tags = info.tags;
+        }
+
+        // Send global update so everyone is updated
+        this.updateGlobal();
+    }
+
     leaveRoom() {
-        this.player = null;
-        this.sendUpdateState();
+        let player = this.player;
+        if (player == null) return;
+
+        player.room.leave(player);
     }
 
     sendPacket(packet: ServerPacket) {
@@ -75,6 +105,7 @@ export default class ServerUser implements Transmissible<User> {
             role: this.role,
             room: this.player?.room?.getTransmitData(),
             cards: this.player?.cards,
+            playedCards: this.player?.playedCards
         }))
     }
 
@@ -97,6 +128,7 @@ export default class ServerUser implements Transmissible<User> {
             role: this.role,
             room: this.player?.room?.getTransmitData(),
             cards: this.player?.cards,
+            playedCards: this.player?.playedCards
         }
     }
 }

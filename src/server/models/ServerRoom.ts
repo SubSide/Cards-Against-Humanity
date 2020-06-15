@@ -9,9 +9,10 @@ import Round from '../../common/models/Round';
 import { ServerPacket, PartialRoomStatePacket, RoomStatePacket } from '../../common/network/ServerPackets';
 import { RoomListItem } from '../../common/network/NetworkModels';
 import RoomManager from '../managers/RoomManager';
-import { getDefaultSettings } from '../util/SettingsUtils';
+import { getDefaultSettings, areSettingsPleasant } from '../util/SettingsUtils';
 import User from '../../common/models/User';
 import Role from '../../common/models/Role';
+import CardRetriever from '../db/CardRetriever';
 
 export default class ServerRoom implements Transmissible<Room> {
     private prompts: DrawingDeck<PromptCard> = new DrawingDeck();
@@ -20,7 +21,7 @@ export default class ServerRoom implements Transmissible<Room> {
     public settings: Settings = getDefaultSettings();
 
     players: ServerPlayer[] = [];
-    private round: Round = null;
+    public round: Round = null;
 
 
     constructor(
@@ -31,7 +32,11 @@ export default class ServerRoom implements Transmissible<Room> {
         this.join(owner);
     };
 
-    public start() {
+    public start(cardRetriever: CardRetriever) {
+        // Check if the settings are pleasant, will throw errors if not
+        // so we don't have to do any if checks
+        areSettingsPleasant(cardRetriever, this, this.settings);
+
         // Create our deck
         let promptCards: PromptCard[] = [];
         let responseCards: ResponseCard[] = [];
@@ -91,7 +96,8 @@ export default class ServerRoom implements Transmissible<Room> {
         player.cards.forEach(card => this.responses.add(card));
         
         // Let the player leave the room
-        player.user.leaveRoom();
+        player.user.player = null;
+        player.user.sendUpdateState();
 
         // If we don't have any players anymore, we remove ourselves
         if (this.players.length <= 0) {
@@ -139,6 +145,34 @@ export default class ServerRoom implements Transmissible<Room> {
         while (player.cards.length < 10) {
             player.cards.push(this.responses.draw());
         }
+    }
+
+    public updateSettings(updatingUser: ServerUser, newSettings: Settings) {
+        // Here we do duplicate checking
+        duplicateTesting: {
+            if (newSettings.maxPlayers != this.settings.maxPlayers) break duplicateTesting;
+            if (newSettings.pointsToWin != this.settings.pointsToWin) break duplicateTesting;
+            if (newSettings.timeToRespond != this.settings.timeToRespond) break duplicateTesting;
+            
+            // This is a b!tch to fix
+            if (newSettings.packIds.length != this.settings.packIds.length) {
+                break duplicateTesting;
+            }
+
+            for (var packId of newSettings.packIds) {
+                if (this.settings.packIds.indexOf(packId) < 0) {
+                    console.debug(packId +" not in", this.settings.packIds);
+                    break duplicateTesting;
+                }
+            }
+
+            return; // No changes!!
+        }
+        // ---
+
+
+        this.settings = newSettings;
+        this.sendAllPartialUpdate([updatingUser], 'settings');
     }
 
     getListTransmitData(): RoomListItem {

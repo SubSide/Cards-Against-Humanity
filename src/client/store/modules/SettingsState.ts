@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 @Module
 export default class SettingsState extends VuexModule {
     cardSize: number = parseInt(Cookies.get("settings.cardSize")) || 5;
-    inlineCards: boolean = Cookies.get("settings.inlineCards") == "true";
+    inlineCards: boolean = Cookies.get("settings.inlineCards") != "false";
     lightTheme: boolean = Cookies.get("settings.lightTheme") == "true";
     hideLogo: boolean = Cookies.get('settings.hideLogo') == "true";
 

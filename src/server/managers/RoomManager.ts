@@ -40,7 +40,7 @@ export default class RoomManager {
     public deleteRoom(room: ServerRoom) {
         // Remove all players from the room
         room.players.forEach(player => {
-            player.user.leaveRoom();
+            room.leave(player);
         });
 
         // Remove the room from the list

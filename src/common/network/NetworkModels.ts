@@ -17,9 +17,10 @@ export interface RoomListItem {
 export interface OwnState extends PartialOwnState {
     user: User;
     role: Role,
-    player?: Player;
-    room?: Room;
-    cards?: ResponseCard[];
+    player: Player;
+    room: Room;
+    cards: ResponseCard[];
+    playedCards: string[];
 }
 
 export interface PartialOwnState {
@@ -28,4 +29,5 @@ export interface PartialOwnState {
     player?: Player;
     room?: Room;
     cards?: ResponseCard[];
+    playedCards?: string[];
 }
