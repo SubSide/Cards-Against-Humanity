@@ -116,12 +116,111 @@ export default class ServerRoom implements Transmissible<Room> {
         }
     }
 
+    public userPlaysCards(player: ServerPlayer, cardIds: string[]) {
+        if (this.round == null) {
+            throw new ClientError("You are trying to play cards while no round is active");
+        }
+
+        if (cardIds == null || !Array.isArray(cardIds) || cardIds.length != this.round.promptCard.pick){
+            throw new ClientError("You didn't pick the required amount of cards for the prompt card");
+        }
+
+        if (this.round.czar.id == player.user.userId) {
+            this.czarPlaysCards(player, cardIds[0]);
+        } else {
+            this.playerPlaysCards(player, cardIds);
+        }
+
+    }
+
+    private playerPlaysCards(player: ServerPlayer, cardIds: string[]) {
+        if (player.playedCards.length != 0) {
+            throw new ClientError("You already played your cards!");
+        }
+
+        let cards: ResponseCard[] = [];
+        cardIds.forEach(cardId => {
+            let card = player.cards.find(card => card.id == cardId);
+            if (card == null) {
+                throw new ClientError("Don't try playing a card you don't have!! >:(");
+            }
+            
+            cards.push(card);
+        });
+
+        // Set the played card
+        player.playedCards = cards.map(card => card.id);
+        // And update globally
+        player.user.updateGlobal();
+
+        // Check the server state
+        this.checkState();
+    }
+
+    private czarPlaysCards(player: ServerPlayer, cardId: string) {
+        if (this.round.cardsChosen == null) {
+            throw new ClientError("You can't pick cards yet!");
+        }
+
+        if (this.round.winner != null) {
+            throw new ClientError("You already picked a winner!");
+        }
+
+        var winningPlayer: ServerPlayer = this.players.find(player => {
+            return player.cards.find(card => card.id == cardId) != null;
+        });
+
+        if (winningPlayer == null) {
+            throw new ClientError("Couldn't find a player with these cards!");
+        }
+
+        // Set the round winner
+        this.round.winner = winningPlayer.user.getTransmitData();
+
+        // Send an update that we picked a winner!
+        this.sendUpdate();
+
+        // Now we wait 10(?) seconds and go to next round
+        setTimeout(this.nextRound.bind(this), 10000);
+    }
+    
+    public checkState() {
+        // Game is not active, ignore!
+        if (this.round == null) return;
+
+        if (
+            this.players.find(player => 
+                this.round.czar.id != player.user.userId
+                && (
+                    player.playedCards == null
+                    || player.playedCards.length == 0
+                )
+            )
+        ) {
+            // We found a player that hasn't played a card yet, so we return
+            return;
+        }
+
+        // Chosen cards are already set!
+        if (this.round.cardsChosen != null) return;
+
+        // Set the cards chosen to an array of the players' response cards
+        this.round.cardsChosen = this.players
+            .filter(player => player.user.userId != this.round.czar.id)
+            .map(player => player.getPlayedResponseCards());
+
+        // Update players
+        this.sendUpdate();
+    }
+
     public nextRound() {
         if (this.round == null) {
             this.round = {
                 roundNumber: 0,
                 czar: null,
-                promptCard: null
+                promptCard: null,
+                cardsChosen: null,
+                winner: null
             }
         }
 
@@ -129,11 +228,40 @@ export default class ServerRoom implements Transmissible<Room> {
         this.round.roundNumber += 1;
         // Draw a czar and get a prompt card
         this.round.czar = this.czars.draw().getTransmitData();
-        this.round.promptCard = this.prompts.draw(true);
+        let promptCard = this.prompts.draw(true);
+        this.round.promptCard = promptCard;
+
+        
+        // Here we remove all players their played cards and return it to the deck
+        this.players.forEach(player => {
+            if (player.playedCards.length > 0) {
+                player.playedCards.forEach(playedCard => {
+                    // Grab the card
+                    let card = player.cards.find(card => card.id == playedCard);
+                    if (card != null) {
+                        // Return the card to the deck's discard pile
+                        this.responses.add(card, true);
+                    }
+                })
+            }
+            // And clear the played cards
+            player.playedCards = [];
+        });
+
 
         // Fix all players
+        let drawTo = 10 + promptCard.draw;
         this.players.forEach(player => {
+            // Fix the player back to 10 cards
             this.fixPlayer(player);
+
+            // sometimes the prompt card requires extra cards to be drawn
+            // we do that here
+            for (var x = player.cards.length; x < drawTo; x++) {
+                player.cards.push(this.responses.draw());
+            }
+
+            // Then we send the player its new cards
             player.user.sendPartialUpdate('cards');
         });
 

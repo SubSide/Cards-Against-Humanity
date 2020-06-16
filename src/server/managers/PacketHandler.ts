@@ -144,33 +144,7 @@ export default class PacketHandler {
             throw new ClientError("Malformed packet");
         }
 
-        if (user.player.playedCards.length != 0) {
-            throw new ClientError("You already played a card!");
-        }
-
-        let round = user.player.room.round;
-        if (round == null) {
-            throw new ClientError("You are trying to play cards while no round is active");
-        }
-
-        if (packet.cardIds.length != round.promptCard.pick){
-            throw new ClientError("You didn't pick the required amount of cards for the prompt card");
-        }
-
-        let cards: ResponseCard[] = [];
-        packet.cardIds.forEach(cardId => {
-            let card = user.player.cards.find(card => card.id == cardId);
-            if (card == null) {
-                throw new ClientError("Don't try playing a card you don't have!! >:(");
-            }
-            
-            cards.push(card);
-        });
-
-        // Set the played card
-        user.player.playedCards = cards.map(card => card.id);
-        // And update globally
-        user.updateGlobal();
+        user.player.room.userPlaysCards(user.player, packet.cardIds);
     }
     
     private handleUserManagement(user: ServerUser, packet: RequestUserManagementPacket) {
