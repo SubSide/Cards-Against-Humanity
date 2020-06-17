@@ -102,6 +102,7 @@ export default class ServerRoom implements Transmissible<Room> {
         // If we don't have any players anymore, we remove ourselves
         if (this.players.length <= 0) {
             this.roomManager.deleteRoom(this);
+            return;
         } else if (this.owner == player.user) {
             // If the player left is the room owner we change the owner to a random player
             this.owner = this.players[Math.floor(Math.random() * this.players.length)].user;
@@ -226,8 +227,9 @@ export default class ServerRoom implements Transmissible<Room> {
 
         // Increment round number by 1
         this.round.roundNumber += 1;
+        
         // Draw a czar and get a prompt card
-        this.round.czar = this.czars.draw().getTransmitData();
+        this.round.czar = this.czars.draw(true).getTransmitData();
         let promptCard = this.prompts.draw(true);
         this.round.promptCard = promptCard;
 
@@ -240,7 +242,7 @@ export default class ServerRoom implements Transmissible<Room> {
                     let card = player.cards.find(card => card.id == playedCard);
                     if (card != null) {
                         // Return the card to the deck's discard pile
-                        this.responses.add(card, true);
+                        this.responses.addToDiscard(card);
                     }
                 })
             }
@@ -362,11 +364,12 @@ class DrawingDeck<T> {
      * @param item the item to add to our deck
      * @param toDiscardInstead if we should add it to our discard pile instead
      */
-    add(item: T, toDiscardInstead: boolean = false) {
-        if (toDiscardInstead)
-            this.discardPile.push(item);
-        else
-            this.deck.push(item)
+    add(item: T) {
+        this.deck.push(item)
+    }
+    
+    addToDiscard(item: T) {
+        this.discardPile.push(item);
     }
 
     /**
@@ -376,8 +379,10 @@ class DrawingDeck<T> {
      */
     remove(item: T) {
         // We want to remove the item from both decks
-        this.deck.splice(Math.floor(Math.random() * this.deck.length), 1)[0];
-        this.discardPile.splice(Math.floor(Math.random() * this.discardPile.length), 1)[0];
+        let deckIndex = this.deck.indexOf(item);
+        if (deckIndex != -1) this.deck.splice(deckIndex, 1);
+        let discardIndex = this.discardPile.indexOf(item);
+        if (discardIndex != -1) this.deck.splice(discardIndex, 1);
     }
 
     /**
