@@ -87,10 +87,33 @@
             }
         },
         watch: {
-            maxPlayers: function() { this.sendSettingsChange() },
-            pointsToWin: function() { this.sendSettingsChange() },
-            timeToRespond: function() { this.sendSettingsChange() },
-            packIds: function() { this.sendSettingsChange() },
+            maxPlayers: function(newValue) {
+                if (this.settings.maxPlayers != newValue) this.sendSettingsChange(); 
+            },
+            pointsToWin: function(newValue) {
+                if (this.settings.pointsToWin != newValue) this.sendSettingsChange(); 
+            },
+            timeToRespond: function(newValue) {
+                if (this.settings.timeToRespond != newValue) this.sendSettingsChange(); 
+            },
+            packIds: function(newValue: string[]) {
+                let settingsPacks = this.settings.packIds;
+                checkChanges: {
+                    // If there are changes in length we send settings change
+                    if (newValue.length != settingsPacks.length) break checkChanges;
+
+                    if (settingsPacks.find(packId => newValue.indexOf(packId) < 0) != null) {
+                        // If there are changes in packs we send settings change
+                        break checkChanges;
+                    }
+
+                    // If there are no changes in packs we cancel the packet
+                    return;
+                }
+
+                // No changes! Let's send!
+                this.sendSettingsChange(); 
+            },
             settings: function() {
                 this.setSettings(this.settings);
             }

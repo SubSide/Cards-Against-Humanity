@@ -86,7 +86,7 @@ export default class PacketHandler {
     }
 
     private handleRequestRooms(user: ServerUser, packet: RequestRoomsPacket) {
-        if (!user.canDo("nicknameChange", 1000)) {
+        if (!user.canDo("requestRooms", 1000)) {
             throw new ClientError("Wait a moment before requesting rooms again.");
         }
         user.sendPacket(new RoomListPacket(
@@ -111,15 +111,9 @@ export default class PacketHandler {
         if (user.player == null || !user.player.canEditRoom()) {
             throw new ClientError("You don't have permissions to edit this room!");
         }
-
-        // We do setting validation here
-        let settings = validatedSettings(this.gameManager.roomManager.cardRetriever, packet.roomSettings);
-        if (settings == null) {
-            throw new ClientError("Settings were malformed");
-        }
         
         // Update settings
-        user.player.room.updateSettings(user, settings);
+        user.player.room.updateSettings(user, packet.roomSettings);
     }
 
     private handleStartGame(user: ServerUser, startGamePacket: StartGamePacket) {

@@ -9,7 +9,7 @@ import Round from '../../common/models/Round';
 import { ServerPacket, PartialRoomStatePacket, RoomStatePacket } from '../../common/network/ServerPackets';
 import { RoomListItem } from '../../common/network/NetworkModels';
 import RoomManager from '../managers/RoomManager';
-import { getDefaultSettings, areSettingsPleasant } from '../util/SettingsUtils';
+import { getDefaultSettings, areSettingsPleasant, validatedSettings } from '../util/SettingsUtils';
 import User from '../../common/models/User';
 import Role from '../../common/models/Role';
 import CardRetriever from '../db/CardRetriever';
@@ -276,27 +276,11 @@ export default class ServerRoom implements Transmissible<Room> {
     }
 
     public updateSettings(updatingUser: ServerUser, newSettings: Settings) {
-        // Here we do duplicate checking
-        duplicateTesting: {
-            if (newSettings.maxPlayers != this.settings.maxPlayers) break duplicateTesting;
-            if (newSettings.pointsToWin != this.settings.pointsToWin) break duplicateTesting;
-            if (newSettings.timeToRespond != this.settings.timeToRespond) break duplicateTesting;
-            
-            // This is a b!tch to fix
-            if (newSettings.packIds.length != this.settings.packIds.length) {
-                break duplicateTesting;
-            }
-
-            for (var packId of newSettings.packIds) {
-                if (this.settings.packIds.indexOf(packId) < 0) {
-                    console.debug(packId +" not in", this.settings.packIds);
-                    break duplicateTesting;
-                }
-            }
-
-            return; // No changes!!
+        // We do setting validation here
+        let settings = validatedSettings(this.roomManager.cardRetriever, newSettings);
+        if (settings == null) {
+            throw new ClientError("Settings were malformed");
         }
-        // ---
 
 
         this.settings = newSettings;
