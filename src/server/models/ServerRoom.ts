@@ -205,10 +205,20 @@ export default class ServerRoom implements Transmissible<Room> {
         // Chosen cards are already set!
         if (this.round.cardsChosen != null) return;
 
-        // Set the cards chosen to an array of the players' response cards
-        this.round.cardsChosen = this.players
+        // Get the cards that the players picked
+        let cardsChosen = this.players
             .filter(player => player.user.userId != this.round.czar.id)
             .map(player => player.getPlayedResponseCards());
+
+        let chosenCards = [];
+        // We randomize the chosen cards list, this is to make sure it isn't the order
+        // of the players (a predicatable pattern)
+        while (cardsChosen.length > 0) {
+            chosenCards.push(cardsChosen.splice(Math.floor(Math.random() * cardsChosen.length), 1)[0]);
+        }
+
+        // Set the cards chosen to a randomized array of the players' chosen cards 
+        this.round.cardsChosen = chosenCards;
 
         // Update players
         this.sendUpdate();
@@ -221,13 +231,14 @@ export default class ServerRoom implements Transmissible<Room> {
                 czar: null,
                 promptCard: null,
                 cardsChosen: null,
-                winner: null
+                winner: null,
+                winnerCards: null
             }
         }
 
         // Increment round number by 1
         this.round.roundNumber += 1;
-        
+
         // Draw a czar and get a prompt card
         this.round.czar = this.czars.draw(true).getTransmitData();
         let promptCard = this.prompts.draw(true);

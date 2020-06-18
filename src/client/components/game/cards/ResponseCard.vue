@@ -19,12 +19,18 @@
         name: 'response-card',
         props: [ "card", "badge" ],
         updated: function (){
-            textFit(this.$refs.text, {
-                "maxFontSize": this.cardSize
-            });
+            this.doTextFit();
+        },
+        mounted: function() {
+            this.doTextFit();
         },
         watch: {
             cardSize: function() {
+                this.doTextFit();
+            }
+        },
+        methods: {
+            doTextFit: function() {
                 textFit(this.$refs.text, {
                     "maxFontSize": this.cardSize
                 });

@@ -6,5 +6,6 @@ export default interface Round {
     promptCard: PromptCard;
     roundNumber: number;
     cardsChosen: ResponseCard[][];
+    winnerCards: string[];
     winner: User;
 }
