@@ -45,7 +45,7 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
             
             client.on('message', data => {
                 if (DEBUG) {
-                    if ((data as ClientPacketType).type != 'changeNickname' && process.env.DEBUG)
+                    if ((data as ClientPacketType).type != 'changeNickname' && process.env.DEBUG == 'true')
                         console.debug("Packet received:", data);
                 }
                 gameManager.onPacket(client, data as ClientPacketType);
