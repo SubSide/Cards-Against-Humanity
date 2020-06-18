@@ -3,43 +3,63 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-6 col-md-3 col-lg-2 mt-3">
-                    <prompt-card :card="promptCard" :played="allPlayersPlayed == 0 ? selectedCards : []" />
+                    <!-- Here we display the current prompt card -->
+                    <prompt-card :text="promptCard.text" :played="allPlayersPlayed == 0 ? selectedCards : []" />
                 </div>
                 <div class="col-6 col-md-9 col-lg-10">
+                    <!-- If not everyone has played their cards we show per player that played a card a response card with their name -->
                     <div class="row" v-if="allPlayersPlayed.length == 0">
-                        <div class="col-12 col-md-4 col-lg-3 mt-3" v-for="card in playerCardsPlayed" :key="card.id">
-                            <response-card class="played font-italic font-weight-light" :card="card" />
+                        <div class="col-12 col-md-4 col-lg-2 mt-3" v-for="player in playersThatPlayedCards" :key="player.user.id">
+                            <response-card 
+                                class="played font-italic font-weight-light" 
+                                :text="player.user.username + ' played their card'+(promptCard.pick > 1 ? 's' : '')" />
                         </div>
                     </div>
+                    <!-- Everyone played a card so we want to show everyones' cards -->
                     <div class="row" v-else>
-                        <div class="col-12 col-md-4 col-lg-2 mt-3" v-for="playerCards in allPlayersPlayed" :key="playerCards[0].id">
-                            <div class="row move-down">
+                        <div 
+                            v-for="playerCards in allPlayersPlayed"
+                            class="col-12 col-md-4 col-lg-2 pt-2 mt-2 position-relative"
+                            :class="{ 
+                                'border border-secondary': czarPicked == playerCards[0].id && winnerCardId == null, 
+                                'border border-success': winnerCardId == playerCards[0].id
+                            }" 
+                            :key="playerCards[0].id">
+                            <div class="row move-down" @click="czarPick(playerCards[0].id)">
                                 <div class="col-12 move-up">
-                                    <prompt-card :card="promptCard" :played="playerCards" />
+                                    <!-- Show the prompt card per player -->
+                                    <prompt-card :text="promptCard.text" :played="playerCards" />
                                 </div>
                                 <div class="col-12">
                                     <div class="row justify-content-center">
+                                        <!-- And show their response cards -->
                                         <div class="col-6 p-1 move-up" v-for="card in playerCards" :key="card.id">
-                                            <response-card :card="card" />
+                                            <response-card :text="card.text" />
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <!-- If this is the card the czar picked, we show a little marker badge above it -->
+                            <div class="czar-pick text-center" v-if="czarPicked == playerCards[0].id || winnerCardId == playerCards[0].id">
+                                <div class="badge badge-success">&#x2714;</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- The play button -->
         <div class="col-12 mt-3">
             <button class="btn btn-primary" :disabled="!canPlay" @click="play">{{ playButtonText }}</button>
         </div>
+        <!-- The players' hand -->
         <div class="col-12 mt-3" :class="{ played: player.hasPlayedCards || isCzar }">
             <div class="row">
                 <response-card 
                     class="col-6 col-md-3 col-lg-2 my-2"
                     v-for="card in cards" 
                     :key="card.id" 
-                    :card="card"
+                    :text="card.text"
                     :badge="badgeText(card)"
                     @click.native="cardPick(card)" />
             </div>
@@ -55,19 +75,24 @@
     import ResponseCardVue from './cards/ResponseCard.vue';
     import PromptCardVue from './cards/PromptCard.vue';
     import User from '../../../common/models/User';
-import { PlayCardPacket } from '../../../common/network/ClientPackets';
-import Round from '../../../common/models/Round';
+    import { PlayCardPacket } from '../../../common/network/ClientPackets';
+    import Round from '../../../common/models/Round';
     
     export default Vue.extend({
         name: 'game',
         data: function() {
             return {
-                playingCards: []
+                playingCards: [],
+                czarPicked: null
             }
         },
         watch: {
             myCardsPlayed(playedCards: string[]) {
                 this.playingCards = [...playedCards];
+            },
+            winnerCardId(winnerCardId) {
+                if (this.winnerCardId != null)
+                    this.czarPicked = null;
             }
         },
         mounted() {
@@ -96,20 +121,15 @@ import Round from '../../../common/models/Round';
             allPlayersPlayed(): ResponseCard[][] {
                 return this.round.cardsChosen || [];
             },
+            winnerCardId(): string {
+                return this.round.winnerCardId;
+            },
             promptCard(): PromptCard {
                 return this.round.promptCard;
             },
-            playerCardsPlayed(): ResponseCard[] {
-                // We're using PromptCard to make it easier
+            playersThatPlayedCards(): Player[] {
                 return this.room.players
-                    .filter(player => player.hasPlayedCards)
-                    .map(player => {
-                        return {
-                            type: 'response',
-                            id: player.user.id,
-                            text: player.user.username + " played their card"+(this.promptCard.pick > 1 ? "s" : "")
-                        }
-                    });
+                    .filter(player => player.hasPlayedCards);
             },
             cards(): ResponseCard[] {
                 return this.$store.state.game.cards;
@@ -121,8 +141,20 @@ import Round from '../../../common/models/Round';
                 return this.playingCards.map((id: string) => this.cards.find(card => card.id == id))
             },
             playButtonText: function(): string {
+                if (this.winnerCardId != null) {
+                    return "Waiting for next round.";
+                }
+
                 if (this.isCzar) {
-                    return "You are the czar!";
+                    if (this.allPlayersPlayed.length == 0) {
+                        return "You are the czar!";
+                    } else {
+                        if (this.czarPicked == null) {
+                            return "Pick a winner";
+                        } else {
+                            return "Choose this as winner";
+                        }
+                    }
                 }
 
                 if (this.myCardsPlayed != null && this.myCardsPlayed.length > 0) {
@@ -136,7 +168,15 @@ import Round from '../../../common/models/Round';
                 return "Play";
             },
             canPlay: function(): boolean {
-                if (this.isCzar) return false;
+                if (this.winnerCardId != null) {
+                    return false;
+                }
+
+                if (this.isCzar) {
+                    if (this.allPlayersPlayed.length == 0 || this.czarPicked == null)
+                        return false;
+                    else return true;
+                }
                 if (this.myCardsPlayed != null && this.myCardsPlayed.length > 0) return false;
 
                 return this.selectedCards.length == this.promptCard.pick;
@@ -166,13 +206,22 @@ import Round from '../../../common/models/Round';
                     this.playingCards.splice(this.playingCards.indexOf(card.id), 1);
                 }
             },
+            czarPick: function(cardId: string) {
+                if (!this.isCzar) return;
+                if (this.round.winner != null) return;
+
+                this.czarPicked = cardId;
+            },
             badgeText: function(card: ResponseCard) {
                 if (this.playingCards.indexOf(card.id) < 0) return null;
                 if (this.promptCard.pick == 1) return "&#x2714;";
                 return this.playingCards.indexOf(card.id) + 1;
             },
             play: function() {
-                this.$socket.send(new PlayCardPacket(this.playingCards));
+                if (!this.isCzar)
+                    this.$socket.send(new PlayCardPacket(this.playingCards));
+                else
+                    this.$socket.send(new PlayCardPacket([this.czarPicked]));
             }
         },
         components: {
@@ -193,5 +242,13 @@ import Round from '../../../common/models/Round';
 
     .move-down {
         margin-bottom: 10px;
+    }
+    .czar-pick {
+        position: absolute;
+        top: -20px;
+        left: 0;
+        right: 0;
+        font-size: 20px;
+        z-index: 5;
     }
 </style>

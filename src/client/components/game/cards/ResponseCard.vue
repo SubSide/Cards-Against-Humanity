@@ -17,7 +17,7 @@
 
     export default Vue.extend({
         name: 'response-card',
-        props: [ "card", "badge" ],
+        props: [ "text", "badge" ],
         updated: function (){
             this.doTextFit();
         },
@@ -32,19 +32,14 @@
         methods: {
             doTextFit: function() {
                 textFit(this.$refs.text, {
-                    "maxFontSize": this.cardSize
+                    "maxFontSize": this.cardSize,
+                    "multiLine": true
                 });
             }
         },
         computed: {
-            id(): string {
-                return this.card.id;
-            },
             cardSize(): number {
                 return 10 + this.$store.state.settings.cardSize;
-            },
-            text(): string {
-                return this.card.text;
             }
         }
     })

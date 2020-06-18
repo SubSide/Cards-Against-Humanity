@@ -1,7 +1,7 @@
 <template>
     <div class="position-relative">
         <div class="card bg-dark border-secondary text-white cah-card">
-            <div class="resizing" :class="{ 'with-icon': showLogo }" ref="text" v-html="text"></div>
+            <div class="resizing" :class="{ 'with-icon': showLogo }" ref="text" v-html="htmlText"></div>
             <div class="icon-holder" v-if="showLogo">
                 <img class="icon" src="../../../assets/images/card_logo.svg" />
                 <small class="text-muted">Cards Against Humanity</small>
@@ -20,7 +20,7 @@
 
     export default Vue.extend({
         name: 'prompt-card',
-        props: [ "card", 'played' ],
+        props: [ "text", 'played' ],
         updated: function (){
             this.doTextFit();
         },
@@ -35,26 +35,24 @@
         methods: {
             doTextFit: function() {
                 textFit(this.$refs.text, {
-                    "maxFontSize": this.cardSize
+                    "maxFontSize": this.cardSize,
+                    "multiLine": true
                 });
             }
         },
         computed: {
-            id(): string {
-                return this.card.id;
-            },
             cardSize(): number {
                 return 10 + this.$store.state.settings.cardSize;
             },
             showLogo(): boolean {
                 return !this.$store.state.settings.hideLogo;
             },
-            text(): string {
+            htmlText(): string {
                 if (!this.shouldInlineCards || this.played == undefined || this.played.length == 0) 
-                    return this.card.text;
+                    return this.text;
 
                 // var newText: string = this.card.text + this.card.text;
-                var newText: string = this.card.text;
+                var newText: string = this.text;
                 if (newText.match(/\_{2,}/)) {
                     this.played.forEach((card: ResponseCard) => {
                         newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text}</span>`); 

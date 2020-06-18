@@ -16,7 +16,7 @@
                             type="range" 
                             class="form-control" 
                             id="cardSize"
-                            min="1"
+                            min="0"
                             max="10"
                             v-model.number="cardSize">
                     </div>
@@ -25,8 +25,6 @@
                             type="checkbox" 
                             class="form-check-input" 
                             id="inlineCards"
-                            min="1"
-                            max="10"
                             v-model="inlineCards">
                         <label class="form-check-label" for="inlineCards">Inline card text for easier reading</label>
                     </div>
@@ -35,8 +33,6 @@
                             type="checkbox" 
                             class="form-check-input" 
                             id="hideLogo"
-                            min="1"
-                            max="10"
                             v-model="hideLogo">
                         <label class="form-check-label" for="hideLogo">Hide card logo</label>
                     </div>
@@ -45,8 +41,6 @@
                             type="checkbox" 
                             class="form-check-input" 
                             id="lightThemeSetting"
-                            min="1"
-                            max="10"
                             v-model="lightTheme">
                         <label class="form-check-label" for="lightThemeSetting">Use light theme (Don't be that guy.)</label>
                     </div>

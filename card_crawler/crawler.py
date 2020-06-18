@@ -5,6 +5,10 @@ debugLevel = 2
 # Go to this link and save it as excel in this folder under the name "Cards Against Humanity.xlsx"
 # https://docs.google.com/spreadsheets/d/1lsy7lIwBe-DWOi2PALZPf5DgXHx9MEvKfRw1GaWQkzg/edit#gid=1583239191
 
+# An amazing thank you to the people that put this whole sheet together. This project would've been a lot worse to
+# manage without it.
+
+
 # Which sheets do we want to read from? (I'm later going to add more options)
 # Just a sheet to grab everything, or be in the form of:
 #  { 

@@ -122,8 +122,8 @@ export default class ServerRoom implements Transmissible<Room> {
             throw new ClientError("You are trying to play cards while no round is active");
         }
 
-        if (cardIds == null || !Array.isArray(cardIds) || cardIds.length != this.round.promptCard.pick){
-            throw new ClientError("You didn't pick the required amount of cards for the prompt card");
+        if (cardIds == null || !Array.isArray(cardIds)) {
+            throw new ClientError("Malformed packet.");
         }
 
         if (this.round.czar.id == player.user.userId) {
@@ -137,6 +137,10 @@ export default class ServerRoom implements Transmissible<Room> {
     private playerPlaysCards(player: ServerPlayer, cardIds: string[]) {
         if (player.playedCards.length != 0) {
             throw new ClientError("You already played your cards!");
+        }
+        
+        if (cardIds.length != this.round.promptCard.pick){
+            throw new ClientError("You didn't pick the required amount of cards for the prompt card");
         }
 
         let cards: ResponseCard[] = [];
@@ -159,6 +163,10 @@ export default class ServerRoom implements Transmissible<Room> {
     }
 
     private czarPlaysCards(player: ServerPlayer, cardId: string) {
+        if (cardId == null) {
+            throw new ClientError("Malformed packet.");
+        }
+
         if (this.round.cardsChosen == null) {
             throw new ClientError("You can't pick cards yet!");
         }
@@ -177,12 +185,16 @@ export default class ServerRoom implements Transmissible<Room> {
 
         // Set the round winner
         this.round.winner = winningPlayer.user.getTransmitData();
+        this.round.winnerCardId = cardId;
+
+        // Increment the player's points by 1
+        winningPlayer.points += 1;
 
         // Send an update that we picked a winner!
         this.sendUpdate();
 
-        // Now we wait 10(?) seconds and go to next round
-        setTimeout(this.nextRound.bind(this), 10000);
+        // Now we wait 7.5(?) seconds and go to next round
+        setTimeout(this.nextRound.bind(this), 7500);
     }
     
     public checkState() {
@@ -232,9 +244,13 @@ export default class ServerRoom implements Transmissible<Room> {
                 promptCard: null,
                 cardsChosen: null,
                 winner: null,
-                winnerCards: null
+                winnerCardId: null
             }
         }
+
+        this.round.winner = null;
+        this.round.winnerCardId = null;
+        this.round.cardsChosen = null;
 
         // Increment round number by 1
         this.round.roundNumber += 1;
@@ -250,10 +266,10 @@ export default class ServerRoom implements Transmissible<Room> {
             if (player.playedCards.length > 0) {
                 player.playedCards.forEach(playedCard => {
                     // Grab the card
-                    let card = player.cards.find(card => card.id == playedCard);
-                    if (card != null) {
-                        // Return the card to the deck's discard pile
-                        this.responses.addToDiscard(card);
+                    let cardIndex = player.cards.findIndex(card => card.id == playedCard);
+                    if (cardIndex >= 0) {
+                        // Splice it from the players' cards and return the card to the deck's discard pile
+                        this.responses.addToDiscard(player.cards.splice(cardIndex, 1)[0]);
                     }
                 })
             }
@@ -275,7 +291,7 @@ export default class ServerRoom implements Transmissible<Room> {
             }
 
             // Then we send the player its new cards
-            player.user.sendPartialUpdate('cards');
+            player.user.sendPartialUpdate('cards', 'playedCards', 'player');
         });
 
         // And send all players an update

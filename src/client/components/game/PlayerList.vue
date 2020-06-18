@@ -3,7 +3,11 @@
         <div 
             v-for="(player, index) in players" 
             class="card d-inline-block p-3 pb-4" 
-            :class="{ 'bg-success text-white':  player.user.id == czar, 'bg-primary text-white': player.user.id == self.user.id && player.user.id != czar }" 
+            :class="{ 
+                'bg-success text-white': player.user.id == roundWinnerId,
+                'bg-danger text-white':  player.user.id == czar, 
+                'bg-primary text-white': player.user.id == self.user.id && player.user.id != czar && player.user.id != roundWinnerId
+            }" 
             :style="{ 'z-index': (1000-index) }" 
             :key="player.user.id">
             <username :user="player.user" />
@@ -30,6 +34,10 @@
             },
             room(): Room {
                 return this.$store.state.game.room;
+            },
+            roundWinnerId(): string {
+                if (this.room.round == null || this.room.round.winner == null) return null;
+                return this.room.round.winner.id;
             },
             czar(): string {
                 return this.room.round?.czar?.id;

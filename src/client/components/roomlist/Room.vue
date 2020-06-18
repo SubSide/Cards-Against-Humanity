@@ -32,7 +32,6 @@
         props: [ 'room' ],
         methods: {
             joinRoom(roomId: string) {
-                console.debug(roomId);
                 this.$socket.send(new JoinRoomPacket(roomId));
             }
         },

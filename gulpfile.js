@@ -39,7 +39,7 @@ function buildServer(cb) {
 
 function buildClient(cb) {
     let npxCmd = (process.platform === 'win32') ? 'npx.cmd' : 'npx';
-    exec(`${npxCmd} webpack --mode development`, err => {
+    exec(`${npxCmd} webpack --config webpack.prod.js`, err => {
         if (err) console.error(err);
         cb();
     });
@@ -56,7 +56,7 @@ function buildWatchedServer(cb) {
 }
 
 function runWatchedClient(cb) {
-    loggedSpawn(cb, appendForWindows('.\\node_modules\\.bin\\webpack-dev-server'));
+    loggedSpawn(cb, appendForWindows('.\\node_modules\\.bin\\webpack-dev-server'), ['--config', 'webpack.dev.js']);
 }
 
 // .\node_modules\.bin\webpack-dev-server

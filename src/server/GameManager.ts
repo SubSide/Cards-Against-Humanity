@@ -53,7 +53,7 @@ export default class GameManager {
 
         // We delete all users that timed out
         removeUsers.forEach(pair => {
-            console.debug(`Removed '${pair.value.username}' due to inactivity.`);
+            console.info(`Removed '${pair.value.username}' due to inactivity.`);
             this.users.delete(pair.key);
             
             let player = pair.value?.player;
@@ -86,7 +86,7 @@ export default class GameManager {
                     user.socket = socket; // Update the socket
                     this.users.delete(packet.oldId); // delete the user from the old id
                     this.users.set(socket.id, user); // Set the user to the new id
-                    console.debug(`Succesfully changed Socket ID for user '${user.username}'. From '${packet.oldId}' to '${socket.id}'`);
+                    console.info(`Succesfully changed Socket ID for user '${user.username}'. From '${packet.oldId}' to '${socket.id}'`);
                     // Send an update state so the user is back up to speed on where it was.
                     user.sendUpdateState();
                 }
@@ -139,7 +139,8 @@ export default class GameManager {
     onConnect(socket: SocketIO.Socket) {
         let newUser = new ServerUser(socket.id, socket);
         this.users.set(socket.id, newUser);
-        console.debug(`New user '${newUser.username}' connected with id: ${newUser.userId}`);
+        if (process.env.DEBUG)
+            console.debug(`New user '${newUser.username}' connected with id: ${newUser.userId}`);
         
         // Send the user the current state of the server
         newUser.sendPacket(new ServerStatePacket(this.roomManager.cardRetriever.packetCache));
@@ -154,6 +155,7 @@ export default class GameManager {
         let user = this.users.get(socket.id);
         if (user == undefined) return;
 
-        console.debug(`User '${user.username}'(${user.userId}) disconnected. After 5 mins he gets removed.`);
+        if (process.env.DEBUG)
+            console.debug(`User '${user.username}'(${user.userId}) disconnected. After 5 mins he gets removed.`);
     }
 }

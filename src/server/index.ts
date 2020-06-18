@@ -2,7 +2,11 @@ import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import GameManager from './GameManager';
 import { ClientPacketType } from '../common/network/ClientPackets';
-require('dotenv').config({ path: __dirname+'/../.env' });
+try {
+    require('dotenv').config({ path: __dirname+'/../../.env' });
+} catch(e) {
+    require('dotenv').config({ path: __dirname+'/../.env' });
+}
 
 const MONGODB_URL = process.env.MONGODB_URL;
 const MONGODB_DB = process.env.MONGODB_DB;
@@ -41,7 +45,7 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
             
             client.on('message', data => {
                 if (DEBUG) {
-                    if ((data as ClientPacketType).type != 'changeNickname')
+                    if ((data as ClientPacketType).type != 'changeNickname' && process.env.DEBUG)
                         console.debug("Packet received:", data);
                 }
                 gameManager.onPacket(client, data as ClientPacketType);

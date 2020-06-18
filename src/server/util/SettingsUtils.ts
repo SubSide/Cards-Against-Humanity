@@ -58,7 +58,7 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
 
         // If there doesn't exist such a pack, the settings is not valid.
         if (pack == null) {
-            console.debug("Tried to find a certain pack ID which returned null");
+            console.warn("Tried to find a certain pack ID which returned null");
             throw error;
         }
     });
@@ -100,7 +100,7 @@ export function areSettingsPleasant(cardRetriever: CardRetriever, room: ServerRo
 
         // If there doesn't exist such a pack, the settings is not valid.
         if (pack == null) {
-            console.debug("Tried to find a certain pack ID which returned null");
+            console.warn("Tried to find a certain pack ID which returned null");
             throw error;
         }
         promptCards += pack.promptCount;
