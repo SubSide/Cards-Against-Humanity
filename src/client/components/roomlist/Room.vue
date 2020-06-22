@@ -10,8 +10,8 @@
                     </span>
                 </div>
                 <div class="row">
-                    <span>Packs: </span>
-                    <small v-for="packId in room.packIds" :key="packId">{{ serverPacks.get(packId).name }}</small>
+                    <span>Packs:&nbsp;</span>
+                    <small class="align-self-center" v-for="packId in room.packIds" :key="packId">{{ serverPacks.get(packId).name }}</small>
                 </div>
             </p>
         </div>
