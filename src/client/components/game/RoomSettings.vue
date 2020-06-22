@@ -57,7 +57,7 @@
             </div>
             <div class="row mt-2">
                 <div class="col">
-                    <button class="btn btn-success" @click="startGame" :disabled="!canStartGame">Start</button>
+                    <button class="btn btn-success" @click="startGame" :disabled="!canStartGame">{{startButtonText}}</button>
                 </div>
             </div>
         </div>
@@ -168,7 +168,21 @@
                 if (this.room.players.length < 3) {
                     return false;
                 }
+                if (this.packIds.length < 1) {
+                    return false;
+                }
                 return true;
+            },
+            startButtonText(): string {
+                if (this.room.players.length < 3) {
+                    return "You need at least 3 players";
+                }
+
+                if (this.packIds.length < 1) {
+                    return "You need to pick at least 1 pack";
+                }
+
+                return "Start game";
             },
             room(): Room {
                 let room = this.$store.state.game.room;
