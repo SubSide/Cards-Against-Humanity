@@ -28,7 +28,7 @@ export default class ServerPlayer implements Transmissible<Player> {
     }
 
     getPlayedResponseCards(): ResponseCard[] {
-        return this.cards.filter(card => this.playedCards.indexOf(card.id) >= 0);
+        return this.playedCards.map(cardId => this.cards.find(card => card.id == cardId));
     }
 
     canEditRoom(): boolean {
