@@ -1,21 +1,21 @@
 import socketIO from 'socket.io';
 import MongoDb, { Db } from "mongodb";
 import GameManager from './GameManager';
+import express from 'express';
+import path from 'path';
+import http from 'http';
+import https from 'https';
 import { ClientPacketType } from '../common/network/ClientPackets';
-try {
-    require('dotenv').config({ path: __dirname+'/../../.env' });
-} catch(e) {
-    require('dotenv').config({ path: __dirname+'/../.env' });
-}
+require('dotenv').config({ path: __dirname+'/../../.env' });
+
 
 const MONGODB_URL = process.env.MONGODB_URL;
 const MONGODB_DB = process.env.MONGODB_DB;
 const WEB_PORT = process.env.WEB_PORT;
 const SERVER_PORT = process.env.SERVER_PORT;
-const DEBUG = process.env.DEBUG;
+const DEBUG = process.env.DEBUG == "true";
+const HTTPS = process.env.HTTPS == "true";
 
-// var server: http.Server;
-var ioServer: socketIO.Server;
 
 async function createCollections(db: Db) {
     let awaits: Promise<any>[] = [];
@@ -37,7 +37,22 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
         });
     })
     .then(db => {
-        ioServer = socketIO();
+        var httpServer: http.Server;
+        var ioServer: SocketIO.Server;
+        if (!DEBUG) {
+            var expressServer = express();
+            expressServer.use(express.static(path.join(__dirname, '/../client')));
+            if (HTTPS) {
+                httpServer = https.createServer(expressServer);
+            } else {
+                httpServer = http.createServer(expressServer);
+            }
+
+            ioServer = socketIO(httpServer);
+        } else {
+            ioServer = socketIO();
+        }
+        
         const gameManager = new GameManager(db as Db, ioServer);
 
         ioServer.on('connection', client => {
@@ -56,17 +71,21 @@ MongoDb.MongoClient.connect(MONGODB_URL, { useUnifiedTopology: true })
              });
         });
         
-        ioServer.listen(SERVER_PORT);
-
+        if (!DEBUG)
+            httpServer.listen(SERVER_PORT, () => console.log("Server running in production"));
+        else {
+            ioServer.listen(SERVER_PORT);
+            console.log("Server running in development");
+        }
     });
 
     
-process.on('SIGTERM', shutDown);
-process.on('SIGINT', shutDown)
+// process.on('SIGTERM', shutDown);
+// process.on('SIGINT', shutDown)
 
-function shutDown() {
-    console.warn("!!! SERVER CLOSED !!!");
-    ioServer?.close(() => {
-        process.exit();
-    });
-}
+// function shutDown() {
+//     console.warn("!!! SERVER CLOSED !!!");
+//     ioServer?.close(() => {
+//         process.exit();
+//     });
+// }
