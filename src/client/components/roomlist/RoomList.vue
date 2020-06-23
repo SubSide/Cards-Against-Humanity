@@ -9,8 +9,12 @@
             <room :room="room"></room>
         </div>
 
-        <div class="col m-2 alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
+        <div class="col-12 m-2 alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
             No servers created yet! Click <button class="btn btn-sm btn-secondary" @click="createRoom">here</button> to create your own.
+        </div>
+
+        <div class="col-12 m-2 alert alert-secondary text-center">
+            This game was made by some random dude in his basement and is in no way affiliated with Cards Against Humanity
         </div>
     </div>
 </template>
