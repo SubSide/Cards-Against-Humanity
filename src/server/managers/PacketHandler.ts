@@ -142,10 +142,6 @@ export default class PacketHandler {
     }
     
     private handleUserManagement(user: ServerUser, packet: RequestUserManagementPacket) {
-        if (user.role < Role.Moderator) {
-            throw new ClientError("You do not have the permissions to do this action!");
-        }
-
         if (!user.canDo("userManagement", 2000)) {
             throw new ClientError("Wait a moment between user management requests.");
         }
@@ -158,7 +154,8 @@ export default class PacketHandler {
         user.sendPacket(new UserManagementPacket(
             editUser.getTransmitData(),
             editUser.role,
-            editUser.player?.getTransmitData()
+            editUser.player?.getTransmitData(),
+            editUser.player?.room?.id
         ));
     }
 }

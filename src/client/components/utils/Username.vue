@@ -32,9 +32,7 @@
         },
         methods: {
             openUserManagement() {
-                if (this.canOpenManagement) {
-                    this.$socket.send(new RequestUserManagementPacket(this.user.id));
-                }
+                this.$socket.send(new RequestUserManagementPacket(this.user.id));
             },
             getTagClasses(tag: Tag): string {
                 return 'user-badge badge badge-'+tag.type;

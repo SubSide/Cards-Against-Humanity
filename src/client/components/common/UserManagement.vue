@@ -4,7 +4,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="userManagementLabel">User management for {{ user != null ? user.username : "" }}</h5>
+                    <h5 class="modal-title" id="userManagementLabel">Info about {{ user != null ? user.username : "" }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -12,17 +12,17 @@
                 <div class="modal-body" v-if="user != null">
                     <p class="col-12">
                         User: <username :user="user" /><br />
-                        Hash:  <span>{{ user.hash }}</span>
+                        Hash:  <span>{{ user.hash || 'None'}}</span>
                         
                         <br />
                     </p>
-                    <div class="col-12">
+                    <div class="col-12" v-if="isUnique">
                         <label for="userRole">Role:</label>
                         <select id="userRole" class="form-control" v-model="role" :disabled="!isUnique || !canDoAction">
                             <option v-for="role in roles" :key="role" :value="role" :disabled="role >= selfRole">{{ getRoleText(role) }}</option>
                         </select>
                     </div>
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-4" v-if="isUnique">
                         Tags:
                         <span>
                             <span v-for="tag in user.tags" :key="tag.text" class="badge badge-lg ml-2" :class="badgeClass(tag)">
@@ -33,7 +33,7 @@
                                 None
                             </span>
                         </span>
-                        <div class="mt-3" v-if="canDoAction && isUnique">
+                        <div class="mt-3" v-if="canDoAction">
                             <h5>Add new tag:</h5>
                             <div class="form-group">
                                 <label for="tagText">Text</label>
@@ -48,10 +48,10 @@
                             <button class="btn btn-success" @click="addTag">Add tag</button>
                         </div>
                     </div>
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-5" v-if="isMod || isRoomHost">
                         <button class="btn btn-warning m-1" @click="kick" :disabled="player == null || !canDoAction">Kick from Room</button>
-                        <button class="btn btn-danger m-1" @click="disconnect" :disabled="!canDoAction">Disconnect</button>
-                        <button class="btn btn-light m-1"  @click="ban" :disabled="!canDoAction || true">Ban from game</button>
+                        <button class="btn btn-danger m-1" v-if="isMod" @click="disconnect" :disabled="!canDoAction">Disconnect</button>
+                        <button class="btn btn-light m-1" v-if="isMod" @click="ban" :disabled="!canDoAction || true">Ban from game</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -82,6 +82,7 @@
                 role: null,
                 previousRole: null,
                 player: null,
+                roomId: null,
                 tagText: "",
                 tagType: TagType.Primary
             }
@@ -106,6 +107,19 @@
             canDoAction: function(): boolean {
                 return this.selfRole > this.role;
             },
+            isMod: function(): boolean {
+                return this.selfRole >= Role.Moderator;
+            },
+            isRoomHost: function() {
+                if (
+                    this.$store.game != null &&
+                    this.$store.game.room != null && this.$store.game.room.id == this.roomId &&
+                    this.$store.user.id == this.$store.game.room.owner.id
+                    ) {
+                        return true;
+                }
+                return false;
+            },
             isUnique: function(): boolean {
                 if (this.user == null) return false;
                 return this.user.hash != null;
@@ -115,7 +129,7 @@
             },
             tagTypes: function(): Map<number, string> {
                 return TagTypes;
-            }
+            },
         },
         sockets: {
             userManagement: function(data: UserManagementPacket) {
@@ -123,6 +137,7 @@
                 this.$data.role = data.role;
                 this.$data.previousRole = data.role;
                 this.$data.player = data.player;
+                this.$data.roomId = data.roomId;
                 $("#userManagementDialog").modal('show');
             }
         },

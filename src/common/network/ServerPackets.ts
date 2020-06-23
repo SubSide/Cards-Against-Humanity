@@ -69,6 +69,7 @@ export class UserManagementPacket implements ServerPacket {
     constructor(
         public user: User,
         public role: Role,
-        public player?: Player
+        public player?: Player,
+        public roomId?: string,
     ) {}
 }
