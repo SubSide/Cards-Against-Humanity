@@ -10,6 +10,8 @@ import { ServerPacket, PartialRoomStatePacket, RoomStatePacket } from '../../com
 import { RoomListItem } from '../../common/network/NetworkModels';
 import RoomManager from '../managers/RoomManager';
 import { getDefaultSettings, areSettingsPleasant, validatedSettings } from '../util/SettingsUtils';
+import DrawingDeck from '../util/DrawingDeck';
+import Queue from '../util/Queue';
 import User from '../../common/models/User';
 import Role from '../../common/models/Role';
 import CardRetriever from '../db/CardRetriever';
@@ -17,7 +19,7 @@ import CardRetriever from '../db/CardRetriever';
 export default class ServerRoom implements Transmissible<Room> {
     private prompts: DrawingDeck<PromptCard> = new DrawingDeck();
     private responses: DrawingDeck<ResponseCard> = new DrawingDeck();
-    private czars: DrawingDeck<ServerUser> = new DrawingDeck();
+    private czars: Queue<ServerUser> = new Queue();
     public settings: Settings = getDefaultSettings();
     private password: string = null
 
@@ -75,7 +77,7 @@ export default class ServerRoom implements Transmissible<Room> {
         // Add the player to our player list
         this.players.push(player);
         // And our Czar deck
-        this.czars.add(user);
+        this.czars.offer(user);
 
         // If we are already playing, we "fix" the player
         if (this.round != null) {
@@ -262,7 +264,7 @@ export default class ServerRoom implements Transmissible<Room> {
         this.round.roundNumber += 1;
 
         // Draw a czar and get a prompt card
-        this.round.czar = this.czars.draw(true).getTransmitData();
+        this.round.czar = this.czars.poll(true).getTransmitData();
         let promptCard = this.prompts.draw(true);
         this.round.promptCard = promptCard;
 
@@ -386,73 +388,4 @@ export default class ServerRoom implements Transmissible<Room> {
         }
     }
 
-}
-
-class DrawingDeck<T> {
-    private discardPile: T[] = [];
-
-    constructor(public deck: T[] = []) {}
-
-    /**
-     * Set a list of items as our deck, clears the discard pile
-     * @param items the list of items that our deck will be
-     */
-    setDeck(items: T[]) {
-        this.deck = items;
-        this.discardPile = [];
-    }
-
-    /**
-     * Add an item to our deck
-     * 
-     * @param item the item to add to our deck
-     * @param toDiscardInstead if we should add it to our discard pile instead
-     */
-    add(item: T) {
-        this.deck.push(item)
-    }
-    
-    addToDiscard(item: T) {
-        this.discardPile.push(item);
-    }
-
-    /**
-     * Remove an item from this deck
-     * 
-     * @param item the item to be removed
-     */
-    remove(item: T) {
-        // We want to remove the item from both decks
-        let deckIndex = this.deck.indexOf(item);
-        if (deckIndex != -1) this.deck.splice(deckIndex, 1);
-        let discardIndex = this.discardPile.indexOf(item);
-        if (discardIndex != -1) this.deck.splice(discardIndex, 1);
-    }
-
-    /**
-     * Here we draw a random item from our pile
-     * 
-     * @param andDiscard If we also immediately add it to the discard pile
-     */
-    draw(andDiscard: boolean = false): T {
-        // If our deck is empty, replace it with the discard pile and clear the discard pile
-        if (this.deck.length < 1) {
-            this.deck = this.discardPile;
-            this.discardPile = [];
-        }
-
-        // Grab (and remove from the deck) a random item
-        let item = this.deck.splice(Math.floor(Math.random() * this.deck.length), 1)[0];
-
-        if (item == null) {
-            throw Error("Couldn't draw card. No cards in deck :(");
-        }
-
-        // If we want to discard it immediately we do that here, if not we have to do it manually
-        if (andDiscard) {
-            this.discardPile.push(item);
-        }
-
-        return item;
-    }
 }
