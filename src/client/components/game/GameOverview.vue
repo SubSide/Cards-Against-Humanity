@@ -22,13 +22,90 @@
     import RoomSettings from './RoomSettings.vue';
     import { LeaveRoomPacket } from '../../../common/network/ClientPackets';
     import PlayerList from './PlayerList.vue';
+    import ding from '../../assets/sounds/ding.wav';
+
+    var isTabActive: boolean;
+
+    window.onfocus = function () { 
+        isTabActive = true; 
+    }; 
+
+    window.onblur = function () { 
+        isTabActive = false; 
+    };
     
     export default Vue.extend({
         name: 'gameOverview',
+        data: function() {
+            return {
+                currentState: State.IN_SETTINGS,
+                sound: new Audio(ding),
+            }
+        },
+        watch: {
+            state: function(newValue, oldValue) {
+                if (oldValue == newValue) return;
+
+                switch (this.soundBackgroundType) {
+                    case 'background':
+                        if (!document.hidden) return;
+                        break;
+                    case 'outOfFocus':
+                        if (isTabActive) return;
+                        break;
+                    case 'always':
+                        break;
+                }
+
+                if (this.playSound == "relevant") {
+                    console.debug("State: ", newValue , ", isCzar: ", this.isCzar);
+                    switch (newValue) {
+                        case State.IN_SETTINGS:
+                            break;
+                        case State.PLAYING:
+                            if (this.isCzar) return;
+                            break;
+                        case State.CHOOSING:
+                            if (!this.isCzar) return;
+                            break;
+                        case State.WINNER:
+                            if (this.isCzar) return;
+                            break;
+                    }
+                } else if (this.playSound == "always") {
+                } else {
+                    return;
+                }
+
+                this.sound.play();
+            },
+            soundVolume(value: number) {
+                this.sound.volume = value;
+            }
+        },
         computed: {
             room(): Room {
                 return this.$store.state.game.room;
             },
+            state(): State {
+                if (this.room.round == null) return State.IN_SETTINGS;
+                if (this.room.round.cardsChosen == null) return State.PLAYING;
+                if (this.room.round.winner == null) return State.CHOOSING;
+                
+                return State.WINNER;
+            },
+            isCzar(): boolean {
+                return this.room.round != null && this.room.round.czar.id == this.$store.state.user.id;
+            },
+            playSound(): string {
+                return this.$store.state.settings.playSound;
+            },
+            soundVolume(): number {
+                return this.$store.state.settings.soundVolume;
+            },
+            soundBackgroundType(): string {
+                return this.$store.state.settings.soundBackgroundType;
+            }
         },
         methods: {
             openLeaveRoom() {
@@ -43,7 +120,14 @@
             'room-settings': RoomSettings,
             'player-list': PlayerList
         }
-    })
+    });
+
+    enum State {
+        IN_SETTINGS,
+        PLAYING,
+        CHOOSING,
+        WINNER,
+    }
 </script>
 
 <style scoped>

@@ -8,6 +8,9 @@ export default class SettingsState extends VuexModule {
     inlineCards: boolean = Cookies.get("settings.inlineCards") != "false";
     lightTheme: boolean = Cookies.get("settings.lightTheme") == "true";
     hideLogo: boolean = Cookies.get('settings.hideLogo') == "true";
+    soundBackgroundType: string = Cookies.get('settings.soundBackgroundType');
+    soundVolume: number = parseFloat(Cookies.get('settings.soundVolume')) || 0.5
+    playSound: string = Cookies.get('settings.playSound');
 
     @Mutation
     updateCardSize(cardSize: number) {
@@ -31,5 +34,23 @@ export default class SettingsState extends VuexModule {
     updateHideLogo(hideLogo: boolean) {
         this.hideLogo = hideLogo;
         Cookies.set("settings.hideLogo", hideLogo ? "true" : "false", { sameSite: 'Strict' });
+    }
+
+    @Mutation
+    updatePlaySound(playSound: string) {
+        this.playSound = playSound;
+        Cookies.set("settings.playSound", playSound);
+    }
+
+    @Mutation
+    updateSoundBackgroundType(soundBackgroundType: string) {
+        this.soundBackgroundType = soundBackgroundType;
+        Cookies.set("settings.soundBackgroundType", soundBackgroundType);
+    }
+
+    @Mutation
+    updateSoundVolume(soundVolume: number) {
+        this.soundVolume = soundVolume;
+        Cookies.set("settings.soundVolume", soundVolume.toString());
     }
 };

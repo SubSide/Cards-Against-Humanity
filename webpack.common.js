@@ -47,18 +47,18 @@ module.exports = {
           'css-loader'
         ]
       }, {
-        test: /\.(svg)$/,
+        test: /\.(svg|wav)$/,
         loader: 'file-loader',
         options: {
           name: '[name][hash].[ext]',
-          outputPath: 'images',
+          outputPath: 'assets',
           esModule: false,
         },
       }
     ],
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.vue', '.css', '.svg' ],
+    extensions: [ '.tsx', '.ts', '.js', '.vue', '.css', '.svg', '.wav' ],
   },
   plugins: [
     new VueLoaderPlugin(),
