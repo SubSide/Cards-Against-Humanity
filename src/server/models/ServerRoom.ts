@@ -64,6 +64,10 @@ export default class ServerRoom implements Transmissible<Room> {
         if (user.player != null) {
             throw new ClientError('You can\'t join this room as you\'re already in one!');
         }
+
+        if (this.settings.maxPlayers <= this.players.length) {
+            throw new ClientError('This room is full!');
+        }
     
         //Check if password is the same
         if (this.password != null && this.password != "" && this.password != password) {
