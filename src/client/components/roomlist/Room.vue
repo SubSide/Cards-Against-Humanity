@@ -1,6 +1,6 @@
 <template>
-    <div class="card">
-        <div class="card-header text-center">{{ room.name }}</div>
+    <div class="card mt-4">
+        <div class="card-header text-center"><i v-if="room.hasPassword" class="cil-lock-locked"></i> {{ room.name }}</div>
         <div class="card-body">
             <div class="card-text">
                 <div class="row">
@@ -17,7 +17,7 @@
         </div>
         <div class="card-footer text-muted d-flex align-items-center justify-content-between">
             <span class="">{{ room.players.length }} / {{ room.maxPlayers }} players</span>
-            <button class="btn btn-primary" @click="joinRoom(room.id)">Join</button>
+            <button class="btn btn-primary" @click="$parent.joinRoom(room)">Join</button>
         </div>
     </div>
 </template>
@@ -30,11 +30,6 @@
     export default Vue.extend({
         name: 'room',
         props: [ 'room' ],
-        methods: {
-            joinRoom(roomId: string) {
-                this.$socket.send(new JoinRoomPacket(roomId));
-            }
-        },
         computed: {
             serverPacks(): Map<String, Pack> {
                 return this.$store.state.server.packs;

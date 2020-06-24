@@ -19,6 +19,7 @@ export default class ServerRoom implements Transmissible<Room> {
     private responses: DrawingDeck<ResponseCard> = new DrawingDeck();
     private czars: DrawingDeck<ServerUser> = new DrawingDeck();
     public settings: Settings = getDefaultSettings();
+    private password: string = null
 
     players: ServerPlayer[] = [];
     public round: Round = null;
@@ -29,7 +30,7 @@ export default class ServerRoom implements Transmissible<Room> {
         public id: string,
         public owner: ServerUser
     ) {
-        this.join(owner);
+        this.join(owner, null);
     };
 
     public start(cardRetriever: CardRetriever) {
@@ -56,10 +57,15 @@ export default class ServerRoom implements Transmissible<Room> {
         this.nextRound();
     }
 
-    public join(user: ServerUser): ServerPlayer {
+    public join(user: ServerUser, password: string): ServerPlayer {
         // If the user already has a player object then he's already in a room
         if (user.player != null) {
             throw new ClientError('You can\'t join this room as you\'re already in one!');
+        }
+    
+        //Check if password is the same
+        if (this.password != null && this.password != "" && this.password != password) {
+            throw new ClientError("Incorrect password");
         }
 
         // Create a new ServerPlayer and set the users' player to this object
@@ -304,16 +310,25 @@ export default class ServerRoom implements Transmissible<Room> {
         }
     }
 
-    public updateSettings(updatingUser: ServerUser, newSettings: Settings) {
+    public updateSettings(updatingUser: ServerUser, newSettings: Settings, password: string = undefined) {
         // We do setting validation here
         let settings = validatedSettings(this.roomManager.cardRetriever, newSettings);
         if (settings == null) {
             throw new ClientError("Settings were malformed");
         }
 
+        if (password !== undefined) {
+            if (password == "") password = null;
+
+            let passwordRegex = new RegExp('^[a-zA-Z0-9 ]{0,32}$');
+            if (password != null && !passwordRegex.test(password)) {
+                throw new ClientError("Password is malformed");
+            }
+            this.password = password;
+        }
 
         this.settings = newSettings;
-        this.sendAllPartialUpdate([updatingUser], 'settings');
+        this.sendAllPartialUpdate([updatingUser], 'settings', 'password');
     }
 
     getListTransmitData(): RoomListItem {
@@ -322,11 +337,12 @@ export default class ServerRoom implements Transmissible<Room> {
             name: `${this.owner.username}'s Room`,
             maxPlayers: this.settings.maxPlayers,
             players: this.players.map(player => player.getTransmitData()),
-            packIds: this.settings.packIds
+            packIds: this.settings.packIds,
+            hasPassword: this.password != null && this.password != ""
         }
     }
 
-    createPartialRoom(...props: (keyof PartialRoom)[]): PartialRoom {
+    createPartialRoom(...props: (keyof Room)[]): PartialRoom {
         let part: PartialRoom = {};
         let whole = this.getTransmitData();
         props.forEach(prop => {
@@ -338,7 +354,7 @@ export default class ServerRoom implements Transmissible<Room> {
         return part;
     }
 
-    sendAllPartialUpdate(exclude: ServerUser[], ...props: (keyof PartialRoom)[]) {
+    sendAllPartialUpdate(exclude: ServerUser[], ...props: (keyof Room)[]) {
         this.sendAllPlayers(new PartialRoomStatePacket(this.createPartialRoom(...props)), exclude);
     }
 
@@ -365,6 +381,7 @@ export default class ServerRoom implements Transmissible<Room> {
             owner: this.owner.getTransmitData(),
             players: this.players.map(player => player.getTransmitData()),
             round: this.round,
+            password: this.password,
             settings: this.settings
         }
     }

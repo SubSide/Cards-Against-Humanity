@@ -11,10 +11,11 @@ export interface RoomListItem {
     id: string,
     maxPlayers: number,
     packIds: string[],
-    players: Player[]
+    players: Player[],
+    hasPassword: boolean,
 }
 
-export interface OwnState extends PartialOwnState {
+export interface OwnState {
     user: User;
     role: Role,
     player: Player;
@@ -23,11 +24,4 @@ export interface OwnState extends PartialOwnState {
     playedCards: string[];
 }
 
-export interface PartialOwnState {
-    user?: User;
-    role?: Role,
-    player?: Player;
-    room?: Room;
-    cards?: ResponseCard[];
-    playedCards?: string[];
-}
+export type PartialOwnState = Partial<OwnState>

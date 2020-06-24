@@ -35,27 +35,49 @@
                         type="range"
                         class="form-control"
                         :disabled="!canEdit"
-                        v-model.number="$data.timeToRespond"
+                        v-model.number="timeToRespond"
                         min="0"
                         max="30"
                         id="timeToRespond"
                         name="timeToRespond" />
                 </div>
+                <div class="col-12 col-md-6 form-group">
+                    <label for="password">Password:</label>
+                    <input
+                        :type="showPassword ? 'text' : 'password'"
+                        class="form-control"
+                        :disabled="!canEdit"
+                        v-model="password"
+                        pattern="[a-zA-Z0-9 ]{0,32}"
+                        min="0"
+                        max="16"
+                        id="password"
+                        name="password" />
+                        
+                    <input type="checkbox"
+                        v-model="showPassword"
+                        id="showPassword"
+                        name="showPassword" />
+                    <label for="showPassword">Show Password</label>
+                </div>
             </div>
             <div class="row mt-3">
                 <div class="col">
-                    <h5>Card packs: <small class="text-muted">It is recommended to select a single main deck. (and just 1 as otherwise you get duplicates)</small></h5>
+                    <h5>Card packs:</h5>
                     <div><button class="btn btn-primary" data-toggle="collapse" data-target="#packList"  aria-expanded="false" aria-controls="packList">Show/hide packs</button></div>
-                    <div id="packList" class="row my-3 collapse" :class="{'show': canEdit}" v-for="group in packGroups" :key="group.title">
-                        <div class="col-12 mb-1">{{ group.title }}</div>
-                        <div class="col-12 col-md-6 pl-5" v-for="pack in group.packs" :key="pack.id">
-                            <input type="checkbox" :id="pack.id" :value="pack.id" v-model="packIds" :disabled="!canEdit" />
-                            <label :for="pack.id" :class="{ 'text-muted': !canEdit }">{{ pack.name }}</label>
+                    <div id="packList" class="collapse" :class="{'show': canEdit}">
+                        <h5><small class="text-muted">The main decks have a lot of cards in common with each other. To prevent getting a lot of duplicates, I recommend just selecting a single one.</small></h5>
+                        <div class="row my-3" v-for="group in packGroups" :key="group.title">
+                            <div class="col-12 mb-1">{{ group.title }}</div>
+                            <div class="col-12 col-md-6 pl-5" v-for="pack in group.packs" :key="pack.id">
+                                <input type="checkbox" :id="pack.id" :value="pack.id" v-model="packIds" :disabled="!canEdit" />
+                                <label :for="pack.id" :class="{ 'text-muted': !canEdit }">{{ pack.name }}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row mt-2">
+            <div class="row mt-4">
                 <div class="col">
                     <button class="btn btn-success" @click="startGame" :disabled="!canStartGame">{{startButtonText}}</button>
                 </div>
@@ -81,9 +103,11 @@
                 maxPlayers: 0,
                 pointsToWin: 0,
                 timeToRespond: 0,
+                password: null,
                 packIds: [],
                 initialized: false,
-                debouncer: null
+                debouncer: null,
+                showPassword: false
             }
         },
         watch: {
@@ -95,6 +119,9 @@
             },
             timeToRespond: function(newValue) {
                 if (this.settings.timeToRespond != newValue) this.sendSettingsChange(); 
+            },
+            password: function(newValue) {
+                if (this.room.password != newValue) this.sendSettingsChange();
             },
             packIds: function(newValue: string[]) {
                 let settingsPacks = this.settings.packIds;
@@ -131,7 +158,7 @@
             },
             _sendSettingsChange() {
                 if (!this.canEdit) return;
-                this.$socket.send(new ChangeRoomSettingsPacket(this.createSettingsObject()));
+                this.$socket.send(new ChangeRoomSettingsPacket(this.createSettingsObject(), this.password));
             },
             createSettingsObject(): Settings {
                 return {
@@ -186,11 +213,12 @@
             },
             room(): Room {
                 let room = this.$store.state.game.room;
+                this.password = room.password;
                 this.setSettings(room.settings);
                 return room;
             },
             settings(): Settings {
-                return this.$store.state.game.settings;
+                return this.$store.state.game.room.settings;
             },
             packGroups(): PackGroup[] {
                 return this.$store.state.server.packGroups;

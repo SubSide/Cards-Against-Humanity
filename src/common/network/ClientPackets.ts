@@ -37,7 +37,7 @@ export class CreateRoomPacket implements ClientPacket {
 
 export class JoinRoomPacket implements ClientPacket {
     type: 'joinRoom' = 'joinRoom';
-    constructor(public roomId: string, public password: string = null) {}
+    constructor(public roomId: string, public password: string) {}
 }
 
 export class RequestStateUpdatePacket implements ClientPacket {
@@ -52,7 +52,7 @@ export class LeaveRoomPacket implements ClientPacket {
 
 export class ChangeRoomSettingsPacket implements ClientPacket {
     type: 'changeRoomSettings' = 'changeRoomSettings';
-    constructor(public roomSettings: Settings) {}
+    constructor(public roomSettings: Settings, public password: string) {}
 }
 
 export class StartGamePacket implements ClientPacket {

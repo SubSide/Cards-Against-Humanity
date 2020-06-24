@@ -62,7 +62,7 @@ export default class PacketHandler {
             throw new ClientError('This room doesn\'t exist.');
         }
 
-        room.join(user);
+        room.join(user, packet.password);
     }
 
     private handleLeaveRoom(user: ServerUser, packet: LeaveRoomPacket) {
@@ -113,7 +113,7 @@ export default class PacketHandler {
         }
         
         // Update settings
-        user.player.room.updateSettings(user, packet.roomSettings);
+        user.player.room.updateSettings(user, packet.roomSettings, packet.password);
     }
 
     private handleStartGame(user: ServerUser, startGamePacket: StartGamePacket) {

@@ -116,7 +116,7 @@
                 return this.$store.state.game.room;
             },
             round(): Round {
-                return this.$store.state.game.round;
+                return this.room.round;
             },
             allPlayersPlayed(): ResponseCard[][] {
                 return this.round.cardsChosen || [];

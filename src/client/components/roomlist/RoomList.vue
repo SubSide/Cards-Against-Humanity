@@ -1,5 +1,6 @@
 <template>
     <div class="row">
+        <prompt ref="passwordPrompt" :title="'This room is password protected'" :input="'password'" :content="'Password:'" :onConfirm="joinRoomPassworded" />
         <div class="col-12 p-3">
             <button class="btn btn-primary" @click="createRoom">Create room</button>
             <button class="btn btn-secondary" @click="requestRooms">Refresh</button>
@@ -9,11 +10,11 @@
             <room :room="room"></room>
         </div>
 
-        <div class="col-12 m-2 alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
+        <div class="w-100 m-2 mt-4 alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
             No servers created yet! Click <button class="btn btn-sm btn-secondary" @click="createRoom">here</button> to create your own.
         </div>
 
-        <div class="col-12 m-2 alert alert-secondary text-center">
+        <div class="w-100 m-2 mt-4 alert alert-secondary text-center">
             This game was made by some random dude in his basement and is in no way affiliated with Cards Against Humanity
         </div>
     </div>
@@ -22,14 +23,16 @@
 <script lang="ts">
     import Vue from 'vue';
     import Room from './Room.vue';
-    import { RequestRoomsPacket, CreateRoomPacket } from '../../../common/network/ClientPackets';
+    import { RequestRoomsPacket, CreateRoomPacket, JoinRoomPacket } from '../../../common/network/ClientPackets';
     import { RoomListPacket } from '../../../common/network/ServerPackets';
+    import { RoomListItem } from '../../../common/network/NetworkModels';
     
     export default Vue.extend({
         name: 'room-list',
         data() {
             return {
-                rooms: []
+                rooms: [],
+                joiningRoom: null
             }
         },
         sockets: {
@@ -46,6 +49,19 @@
             },
             requestRooms() {
                 this.$socket.send(new RequestRoomsPacket());
+            },
+            joinRoomPassworded(password: string) {
+                this.joinRoom(this.joiningRoom, password);
+            },
+            joinRoom(room: RoomListItem, password: string = null) {
+                this.joiningRoom = room;
+                // TODO room password
+                if (room.hasPassword && password == null) {
+                    (this.$refs.passwordPrompt as any).show();
+                    return;
+                }
+                
+                this.$socket.send(new JoinRoomPacket(room.id, password));
             }
         },
         components: { 'room': Room }
