@@ -8,9 +8,9 @@ export default class SettingsState extends VuexModule {
     inlineCards: boolean = Cookies.get("settings.inlineCards") != "false";
     lightTheme: boolean = Cookies.get("settings.lightTheme") == "true";
     hideLogo: boolean = Cookies.get('settings.hideLogo') == "true";
-    soundBackgroundType: string = Cookies.get('settings.soundBackgroundType');
+    soundBackgroundType: string = Cookies.get('settings.soundBackgroundType') || "background";
     soundVolume: number = parseFloat(Cookies.get('settings.soundVolume')) || 0.5
-    playSound: string = Cookies.get('settings.playSound');
+    playSound: string = Cookies.get('settings.playSound') || "none";
 
     @Mutation
     updateCardSize(cardSize: number) {
