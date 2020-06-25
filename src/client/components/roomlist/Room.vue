@@ -3,15 +3,21 @@
         <div class="card-header text-center"><i v-if="room.hasPassword" class="cil-lock-locked"></i> {{ room.name }}</div>
         <div class="card-body">
             <div class="card-text">
-                <div class="row">
-                    <span>Players:&nbsp;</span>
-                    <span v-for="player in room.players" :key="player.user.id">
-                        <username :user="player.user" /> 
-                    </span>
+                <div>
+                    <span>Players:</span>
+                    <div class="data">
+                        <span v-for="(player,index) in room.players" :key="player.user.id">
+                            <username :user="player.user" /><span v-if="index != room.players.length - 1">,&nbsp;</span>
+                        </span>
+                    </div>
                 </div>
-                <div class="row">
-                    <span>Packs:&nbsp;</span>
-                    <small class="align-self-center" v-for="packId in room.packIds" :key="packId">{{ serverPacks.get(packId).name }}</small>
+                <div class="mt-3">
+                    <span>Packs:</span>
+                    <div class="data">
+                        <small v-for="(packId, index) in room.packIds" :key="packId">
+                            {{ serverPacks.get(packId).name }}<span v-if="index != room.packIds.length - 1">,&nbsp;</span>
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -37,3 +43,11 @@
         }
     });
 </script>
+
+<style scoped>
+    .data {
+        margin-left: 10px;
+        max-height: 80px;
+        overflow: hidden;
+    }
+</style>
