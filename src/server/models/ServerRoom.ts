@@ -21,7 +21,7 @@ export default class ServerRoom implements Transmissible<Room> {
     private responses: DrawingDeck<ResponseCard> = new DrawingDeck();
     private czars: Queue<ServerUser> = new Queue();
     public settings: Settings = getDefaultSettings();
-    private password: string = null
+    private password: string = null;
 
     players: ServerPlayer[] = [];
     public round: Round = null;
@@ -53,6 +53,13 @@ export default class ServerRoom implements Transmissible<Room> {
 
         this.prompts.setDeck(promptCards);
         this.responses.setDeck(responseCards);
+
+        // We reset the players by resetting the points and their cards
+        this.players.forEach(player => {
+            player.points = 0;
+            player.cards = [];
+            player.playedCards = [];
+        })
 
         // Start the round!
         this.round = null;
@@ -258,6 +265,13 @@ export default class ServerRoom implements Transmissible<Room> {
                 winner: null,
                 winnerCardId: null
             }
+        }
+
+        // If one of the players reached the amount of points to win, we set the round to null
+        if (!this.players.every(player => player.points < this.settings.pointsToWin)) {
+            this.round = null;
+            this.sendUpdate();
+            return;
         }
 
         this.round.winner = null;

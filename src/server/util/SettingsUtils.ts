@@ -6,7 +6,7 @@ import ServerRoom from "../models/ServerRoom";
 export function getDefaultSettings(): Settings {
     return {
         maxPlayers: 10,
-        pointsToWin: 6,
+        pointsToWin: 8,
         timeToRespond: 0,
         packIds: []
     }
@@ -27,8 +27,8 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
 
     // -- pointsToWin check --
     let pointsToWin = settings.pointsToWin;
-    // Let's put a limit from 5 to 50 for now
-    if (!Number.isInteger(pointsToWin) || pointsToWin < 5 || pointsToWin > 50) {
+    // Let's put a limit from 3 to 50 for now
+    if (!Number.isInteger(pointsToWin) || pointsToWin < 3 || pointsToWin > 50) {
         console.log("Received a packet where pointsToWin was incorrect");
         throw error;
     }
