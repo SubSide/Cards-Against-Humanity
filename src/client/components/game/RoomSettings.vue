@@ -30,18 +30,6 @@
                         name="pointsToWin" />
                 </div>
                 <div class="col-12 col-md-6 form-group">
-                    <label for="timeToRespond">Time to respond: {{ timeToRespondText }}</label>
-                    <input
-                        type="range"
-                        class="form-control"
-                        :disabled="!canEdit"
-                        v-model.number="timeToRespond"
-                        min="0"
-                        max="30"
-                        id="timeToRespond"
-                        name="timeToRespond" />
-                </div>
-                <div class="col-12 col-md-6 form-group">
                     <label for="password">Password:</label>
                     <input
                         :type="showPassword ? 'text' : 'password'"
@@ -102,7 +90,6 @@
             return {
                 maxPlayers: 0,
                 pointsToWin: 0,
-                timeToRespond: 0,
                 password: null,
                 packIds: [],
                 initialized: false,
@@ -116,9 +103,6 @@
             },
             pointsToWin: function(newValue) {
                 if (this.settings.pointsToWin != newValue) this.sendSettingsChange(); 
-            },
-            timeToRespond: function(newValue) {
-                if (this.settings.timeToRespond != newValue) this.sendSettingsChange(); 
             },
             password: function(newValue) {
                 if (this.room.password != newValue) this.sendSettingsChange();
@@ -149,7 +133,6 @@
             setSettings(settings: Settings) {
                 this.maxPlayers = settings.maxPlayers;
                 this.pointsToWin = settings.pointsToWin;
-                this.timeToRespond = settings.timeToRespond;
                 this.packIds = settings.packIds;
             },
             sendSettingsChange() {
@@ -164,7 +147,6 @@
                 return {
                     maxPlayers: this.maxPlayers,
                     pointsToWin: this.pointsToWin,
-                    timeToRespond: this.timeToRespond,
                     packIds: this.packIds
                 }
             },
@@ -176,14 +158,6 @@
             this.$data.debouncer = debounce(this._sendSettingsChange.bind(this), 2000);
         },
         computed: {
-            timeToRespondText(): string {
-                var time = this.timeToRespond * 30;
-                if (time == 0) {
-                    return "Unlimited";
-                }
-
-                return Math.floor(time / 60)+" minutes " + (time % 60)+ " seconds";
-            },
             self(): User {
                 return this.$store.state.user;
             },

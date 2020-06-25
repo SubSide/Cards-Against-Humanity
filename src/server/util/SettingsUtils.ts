@@ -7,7 +7,6 @@ export function getDefaultSettings(): Settings {
     return {
         maxPlayers: 10,
         pointsToWin: 8,
-        timeToRespond: 0,
         packIds: []
     }
 }
@@ -33,15 +32,6 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
         throw error;
     }
     // -- End pointsToWin check --
-
-    // -- timeToRespond check --
-    let timeToRespond = settings.timeToRespond;
-    // They are intervals of 30 seconds. So Let's put it on a limit of 15 minutes, where 0 is unlimited
-    if (!Number.isInteger(timeToRespond) || timeToRespond < 0 || timeToRespond > 30) {
-        console.log("Received a packet where timeToRespond was incorrect");
-        throw error;
-    }
-    // -- End timeToRespond check --
 
     // -- packIds check --
     let packIds = settings.packIds;
@@ -69,7 +59,6 @@ export function validatedSettings(cardRetriever: CardRetriever, settings: Settin
     return {
         maxPlayers: maxPlayers,
         pointsToWin: pointsToWin,
-        timeToRespond: timeToRespond,
         packIds: Array.from(packsSet)
     }
 }
