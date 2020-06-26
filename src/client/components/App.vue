@@ -29,7 +29,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
-        <div class="container position-relative">
+        <div class="container position-relative" v-if="!isDisconnected">
             <user-management />
             <login />
             <settings />
@@ -37,12 +37,20 @@
             <room-list v-else />
             <toasts />
         </div>
+        <div class="container text-center" v-else>
+            <h5 class="mt-4">This site has been opened in another tab or has been inactive for too long.</h5>
+            <p>You can close this tab now, or if you want to open the game here, click the button below.</p>
+            <p class="mt-3">
+                <button class="btn btn-success" @click="refreshTab">Open in this tab</button>
+            </p>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from 'vue';
     import sessionStorage from 'sessionstorage';
+    import Cookies from 'js-cookie';
     import { SocketChangePacket, RequestStateUpdatePacket, JoinWithInvitePacket } from '../../common/network/ClientPackets';
     import { ErrorPacket } from '../../common/network/ServerPackets';
     import RoomList from './roomlist/RoomList.vue';
@@ -65,6 +73,11 @@
             'toasts': Toasts,
             'settings': Settings,
             'user-management': UserManagement
+        },
+        data() {
+            return {
+                isDisconnected: false
+            }
         },
         computed: {
             left(): string {
@@ -116,17 +129,30 @@
 
                 // Clear hash
                 history.pushState("", document.title, window.location.pathname + window.location.search);
+            },
+            refreshTab() {
+                window.location.reload(false);
             }
         },
         sockets: {
             connect: function() {
-                let id = sessionStorage.getItem(STORAGE_PREVIOUS_ID);
-                sessionStorage.setItem(STORAGE_PREVIOUS_ID, this.$socket.id);
+                // let id = sessionStorage.getItem(STORAGE_PREVIOUS_ID);
+                // sessionStorage.setItem(STORAGE_PREVIOUS_ID, this.$socket.id);
+                let id = Cookies.get(STORAGE_PREVIOUS_ID);
+                Cookies.set(STORAGE_PREVIOUS_ID, this.$socket.id, {
+                    sameSite: 'Strict',
+                    secure: document.location.protocol == 'https',
+                    expires: 1 // Expires in 1 day
+                });
+
                 if (id != undefined && id != "undefined" && this.$socket.id !== id) {
                     this.$socket.send(new SocketChangePacket(id));
                 } else {
                     this.$socket.send(new RequestStateUpdatePacket());
                 }
+            },
+            disconnect: function() {
+                this.$data.isDisconnected = true;
             }
         }
     });

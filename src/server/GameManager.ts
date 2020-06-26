@@ -61,6 +61,9 @@ export default class GameManager {
             if (player != null) {
                 player.room.leave(player);
             }
+
+            // Also clean up the open socket
+            pair.value.socket.disconnect(true);
         });
     }
 
@@ -82,6 +85,7 @@ export default class GameManager {
                 let user = this.users.get(packet.oldId);
                 // This automatically makes it fail-safe, if the user doesn't exist, we ignore it.
                 if (user !== undefined) {
+                    user.socket.disconnect(true); // Close previous socket
                     user.socketId = socket.id; // Update the id
                     user.socket = socket; // Update the socket
                     this.users.delete(packet.oldId); // delete the user from the old id
