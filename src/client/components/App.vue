@@ -2,7 +2,7 @@
     <div class="body d-flex flex-column">
         <div class="navbar navbar-expand-sm" :class="{ 'navbar-dark bg-dark': !isLightTheme, 'navbar-light bg-light': isLightTheme }">
             <span class="navbar-brand order-0" href="#">CAH</span>
-            <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
+            <!-- <div class="collapse navbar-collapse order-sm-0 order-10 mx-5" id="navbarSupportedContent">
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="#">Link 1</a>
@@ -11,7 +11,7 @@
                         <a class="nav-link" href="#">Link 2</a>
                     </li>
                 </ul>
-            </div>
+            </div> -->
             <div class="nav-item mx-auto"></div>
             <div class="navbar-nav dropdown">
                 <div class="navbar-text order-4 btn btn-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
@@ -25,9 +25,9 @@
                     <a class="dropdown-item" href="#">Another action</a> -->
                 </div>
             </div>
-            <button class="navbar-toggler order-6" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- <button class="navbar-toggler order-6" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
-            </button>
+            </button> -->
         </div>
         <div class="container position-relative" v-if="!isDisconnected">
             <user-management />
