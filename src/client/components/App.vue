@@ -150,6 +150,7 @@
                 } else {
                     this.$socket.send(new RequestStateUpdatePacket());
                 }
+                this.$data.isDisconnected = false;
             },
             disconnect: function() {
                 this.$data.isDisconnected = true;
