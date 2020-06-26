@@ -1,10 +1,29 @@
 <template>
     <div class="body d-flex flex-column">
         <prompt ref="leavePrompt" :title="'Leaving room'" :content="'Are you sure you want to leave this room?'" :onConfirm="leaveRoom" />
+        <div class="modal fade" id="roomSettingsModal" tabindex="-1" role="dialog" aria-labelledby="roomSettingsLabel" aria-hidden="true">
+            <div id="loginForm" class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roomSettingsLabel">Room settings</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <room-settings />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="content mt-3">
             <div class="row">
                 <div class="col-12">
                     <button class="btn btn-secondary" @click="openLeaveRoom">Leave room</button>
+                    <button type="button" v-if="room.round" class="btn btn-secondary ml-2" data-toggle="modal" data-target="#roomSettingsModal">Settings</button>
                 </div>
             </div>
             <game v-if="room.round" />
