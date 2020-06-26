@@ -6,7 +6,7 @@
                     Change your settings here. You'll need at least 3 players to start the game.
                 </p>
                 <div class="col-12 col-md-6 form-group">
-                    <label for="maxPlayers">Maximum amount of players: {{ maxPlayers }}</label>
+                    <label :for="idPrefix+'maxPlayers'">Maximum amount of players: {{ maxPlayers }}</label>
                     <input
                         type="range"
                         class="form-control"
@@ -14,11 +14,11 @@
                         v-model.number="maxPlayers"
                         min="3"
                         max="24"
-                        id="maxPlayers"
+                        :id="idPrefix+'maxPlayers'"
                         name="maxPlayers" />
                 </div>
                 <div class="col-12 col-md-6 form-group">
-                    <label for="pointsToWin">Points to win: {{ pointsToWin }}</label>
+                    <label :for="idPrefix+'pointsToWin'">Points to win: {{ pointsToWin }}</label>
                     <input
                         type="range"
                         class="form-control"
@@ -26,11 +26,11 @@
                         v-model.number="pointsToWin"
                         min="3"
                         max="50"
-                        id="pointsToWin"
+                        :id="idPrefix+'pointsToWin'"
                         name="pointsToWin" />
                 </div>
                 <div class="col-12 col-md-6 form-group">
-                    <label for="password">Password:</label>
+                    <label :for="idPrefix+'password'">Password:</label>
                     <input
                         :type="showPassword ? 'text' : 'password'"
                         class="form-control"
@@ -39,17 +39,17 @@
                         pattern="[a-zA-Z0-9 ]{0,32}"
                         min="0"
                         max="16"
-                        id="password"
+                        :id="idPrefix+'password'"
                         name="password" />
                         
                     <input type="checkbox"
                         v-model="showPassword"
-                        id="showPassword"
+                        :id="idPrefix+'showPassword'"
                         name="showPassword" />
-                    <label for="showPassword">Show Password</label>
+                    <label :for="idPrefix+'showPassword'">Show Password</label>
                 </div>
                 <div class="col-12 col-md-6 form-group">
-                    <label for="password">Invite link:</label>
+                    <label :for="idPrefix+'inviteField'">Invite link:</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <button class="btn btn-primary" :disabled="!inviteUrl" @click="copyInvite" type="button">Copy</button>
@@ -59,13 +59,14 @@
                             class="form-control"
                             readonly="readonly"
                             ref="inviteField"
+                            :id="idPrefix+'inviteField'"
                             @click="selectAll"
                             v-model="inviteUrl" />
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" :disabled="!canEdit" @click="refreshInvite" type="button">{{ inviteUrl ? 'Refresh' : 'Create'}}</button>
+                        <div class="input-group-append" v-if="canEdit">
+                            <button class="btn btn-primary" @click="refreshInvite" type="button">{{ inviteUrl ? 'Refresh' : 'Create'}}</button>
                         </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-danger" :disabled="!canEdit" @click="removeInvite" type="button">X</button>
+                        <div class="input-group-append" v-if="canEdit">
+                            <button class="btn btn-danger" @click="removeInvite" type="button">X</button>
                         </div>
                     </div>
                 </div>
@@ -79,8 +80,8 @@
                         <div class="row my-3" v-for="group in packGroups" :key="group.title">
                             <div class="col-12 mb-1">{{ group.title }}</div>
                             <div class="col-12 col-md-6 pl-5" v-for="pack in group.packs" :key="pack.id">
-                                <input type="checkbox" :id="pack.id" :value="pack.id" v-model="packIds" :disabled="!canEdit" />
-                                <label :for="pack.id" :class="{ 'text-muted': !canEdit }">{{ pack.name }}</label>
+                                <input type="checkbox" :id="idPrefix+pack.id" :value="pack.id" v-model="packIds" :disabled="!canEdit" />
+                                <label :for="idPrefix+pack.id" :class="{ 'text-muted': !canEdit }">{{ pack.name }}</label>
                             </div>
                         </div>
                     </div>
@@ -105,6 +106,7 @@
     import Role from '../../../common/models/Role';
     import { PackGroup } from '../../../common/models/Pack';
         
+    var uniquePrefix = 1;
     export default Vue.extend({
         name: 'room-settings',
         data: function() {
@@ -116,7 +118,8 @@
                 initialized: false,
                 inviteId: null,
                 debouncer: null,
-                showPassword: false
+                showPassword: false,
+                idPrefix: (uniquePrefix++).toString(36)
             }
         },
         watch: {
