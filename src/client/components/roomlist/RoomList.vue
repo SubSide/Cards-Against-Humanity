@@ -5,13 +5,17 @@
             <button class="btn btn-primary" @click="createRoom">Create room</button>
             <button class="btn btn-secondary" @click="requestRooms">Refresh</button>
         </div>
-
         <div class="col-lg-4 col-sm-6" v-for="room in rooms" :key="room.id">
             <room :room="room"></room>
         </div>
 
         <div class="w-100 m-2 mt-4 alert alert-primary text-center" v-if="rooms.length < 1" role="alert">
             No servers created yet! Click <button class="btn btn-sm btn-secondary" @click="createRoom">here</button> to create your own.
+        </div>
+
+        <div class="w-100 m-2 mt-4 alert alert-warning text-center" role="alert">
+            This game is currently in beta. Things might break, cards might be incorrect, server might overload. If that happens please tell me about it. 
+            Please take this in consideration when something goes wrong!
         </div>
 
         <div class="w-100 m-2 mt-4 alert alert-secondary text-center">
