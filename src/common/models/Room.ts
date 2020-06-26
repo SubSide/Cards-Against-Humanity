@@ -8,6 +8,7 @@ export default interface Room {
     settings: Settings;
     owner: User;
     password: string;
+    inviteId: string;
     round: Round;
     players: Player[];
 }

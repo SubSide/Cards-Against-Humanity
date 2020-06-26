@@ -12,7 +12,7 @@ import RoomManager from '../managers/RoomManager';
 import { getDefaultSettings, areSettingsPleasant, validatedSettings } from '../util/SettingsUtils';
 import DrawingDeck from '../util/DrawingDeck';
 import Queue from '../util/Queue';
-import User from '../../common/models/User';
+import { v4 as UUID } from 'uuid';
 import Role from '../../common/models/Role';
 import CardRetriever from '../db/CardRetriever';
 
@@ -22,6 +22,7 @@ export default class ServerRoom implements Transmissible<Room> {
     private czars: Queue<ServerUser> = new Queue();
     public settings: Settings = getDefaultSettings();
     private password: string = null;
+    public inviteId: string = null;
 
     players: ServerPlayer[] = [];
     public round: Round = null;
@@ -102,6 +103,14 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendAllPartialUpdate([user], 'players');
 
         return player;
+    }
+
+    public joinWithInvite(user: ServerUser, inviteId: string) {
+        if (this.inviteId == null || this.inviteId != inviteId) {
+            throw new ClientError("Invalid inviteId");
+        }
+
+        this.join(user, this.password);
     }
 
     public leave(player: ServerPlayer) {
@@ -324,6 +333,15 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendUpdate();
     }
 
+    public refreshInviteLink(clearInstead: boolean) {
+        if (!clearInstead) {
+            this.inviteId = Buffer.from(UUID()).toString('base64');
+        } else {
+            this.inviteId = null;
+        }
+        this.sendAllPartialUpdate([], 'inviteId');
+    }
+
     public fixPlayer(player: ServerPlayer) {
         while (player.cards.length < 10) {
             player.cards.push(this.responses.draw());
@@ -402,7 +420,8 @@ export default class ServerRoom implements Transmissible<Room> {
             players: this.players.map(player => player.getTransmitData()),
             round: this.round,
             password: this.password,
-            settings: this.settings
+            settings: this.settings,
+            inviteId: this.inviteId,
         }
     }
 

@@ -12,6 +12,8 @@ export type ClientPacketType =
     ChangeNicknamePacket |
     StartGamePacket |
     PlayCardPacket |
+    RefreshInviteLinkPacket |
+    JoinWithInvitePacket |
     RequestUserManagementPacket |
     DoUserManagementPacket
 
@@ -53,6 +55,16 @@ export class LeaveRoomPacket implements ClientPacket {
 export class ChangeRoomSettingsPacket implements ClientPacket {
     type: 'changeRoomSettings' = 'changeRoomSettings';
     constructor(public roomSettings: Settings, public password: string) {}
+}
+
+export class RefreshInviteLinkPacket implements ClientPacket {
+    type: 'refreshInviteLink' = 'refreshInviteLink';
+    constructor(public remove: boolean) {}
+}
+
+export class JoinWithInvitePacket implements ClientPacket {
+    type: 'joinWithInvite' = 'joinWithInvite';
+    constructor(public inviteId: string) {}
 }
 
 export class StartGamePacket implements ClientPacket {

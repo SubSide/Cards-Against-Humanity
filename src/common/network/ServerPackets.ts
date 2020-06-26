@@ -5,15 +5,6 @@ import User from "../models/User";
 import Role from "../models/Role";
 import Player from "../models/Player";
 
-export type ServerPacketType =
-    RoomListPacket |
-    UserStateUpdatePacket |
-    ServerStatePacket |
-    InfoPacket |
-    ErrorPacket |
-    UserManagementPacket
-
-
 export interface ServerPacket {
     type: string;
 }

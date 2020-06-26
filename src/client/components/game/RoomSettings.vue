@@ -48,6 +48,27 @@
                         name="showPassword" />
                     <label for="showPassword">Show Password</label>
                 </div>
+                <div class="col-12 col-md-6 form-group">
+                    <label for="password">Invite link:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-primary" :disabled="!inviteUrl" @click="copyInvite" type="button">Copy</button>
+                        </div>
+                        <input
+                            type="text"
+                            class="form-control"
+                            readonly="readonly"
+                            ref="inviteField"
+                            @click="selectAll"
+                            v-model="inviteUrl" />
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" :disabled="!canEdit" @click="refreshInvite" type="button">{{ inviteUrl ? 'Refresh' : 'Create'}}</button>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-danger" :disabled="!canEdit" @click="removeInvite" type="button">X</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row mt-3">
                 <div class="col">
@@ -79,7 +100,7 @@
     import Room from '../../../common/models/Room';
     import Settings from '../../../common/models/Settings';
     import debounce from 'debounce';
-    import { ChangeRoomSettingsPacket, StartGamePacket } from '../../../common/network/ClientPackets';
+    import { ChangeRoomSettingsPacket, StartGamePacket, RefreshInviteLinkPacket } from '../../../common/network/ClientPackets';
     import User from '../../../common/models/User';
     import Role from '../../../common/models/Role';
     import { PackGroup } from '../../../common/models/Pack';
@@ -93,6 +114,7 @@
                 password: null,
                 packIds: [],
                 initialized: false,
+                inviteId: null,
                 debouncer: null,
                 showPassword: false
             }
@@ -127,7 +149,7 @@
             },
             settings: function() {
                 this.setSettings(this.settings);
-            }
+            },
         },
         methods: { 
             setSettings(settings: Settings) {
@@ -152,6 +174,20 @@
             },
             startGame() {
                 this.$socket.send(new StartGamePacket(this.createSettingsObject()));
+            },
+            refreshInvite() {
+                this.$socket.send(new RefreshInviteLinkPacket(false));
+            },
+            removeInvite() {
+                this.$socket.send(new RefreshInviteLinkPacket(true));
+            },
+            copyInvite() {
+                this.$refs.inviteField.select();
+                document.execCommand('copy');
+            },
+            selectAll() {
+                this.$refs.inviteField.focus();
+                this.$refs.inviteField.select();
             }
         },
         mounted: function() {
@@ -186,8 +222,9 @@
                 return "Start game";
             },
             room(): Room {
-                let room = this.$store.state.game.room;
+                let room: Room = this.$store.state.game.room;
                 this.password = room.password;
+                this.inviteId = room.inviteId;
                 this.setSettings(room.settings);
                 return room;
             },
@@ -196,6 +233,16 @@
             },
             packGroups(): PackGroup[] {
                 return this.$store.state.server.packGroups;
+            },
+            inviteUrl(): string {
+                if (this.inviteId == null) return null;
+                let path = window.location.protocol + "//" +
+                    window.location.host + 
+                    window.location.pathname;
+                
+                path += "#invite=" + this.inviteId;
+
+                return path;
             }
         }
     })

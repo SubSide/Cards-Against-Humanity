@@ -43,7 +43,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import sessionStorage from 'sessionstorage';
-    import { SocketChangePacket, RequestStateUpdatePacket } from '../../common/network/ClientPackets';
+    import { SocketChangePacket, RequestStateUpdatePacket, JoinWithInvitePacket } from '../../common/network/ClientPackets';
     import { ErrorPacket } from '../../common/network/ServerPackets';
     import RoomList from './roomlist/RoomList.vue';
     import GameOverview from './game/GameOverview.vue';
@@ -87,6 +87,7 @@
         },
         mounted: function() {
             this.doTheming();
+            this.handleHash();
         },
         methods: {
             doTheming: function() {
@@ -103,6 +104,18 @@
                     $("#darkTheme").removeAttr("disabled");
                     $("#lightTheme").attr("disabled", "disabled");
                 }
+            },
+            handleHash: function() {
+                let hashRegex = /^(#|)invite=(.*)$/;
+                
+                let hashExec = hashRegex.exec(document.location.hash);
+                
+                if (hashExec != null) {
+                    this.$socket.send(new JoinWithInvitePacket(hashExec[2]));
+                }
+
+                // Clear hash
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }
         },
         sockets: {

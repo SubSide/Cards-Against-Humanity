@@ -1,4 +1,4 @@
-import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket, ChangeRoomSettingsPacket, StartGamePacket, RequestUserManagementPacket, DoUserManagementPacket, PlayCardPacket } from "../../common/network/ClientPackets";
+import { ClientPacketType, CreateRoomPacket, RequestRoomsPacket, JoinRoomPacket, RequestStateUpdatePacket, ChangeNicknamePacket, LeaveRoomPacket, ChangeRoomSettingsPacket, StartGamePacket, RequestUserManagementPacket, DoUserManagementPacket, PlayCardPacket, RefreshInviteLinkPacket, JoinWithInvitePacket } from "../../common/network/ClientPackets";
 import ServerUser from "../models/ServerUser";
 import GameManager from "../GameManager";
 import { RoomListPacket, ErrorPacket, UserManagementPacket, InfoPacket } from "../../common/network/ServerPackets";
@@ -37,6 +37,12 @@ export default class PacketHandler {
             case 'changeRoomSettings':
                 this.handleChangeRoomSettings(user, packet);
                 break;
+            case 'refreshInviteLink':
+                this.handleRefreshInviteLink(user, packet);
+                break;
+            case 'joinWithInvite':
+                this.handleJoinByInvite(user, packet);
+                break;
             case 'startGame':
                 this.handleStartGame(user, packet);
                 break;
@@ -53,10 +59,11 @@ export default class PacketHandler {
     }
     
     private handleJoinRoom(user: ServerUser, packet: JoinRoomPacket) {
-        let room = this.gameManager.roomManager.getRoom(packet.roomId);
         if (!user.canDo("joinRoom", 1000)) {
             throw new ClientError("Wait a moment before joining another room.");
         }
+
+        let room = this.gameManager.roomManager.getRoom(packet.roomId);
         
         if (room == null) {
             throw new ClientError('This room doesn\'t exist.');
@@ -114,6 +121,32 @@ export default class PacketHandler {
         
         // Update settings
         user.player.room.updateSettings(user, packet.roomSettings, packet.password);
+    }
+
+    private handleRefreshInviteLink(user: ServerUser, packet: RefreshInviteLinkPacket) {
+        if (!user.canDo('refreshInviteLink', 500)) {
+            throw new ClientError('Wait a moment between invitelink refreshes.');
+        }
+        
+        if (user.player == null || !user.player.canEditRoom()) {
+            throw new ClientError("You don't have permissions to edit this room!");
+        }
+
+        user.player.room.refreshInviteLink(packet.remove);
+    }
+
+    private handleJoinByInvite(user: ServerUser, packet: JoinWithInvitePacket) {
+        if (!user.canDo("joinRoom", 2000)) {
+            throw new ClientError("Wait a moment before joining another room.");
+        }
+        
+        let room = this.gameManager.roomManager.rooms.find(room => room.inviteId == packet.inviteId);
+        
+        if (room == null) {
+            throw new ClientError('No room with this invite link exists.');
+        }
+
+        room.joinWithInvite(user, packet.inviteId);
     }
 
     private handleStartGame(user: ServerUser, startGamePacket: StartGamePacket) {
