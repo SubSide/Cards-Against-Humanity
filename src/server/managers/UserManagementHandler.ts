@@ -14,28 +14,37 @@ export default class UserManagementHandler {
     }
 
     public handlePacket(user: ServerUser, packet: DoUserManagementPacket) {
-        if (user.role < Role.Moderator) {
-            throw new ClientError("You do not have the permissions to do this action!");
-        }
 
         if (!user.canDo("doUserManagement", 200)) {
             throw new ClientError("Wait a moment between user management requests.");
         }
-        
 
         let editUser: ServerUser = this.gameManager.getUserById(packet.userId);
         if (editUser == null) {
             throw new ClientError("This user doesn't exist!");
         }
 
-        if (editUser.role >= user.role) {
-            throw new ClientError("You can't edit someone with the same or higher rank as yours!");
-        }
-
         this.doUserManagement(user, editUser, packet);
     }
 
     private doUserManagement(master: ServerUser, minion: ServerUser, packet: DoUserManagementPacket) {
+
+        // Only kick is allowed by the room owner
+        if (
+            master != minion && // Let's not kick ourselves
+            packet.payload.type == 'manUserKickOutRoom' && // Is the correct packet
+            master.player != null && minion.player != null && // Are both master and minion in a room
+            master.player.room.owner == master && // Is the master the owner of the room
+            master.player.room == minion.player.room // Are both master and minion in the same room
+        ) {
+            this.kickUser(master, minion);
+            return;
+        }
+
+        if (master.role < Role.Moderator) {
+            throw new ClientError("You do not have the permissions to do this action!");
+        }
+
         if (minion.role >= master.role) {
             throw new ClientError("You can't edit someone with the same or higher rank as yours!");
         }

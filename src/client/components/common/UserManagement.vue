@@ -49,14 +49,13 @@
                         </div>
                     </div>
                     <div class="col-12 mt-5" v-if="isMod || isRoomHost">
-                        <button class="btn btn-warning m-1" @click="kick" :disabled="player == null || !canDoAction">Kick from Room</button>
+                        <button class="btn btn-warning m-1" @click="kick" :disabled="player == null || (!canDoAction && !isRoomHost)">Kick from Room</button>
                         <button class="btn btn-danger m-1" v-if="isMod" @click="disconnect" :disabled="!canDoAction">Disconnect</button>
                         <button class="btn btn-light m-1" v-if="isMod" @click="ban" :disabled="!canDoAction || true">Ban from game</button>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button class="btn btn-primary">Update</button>
                 </div>
             </div>
         </div>
@@ -112,9 +111,9 @@
             },
             isRoomHost: function() {
                 if (
-                    this.$store.game != null &&
-                    this.$store.game.room != null && this.$store.game.room.id == this.roomId &&
-                    this.$store.user.id == this.$store.game.room.owner.id
+                    this.$store.state.game != null &&
+                    this.$store.state.game.room != null && this.$store.state.game.room.id == this.roomId &&
+                    this.$store.state.user.id == this.$store.state.game.room.owner.id
                     ) {
                         return true;
                 }
