@@ -142,8 +142,6 @@
                 this.sendSettingsChange(); 
             },
             settings: function(newValue: Settings, oldValue: Settings) {
-                console.debug("Settings change is being executed!");
-                console.debug(oldValue, newValue, hasSettingsChanged(oldValue, newValue));
                 if (hasSettingsChanged(oldValue, newValue)) {
                     this.setSettings(this.settings);
                 }
