@@ -55,7 +55,7 @@
                 var newText: string = this.text;
                 if (newText.match(/\_{2,}/)) {
                     this.played.forEach((card: ResponseCard) => {
-                        newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text}</span>`); 
+                        newText = newText.replace(/\_{2,}/, `<span class="text-info">${card.text.replace(/\.$/, '')}</span>`); 
                     })
                 } else {
                     newText += this.played
