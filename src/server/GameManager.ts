@@ -14,7 +14,7 @@ export default class GameManager {
 
     public users: Map<string, ServerUser>;
 
-    private static PLAYER_TIMEOUT = 5 * 60 * 1000;
+    private static PLAYER_TIMEOUT = 2 * 60 * 1000;
 
     constructor(db: Db, serverIO: SocketIO.Server) {
         this.roomManager = new RoomManager(db);
