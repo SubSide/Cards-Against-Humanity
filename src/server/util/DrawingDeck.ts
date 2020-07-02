@@ -1,14 +1,17 @@
 export default class DrawingDeck<T> {
-    private discardPile: T[] = [];
+    private discardPile: T[];
+    private deck: T[];
 
-    constructor(public deck: T[] = []) {}
+    constructor(deck: T[] = []) {
+        this.setDeck(deck);
+    }
 
     /**
      * Set a list of items as our deck, clears the discard pile
      * @param items the list of items that our deck will be
      */
     setDeck(items: T[]) {
-        this.deck = items;
+        this.deck = [...items];
         this.discardPile = [];
     }
 
@@ -16,7 +19,6 @@ export default class DrawingDeck<T> {
      * Add an item to our deck
      * 
      * @param item the item to add to our deck
-     * @param toDiscardInstead if we should add it to our discard pile instead
      */
     add(item: T) {
         this.deck.push(item)

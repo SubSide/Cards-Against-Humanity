@@ -9,7 +9,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <form class="modal-body">
                     <div class="form-group">
                         <label for="username">Username:</label>
                         <input 
@@ -31,7 +31,7 @@
                             max="100"
                             title="Can have a maximum of 100 characters">
                     </div>
-                </div>
+                </form>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" value="Change Username">
