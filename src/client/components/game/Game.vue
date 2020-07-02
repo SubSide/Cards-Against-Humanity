@@ -6,10 +6,10 @@
                     <!-- Here we display the current prompt card -->
                     <prompt-card :text="promptCard.text" :played="allPlayersPlayed == 0 ? selectedCards : []" />
                 </div>
-                <div class="col-6 col-md-9 col-lg-10">
+                <div class="col-12 col-md-9 col-lg-10">
                     <!-- If not everyone has played their cards we show per player that played a card a response card with their name -->
                     <div class="row" v-if="allPlayersPlayed.length == 0">
-                        <div class="col-12 col-md-4 col-lg-2 mt-3" v-for="player in playersThatPlayedCards" :key="player.user.id">
+                        <div class="col-6 col-lg-2 mt-3" v-for="player in playersThatPlayedCards" :key="player.user.id">
                             <response-card 
                                 class="played font-italic font-weight-light" 
                                 :text="player.user.username + ' played their card'+(promptCard.pick > 1 ? 's' : '')" />
@@ -19,7 +19,7 @@
                     <div class="row" v-else>
                         <div 
                             v-for="playerCards in allPlayersPlayed"
-                            class="col-12 col-md-4 col-lg-2 pt-2 mt-2 position-relative"
+                            class="col-6 col-md-4 col-lg-2 pt-2 mt-2 position-relative"
                             :class="{ 
                                 'border border-secondary': czarPicked == playerCards[0].id && winnerCardId == null, 
                                 'border border-success': winnerCardId == playerCards[0].id
@@ -51,17 +51,21 @@
         <!-- The play button -->
         <div class="col-12 mt-3">
             <button class="btn btn-primary" :disabled="!canPlay" @click="play">{{ playButtonText }}</button>
+            <small class="ml-2" v-if="!isCzar">{{ czar.username }} is czar!</small>
         </div>
         <!-- The players' hand -->
-        <div class="col-12 mt-3" :class="{ played: player.hasPlayedCards || isCzar }">
-            <div class="row">
+        <div class="col-12 position-relative mt-3">
+            <div class="row" :class="{ played: player.hasPlayedCards || isCzar }">
                 <response-card 
-                    class="col-6 col-md-3 col-lg-2 my-2"
+                    class="col-4 col-md-3 col-lg-2 my-2"
                     v-for="card in cards" 
                     :key="card.id" 
                     :text="card.text"
                     :badge="badgeText(card)"
                     @click.native="cardPick(card)" />
+            </div>
+            <div class="czarIndication d-flex justify-content-center align-items-center" v-if="isCzar">
+                <div class="alert alert-secondary w-100 text-center mx-2 p-3 font-weight-bold"><h3>You're the card czar!</h3></div>
             </div>
         </div>
     </div>
@@ -233,7 +237,7 @@
 
 <style scoped>
     .played {
-        opacity: 0.65;
+        opacity: 0.55;
     }
 
     .move-up {
@@ -250,5 +254,13 @@
         right: 0;
         font-size: 20px;
         z-index: 5;
+    }
+
+    .czarIndication {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
 </style>
