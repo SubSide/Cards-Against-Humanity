@@ -105,6 +105,7 @@
     import User from '../../../common/models/User';
     import Role from '../../../common/models/Role';
     import { PackGroup } from '../../../common/models/Pack';
+    import { hasSettingsChanged, areArraysTheSame } from '../../../common/utils/SettingsUtils';
         
     var uniquePrefix = 1;
     export default Vue.extend({
@@ -115,10 +116,10 @@
                 pointsToWin: 0,
                 password: null,
                 packIds: [],
-                initialized: false,
                 inviteId: null,
                 debouncer: null,
                 showPassword: false,
+                settings: null,
                 idPrefix: (uniquePrefix++).toString(36)
             }
         },
@@ -133,25 +134,19 @@
                 if (this.room.password != newValue) this.sendSettingsChange();
             },
             packIds: function(newValue: string[]) {
-                let settingsPacks = this.settings.packIds;
-                checkChanges: {
-                    // If there are changes in length we send settings change
-                    if (newValue.length != settingsPacks.length) break checkChanges;
-
-                    if (settingsPacks.find(packId => newValue.indexOf(packId) < 0) != null) {
-                        // If there are changes in packs we send settings change
-                        break checkChanges;
-                    }
-
-                    // If there are no changes in packs we cancel the packet
+                if (areArraysTheSame(this.settings.packIds, newValue)) {
                     return;
                 }
 
-                // No changes! Let's send!
+                // there are changes! Let's send!
                 this.sendSettingsChange(); 
             },
-            settings: function() {
-                this.setSettings(this.settings);
+            settings: function(newValue: Settings, oldValue: Settings) {
+                console.debug("Settings change is being executed!");
+                console.debug(oldValue, newValue, hasSettingsChanged(oldValue, newValue));
+                if (hasSettingsChanged(oldValue, newValue)) {
+                    this.setSettings(this.settings);
+                }
             },
         },
         methods: { 
@@ -228,11 +223,8 @@
                 let room: Room = this.$store.state.game.room;
                 this.password = room.password;
                 this.inviteId = room.inviteId;
-                this.setSettings(room.settings);
+                this.settings = room.settings;
                 return room;
-            },
-            settings(): Settings {
-                return this.$store.state.game.room.settings;
             },
             packGroups(): PackGroup[] {
                 return this.$store.state.server.packGroups;

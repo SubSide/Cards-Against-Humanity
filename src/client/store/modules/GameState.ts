@@ -3,8 +3,7 @@ import { UserStateUpdatePacket, RoomStatePacket, PartialRoomStatePacket, Partial
 import Room from '../../../common/models/Room';
 import Player from '../../../common/models/Player';
 import { ResponseCard } from '../../../common/models/Card';
-import Settings from '../../../common/models/Settings';
-import Round from '../../../common/models/Round';
+
 
 @Module
 export default class GameState extends VuexModule {
