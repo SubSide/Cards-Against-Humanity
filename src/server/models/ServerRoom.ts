@@ -142,6 +142,9 @@ export default class ServerRoom implements Transmissible<Room> {
         // If the player was the czar we skip to next round
         if (this.round != null && this.round.czar.id == player.user.userId) {
             this.nextRound();
+        } else {
+            // Otherwise we check if the player wasn't the last player that should play cards
+            this.checkState();
         }
     }
 
