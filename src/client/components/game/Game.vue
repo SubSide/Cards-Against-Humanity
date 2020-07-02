@@ -39,6 +39,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div v-if="winnerCardId == playerCards[0].id" class="text-center mb-1">{{ winner.username }} won!</div>
                             <!-- If this is the card the czar picked, we show a little marker badge above it -->
                             <div class="czar-pick text-center" v-if="czarPicked == playerCards[0].id || winnerCardId == playerCards[0].id">
                                 <div class="badge badge-success">&#x2714;</div>
@@ -127,6 +128,9 @@
             },
             winnerCardId(): string {
                 return this.round.winnerCardId;
+            },
+            winner(): User {
+                return this.round.winner;
             },
             promptCard(): PromptCard {
                 return this.round.promptCard;
