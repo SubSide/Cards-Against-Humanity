@@ -232,6 +232,11 @@ export default class ServerRoom implements Transmissible<Room> {
         // Game is not active, ignore!
         if (this.round == null) return;
 
+        if (this.players.length < 3) {
+            this.endGame();
+            return;
+        }
+
         if (
             this.players.find(player => 
                 this.round.czar.id != player.user.userId
@@ -267,6 +272,11 @@ export default class ServerRoom implements Transmissible<Room> {
         this.sendUpdate();
     }
 
+    public endGame() {
+        this.round = null;
+        this.sendUpdate();
+    }
+
     public nextRound() {
         if (this.round == null) {
             this.round = {
@@ -281,8 +291,7 @@ export default class ServerRoom implements Transmissible<Room> {
 
         // If one of the players reached the amount of points to win, we set the round to null
         if (!this.players.every(player => player.points < this.settings.pointsToWin)) {
-            this.round = null;
-            this.sendUpdate();
+            this.endGame();
             return;
         }
 
