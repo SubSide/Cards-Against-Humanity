@@ -42,7 +42,7 @@
     "js-cookie": "^2.2.1",
     "mongodb": "^3.5.7",
     "sessionstorage": "^0.1.0",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.5.0",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.3",
     "uuid": "^8.2.0",
